@@ -1,5 +1,5 @@
 ---
-title: Bornfire Night
+title: Bonfire Night
 description: A night of fire and bonding
 cover: /images/freshers 3.jpg
 gallery:
