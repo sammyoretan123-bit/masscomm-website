@@ -29,3 +29,27 @@ collections:
       - { label: "Name", name: "name", widget: "string" }
       - { label: "Role / Title", name: "role", widget: "string" }
       - { label: "Photo", name: "photo", widget: "image" }
+
+  - name: "hod"
+    label: "HOD"
+    label_singular: "HOD Entry"
+    folder: "content/hod"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Name", name: "name", widget: "string" }
+      - { label: "Role / Title", name: "role", widget: "string", default: "Head of Department" }
+      - { label: "Photo", name: "photo", widget: "image" }
+      - { label: "Welcome Message", name: "message", widget: "text" }
+
+  - name: "executives"
+    label: "Executives"
+    label_singular: "Executive"
+    folder: "content/executives"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Name", name: "name", widget: "string" }
+      - { label: "Position", name: "position", widget: "string" }
+      - { label: "Photo", name: "photo", widget: "image" }
+      - { label: "Display Order", name: "order", widget: "number", default: 1, hint: "1 = shows first. President should be 1, VP 2, etc." }
