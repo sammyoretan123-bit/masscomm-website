@@ -9,7 +9,8 @@
    add its slug (filename without .md) to this list. */
 
 const LECTURER_FILES = [
-  "dr.-ishola-lamidi"
+  "dr.-ishola-lamidi",
+  "dr.-oretan-samuel"
 ];
 
 /* ---------- 2. PARSE FRONT-MATTER FROM MARKDOWN ---------- */
