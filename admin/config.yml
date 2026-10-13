@@ -18,3 +18,14 @@ collections:
       - { label: "Description", name: "description", widget: "text" }
       - { label: "Cover Image", name: "cover", widget: "image" }
       - { label: "Photo Gallery", name: "gallery", widget: "list", field: { label: "Image", name: "image", widget: "image" } }
+
+  - name: "lecturers"
+    label: "Lecturers"
+    label_singular: "Lecturer"
+    folder: "content/lecturers"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Name", name: "name", widget: "string" }
+      - { label: "Role / Title", name: "role", widget: "string" }
+      - { label: "Photo", name: "photo", widget: "image" }
