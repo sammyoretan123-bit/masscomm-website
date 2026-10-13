@@ -608,3 +608,47 @@ a.activity-card:hover {
   font-size: 1.05rem;
   line-height: 1.7;
 }
+
+/* ---------- FOOTER CREDIT ---------- */
+.footer-credit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255,255,255,0.15);
+  flex-wrap: wrap;
+}
+
+.footer-credit img {
+  width: 55px;
+  height: 55px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.footer-credit-text {
+  text-align: left;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.footer-credit-text .powered-by {
+  color: #bbbbbb;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.footer-credit-text .movement-name {
+  color: #9d4edd;
+  font-weight: bold;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+}
+
+.footer-credit-text .admin-name {
+  color: #ffffff;
+  font-size: 0.85rem;
+}
