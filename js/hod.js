@@ -14,11 +14,9 @@ async function getHodSlug() {
     const res = await fetch(url);
     if (!res.ok) throw new Error("GitHub API failed");
     const files = await res.json();
-
     const mdFile = files.find(
       (f) => f.name.endsWith(".md") && f.name !== ".gitkeep"
     );
-
     return mdFile ? mdFile.name.replace(".md", "") : null;
   } catch (err) {
     console.warn("Could not fetch HOD:", err);
@@ -26,25 +24,54 @@ async function getHodSlug() {
   }
 }
 
-/* ---------- 2. PARSE FRONT-MATTER ---------- */
+/* ---------- 2. PARSE FRONT-MATTER (YAML-SAFE) ---------- */
 function parseFrontMatter(text) {
-  const result = {};
+  const result = { data: {}, body: "" };
   const match = text.match(/^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/);
   if (!match) return { data: {}, body: text };
 
   const frontMatter = match[1];
   const body = match[2] ? match[2].trim() : "";
 
-  frontMatter.split("\n").forEach((line) => {
-    const colonIndex = line.indexOf(":");
-    if (colonIndex === -1) return;
-    const key = line.slice(0, colonIndex).trim();
-    let value = line.slice(colonIndex + 1).trim();
-    value = value.replace(/^["']|["']$/g, "");
-    result[key] = value;
-  });
+  // Parse line-by-line, handling multi-line YAML values
+  const lines = frontMatter.split("\n");
+  let currentKey = null;
+  let currentValue = [];
+  let isMultiline = false;
 
-  return { data: result, body };
+  for (const line of lines) {
+    const keyMatch = line.match(/^([a-zA-Z_][a-zA-Z0-9_]*):\s*(.*)$/);
+
+    if (keyMatch) {
+      // Save previous key
+      if (currentKey) {
+        result.data[currentKey] = currentValue.join("\n").trim();
+      }
+
+      currentKey = keyMatch[1];
+      let value = keyMatch[2];
+
+      // Check for YAML block scalar indicators
+      if (value === "|" || value === ">" || value === "|-" || value === ">-" || value === "|+" || value === ">+") {
+        isMultiline = true;
+        currentValue = [];
+      } else {
+        isMultiline = false;
+        value = value.replace(/^["']|["']$/g, "");
+        currentValue = [value];
+      }
+    } else if (isMultiline && currentKey) {
+      // This line is a continuation of the multi-line value
+      currentValue.push(line.replace(/^\s{2}/, ""));
+    }
+  }
+
+  // Save the last key
+  if (currentKey) {
+    result.data[currentKey] = currentValue.join("\n").trim();
+  }
+
+  return { data: result.data, body };
 }
 
 /* ---------- 3. FETCH HOD ---------- */
@@ -76,7 +103,7 @@ async function renderHod() {
   if (!slug) {
     profileContainer.innerHTML = `
       <p style="text-align:center; width:100%; color:#666;">
-              HOD information is being updated. Please check back soon.
+        HOD information is being updated. Please check back soon.
       </p>`;
     return;
   }
@@ -95,11 +122,22 @@ async function renderHod() {
 
   // Welcome message
   if (messageContainer && hod.message) {
+    // Split into paragraphs
+    const paragraphs = hod.message
+      .split(/\n{2,}/)
+      .map((p) => `<p>${p.replace(/\n/g, "<br />")}</p>`)
+      .join("");
+
     messageContainer.innerHTML = `
       <h2 style="color: #6a0dad; margin-bottom: 15px;">Welcome Message from the HOD</h2>
-      <p>${hod.message.replace(/\n\n/g, "</p><br /><p>")}</p>
+      ${paragraphs}
       <br />
       <p style="font-weight: bold; color: #6a0dad;">&mdash; ${hod.name}, ${hod.role}</p>
+    `;
+  } else if (messageContainer) {
+    messageContainer.innerHTML = `
+      <h2 style="color: #6a0dad; margin-bottom: 15px;">Welcome Message from the HOD</h2>
+      <p style="color:#666;">Welcome message is being updated.</p>
     `;
   }
 }
