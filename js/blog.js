@@ -80,7 +80,6 @@ async function renderBlog() {
   const slugs = await getBlogSlugs();
   const posts = (await Promise.all(slugs.map(fetchBlogPost))).filter(Boolean);
 
-  // Sort by date (newest first)
   posts.sort((a, b) => new Date(b.date) - new Date(a.date));
 
   if (posts.length === 0) {
@@ -92,18 +91,62 @@ async function renderBlog() {
   }
 
   container.innerHTML = posts.map((p) => `
-    <div class="blog-card">
+    <a href="blog-post.html?id=${p.slug}" class="blog-card">
       ${p.cover ? `<img src="${p.cover}" alt="${p.title}" />` : ""}
       <div class="blog-info">
         <p class="author">By ${p.author} &bull; ${p.date}</p>
         <h3>${p.title}</h3>
         <p>${truncate(p.body, 180)}</p>
       </div>
-    </div>
+    </a>
   `).join("");
 }
 
-/* ---------- 6. RUN ---------- */
+/* ---------- 6. RENDER BLOG DETAIL ---------- */
+async function renderBlogPost() {
+  const container = document.getElementById("blog-detail");
+  if (!container) return;
+
+  const params = new URLSearchParams(window.location.search);
+  const slug = params.get("id");
+
+  if (!slug) {
+    container.innerHTML = "<p>No blog post selected.</p>";
+    return;
+  }
+
+  const post = await fetchBlogPost(slug);
+  if (!post) {
+    container.innerHTML = "<p>Blog post not found.</p>";
+    return;
+  }
+
+  document.title = post.title + " | Mass Communication Department";
+
+  const coverHTML = post.cover
+    ? `<img src="${post.cover}" alt="${post.title}" style="width:100%; max-width:900px; border-radius:12px; margin-bottom:25px; display:block; margin-left:auto; margin-right:auto;" />`
+    : "";
+
+  // Convert line breaks to paragraphs
+  const bodyHTML = post.body
+    .split("\n\n")
+    .map((para) => `<p>${para.replace(/\n/g, "<br />")}</p>`)
+    .join("");
+
+  container.innerHTML = `
+    <h1 style="color:#6a0dad; margin-bottom:15px; font-size:2.2rem;">${post.title}</h1>
+    <p style="color:#6a0dad; font-weight:bold; font-size:0.9rem; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:25px;">
+      By ${post.author} &bull; ${post.date}
+    </p>
+    ${coverHTML}
+    <div style="text-align:left; max-width:800px; margin:0 auto; line-height:1.9; font-size:1.05rem; color:#333;">
+      ${bodyHTML}
+    </div>
+  `;
+}
+
+/* ---------- 7. RUN ---------- */
 document.addEventListener("DOMContentLoaded", () => {
   renderBlog();
+  renderBlogPost();
 });
