@@ -1,47 +1,48 @@
 /* ============================================
    MASS COMMUNICATION DEPARTMENT
    File: js/activities.js
-   Purpose: Load activities from content/activities/*.md
+   Purpose: Auto-load activities from content/activities/
    ============================================ */
 
-/* ---------- 1. LIST OF ACTIVITY FILES ---------- */
-/* When you add a new activity in the admin panel,
-   add its filename (without .md) to this list. */
+const GITHUB_REPO = "sammyoretan123-bit/masscomm-website";
+const ACTIVITIES_FOLDER = "content/activities";
 
-const ACTIVITY_FILES = [
-];
+/* ---------- 1. GET ACTIVITY FILES FROM GITHUB ---------- */
+async function getActivitySlugs() {
+  try {
+    const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${ACTIVITIES_FOLDER}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("GitHub API failed");
+    const files = await res.json();
+
+    return files
+      .filter((f) => f.name.endsWith(".md") && f.name !== ".gitkeep")
+      .map((f) => f.name.replace(".md", ""));
+  } catch (err) {
+    console.warn("Could not fetch activity list:", err);
+    return [];
+  }
+}
 
 /* ---------- 2. PARSE FRONT-MATTER FROM MARKDOWN ---------- */
 function parseFrontMatter(text) {
   const result = {};
-
-  // Match content between --- and ---
-  const match = text.match(/^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/);
+  const match = text.match(/^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/);
   if (!match) return { data: {}, body: text };
 
   const frontMatter = match[1];
-  const body = match[2].trim();
+  const body = match[2] ? match[2].trim() : "";
 
-  // Simple key: value parser
   frontMatter.split("\n").forEach((line) => {
     const colonIndex = line.indexOf(":");
     if (colonIndex === -1) return;
-
     const key = line.slice(0, colonIndex).trim();
     let value = line.slice(colonIndex + 1).trim();
-
-    // Remove quotes
     value = value.replace(/^["']|["']$/g, "");
-
-    // Handle lists (gallery)
-    if (key === "gallery" && value.startsWith("[")) {
-      // leave as is for now
-    }
-
     result[key] = value;
   });
 
-  // Parse gallery array separately (Sveltia writes it as YAML list)
+  // Parse gallery array
   const galleryMatch = frontMatter.match(/gallery:\s*\n((?:\s*-\s*.+\n?)*)/);
   if (galleryMatch) {
     const items = galleryMatch[1]
@@ -81,7 +82,8 @@ async function renderActivitiesList() {
   const container = document.getElementById("activities-live-grid");
   if (!container) return;
 
-  const activities = (await Promise.all(ACTIVITY_FILES.map(fetchActivity)))
+  const slugs = await getActivitySlugs();
+  const activities = (await Promise.all(slugs.map(fetchActivity)))
     .filter(Boolean);
 
   if (activities.length === 0) {
