@@ -9,7 +9,6 @@
    add its filename (without .md) to this list. */
 
 const ACTIVITY_FILES = [
-  "bonfire-night"
 ];
 
 /* ---------- 2. PARSE FRONT-MATTER FROM MARKDOWN ---------- */
