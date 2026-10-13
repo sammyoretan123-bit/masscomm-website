@@ -93,3 +93,18 @@ collections:
       - { label: "Lecturer Name", name: "lecturer_name", widget: "string" }
       - { label: "Lecturer Title", name: "lecturer_title", widget: "string", hint: "e.g. Dr., Prof., Mr., Mrs." }
       - { label: "Post in Charge", name: "post", widget: "string", hint: "e.g. Course Coordinator, Lecturer, HOD" }
+
+  - name: "contact"
+    label: "Contact Info"
+    label_singular: "Contact"
+    folder: "content/contact"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Department Address", name: "address", widget: "text" }
+      - { label: "Email", name: "email", widget: "string" }
+      - { label: "Phone", name: "phone", widget: "string" }
+      - { label: "Instagram", name: "instagram", widget: "string", required: false, hint: "e.g. @masscomm_aaua" }
+      - { label: "X (Twitter)", name: "twitter", widget: "string", required: false, hint: "e.g. @masscomm_aaua" }
+      - { label: "Facebook", name: "facebook", widget: "string", required: false }
+      - { label: "TikTok", name: "tiktok", widget: "string", required: false }
