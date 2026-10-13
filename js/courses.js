@@ -82,10 +82,10 @@ async function renderCourses() {
 
   courses.sort(sortByCode);
 
-  if (courses.length === 0) {
+   if (courses.length === 0) {
     container.innerHTML = `
       <p style="text-align:center; width:100%; color:#666;">
-        No courses listed yet. Add one in the admin panel.
+        Course information is being updated. Please check back soon.
       </p>`;
     return;
   }

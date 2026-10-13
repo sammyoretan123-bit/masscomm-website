@@ -80,7 +80,7 @@ async function renderNews() {
   if (items.length === 0) {
     container.innerHTML = `
       <p style="text-align:center; width:100%; color:#666;">
-        No news yet. Add one in the admin panel.
+               News is being updated. Please check back soon.
       </p>`;
     return;
   }

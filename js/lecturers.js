@@ -75,7 +75,7 @@ async function renderLecturers() {
   if (lecturers.length === 0) {
     container.innerHTML = `
       <p style="text-align:center; width:100%; color:#666;">
-        No lecturers listed yet. Add one in the admin panel.
+        Lecturer information is being updated. Please check back soon.
       </p>`;
     return;
   }

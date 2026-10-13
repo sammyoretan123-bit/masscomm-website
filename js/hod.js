@@ -76,7 +76,7 @@ async function renderHod() {
   if (!slug) {
     profileContainer.innerHTML = `
       <p style="text-align:center; width:100%; color:#666;">
-        No HOD added yet. Add one in the admin panel.
+              HOD information is being updated. Please check back soon.
       </p>`;
     return;
   }

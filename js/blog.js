@@ -85,7 +85,7 @@ async function renderBlog() {
   if (posts.length === 0) {
     container.innerHTML = `
       <p style="text-align:center; width:100%; color:#666;">
-        No blog posts yet. Add one in the admin panel.
+        Blog posts are being updated. Please check back soon.
       </p>`;
     return;
   }

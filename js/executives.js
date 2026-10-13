@@ -80,7 +80,7 @@ async function renderExecutives() {
   if (executives.length === 0) {
     container.innerHTML = `
       <p style="text-align:center; width:100%; color:#666;">
-        No executives listed yet. Add one in the admin panel.
+       Executive information is being updated. Please check back soon.
       </p>`;
     return;
   }

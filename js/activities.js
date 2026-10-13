@@ -89,7 +89,7 @@ async function renderActivitiesList() {
   if (activities.length === 0) {
     container.innerHTML = `
       <p style="text-align:center; width:100%; color:#666;">
-        No activities yet. Add one in the admin panel.
+         Activity information is being updated. Please check back soon.
       </p>`;
     return;
   }
