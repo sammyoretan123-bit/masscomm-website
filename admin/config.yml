@@ -79,3 +79,17 @@ collections:
       - { label: "Date", name: "date", widget: "datetime", date_format: "DD MMMM YYYY", time_format: false, format: "DD MMMM YYYY" }
       - { label: "Cover Image", name: "cover", widget: "image", required: false }
       - { label: "Body", name: "body", widget: "markdown" }
+
+  - name: "courses"
+    label: "Courses"
+    label_singular: "Course"
+    folder: "content/courses"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Course Code", name: "code", widget: "string", hint: "e.g. MAC 101" }
+      - { label: "Course Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Lecturer Name", name: "lecturer_name", widget: "string" }
+      - { label: "Lecturer Title", name: "lecturer_title", widget: "string", hint: "e.g. Dr., Prof., Mr., Mrs." }
+      - { label: "Post in Charge", name: "post", widget: "string", hint: "e.g. Course Coordinator, Lecturer, HOD" }
