@@ -1,22 +1,32 @@
 /* ============================================
    MASS COMMUNICATION DEPARTMENT
    File: js/lecturers.js
-   Purpose: Load lecturers from content/lecturers/*.md
+   Purpose: Auto-load lecturers from content/lecturers/
    ============================================ */
 
-/* ---------- 1. LIST OF LECTURER FILES ---------- */
-/* When you add a new lecturer in the admin panel,
-   add its slug (filename without .md) to this list. */
+const GITHUB_REPO = "sammyoretan123-bit/masscomm-website";
+const LECTURERS_FOLDER = "content/lecturers";
 
-const LECTURER_FILES = [
-  "dr.-ishola-lamidi",
-  "dr.-oretan-samuel"
-];
+/* ---------- 1. GET LECTURER FILES FROM GITHUB ---------- */
+async function getLecturerSlugs() {
+  try {
+    const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${LECTURERS_FOLDER}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("GitHub API failed");
+    const files = await res.json();
+
+    return files
+      .filter((f) => f.name.endsWith(".md") && f.name !== ".gitkeep")
+      .map((f) => f.name.replace(".md", ""));
+  } catch (err) {
+    console.warn("Could not fetch lecturer list:", err);
+    return [];
+  }
+}
 
 /* ---------- 2. PARSE FRONT-MATTER FROM MARKDOWN ---------- */
 function parseFrontMatter(text) {
   const result = {};
-
   const match = text.match(/^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/);
   if (!match) return { data: {}, body: text };
 
@@ -26,11 +36,9 @@ function parseFrontMatter(text) {
   frontMatter.split("\n").forEach((line) => {
     const colonIndex = line.indexOf(":");
     if (colonIndex === -1) return;
-
     const key = line.slice(0, colonIndex).trim();
     let value = line.slice(colonIndex + 1).trim();
     value = value.replace(/^["']|["']$/g, "");
-
     result[key] = value;
   });
 
@@ -61,8 +69,8 @@ async function renderLecturers() {
   const container = document.getElementById("lecturers-grid");
   if (!container) return;
 
-  const lecturers = (await Promise.all(LECTURER_FILES.map(fetchLecturer)))
-    .filter(Boolean);
+  const slugs = await getLecturerSlugs();
+  const lecturers = (await Promise.all(slugs.map(fetchLecturer))).filter(Boolean);
 
   if (lecturers.length === 0) {
     container.innerHTML = `
