@@ -58,6 +58,18 @@ collections:
       - { label: "Photo", name: "photo", widget: "image" }
       - { label: "Welcome Message", name: "message", widget: "text" }
 
+  - name: "hod-history"
+    label: "HOD History"
+    label_singular: "Past HOD"
+    folder: "content/hod-history"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Name", name: "name", widget: "string" }
+      - { label: "Photo", name: "photo", widget: "image" }
+      - { label: "Years Served", name: "years", widget: "string", hint: "e.g. 2015 – 2018" }
+      - { label: "Display Order", name: "order", widget: "number", default: 1, hint: "1 = most recent past HOD. Increase for older ones." }
+
   - name: "executives"
     label: "Executives"
     label_singular: "Executive"

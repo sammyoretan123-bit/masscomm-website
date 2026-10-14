@@ -1,22 +1,21 @@
 /* ============================================
    MASS COMMUNICATION DEPARTMENT
    File: js/hod.js
-   Purpose: Auto-load HOD from content/hod/
+   Purpose: Load current HOD + past HOD history
    ============================================ */
 
 const GITHUB_REPO = "sammyoretan123-bit/masscomm-website";
 const HOD_FOLDER = "content/hod";
+const HOD_HISTORY_FOLDER = "content/hod-history";
 
-/* ---------- 1. GET HOD FILE ---------- */
+/* ---------- 1. GET CURRENT HOD FILE ---------- */
 async function getHodSlug() {
   try {
     const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${HOD_FOLDER}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error("GitHub API failed");
     const files = await res.json();
-    const mdFile = files.find(
-      (f) => f.name.endsWith(".md") && f.name !== ".gitkeep"
-    );
+    const mdFile = files.find((f) => f.name.endsWith(".md") && f.name !== ".gitkeep");
     return mdFile ? mdFile.name.replace(".md", "") : null;
   } catch (err) {
     console.warn("Could not fetch HOD:", err);
@@ -24,57 +23,46 @@ async function getHodSlug() {
   }
 }
 
-/* ---------- 2. PARSE FRONT-MATTER (YAML-SAFE) ---------- */
+/* ---------- 2. PARSE FRONT-MATTER (handles multi-line) ---------- */
 function parseFrontMatter(text) {
-  const result = { data: {}, body: "" };
+  const result = {};
   const match = text.match(/^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/);
   if (!match) return { data: {}, body: text };
 
   const frontMatter = match[1];
   const body = match[2] ? match[2].trim() : "";
-
-  // Parse line-by-line, handling multi-line YAML values
   const lines = frontMatter.split("\n");
-  let currentKey = null;
-  let currentValue = [];
-  let isMultiline = false;
+  let i = 0;
 
-  for (const line of lines) {
+  while (i < lines.length) {
+    const line = lines[i];
+    if (!line.trim()) { i++; continue; }
     const keyMatch = line.match(/^([a-zA-Z_][a-zA-Z0-9_]*):\s*(.*)$/);
+    if (!keyMatch) { i++; continue; }
 
-    if (keyMatch) {
-      // Save previous key
-      if (currentKey) {
-        result.data[currentKey] = currentValue.join("\n").trim();
+    const key = keyMatch[1];
+    const rawValue = keyMatch[2].trim();
+
+    if (/^[|>][-+]?$/.test(rawValue)) {
+      const isFolded = rawValue.startsWith(">");
+      const blockLines = [];
+      i++;
+      while (i < lines.length && (lines[i].startsWith("  ") || !lines[i].trim())) {
+        blockLines.push(lines[i].replace(/^\s{2}/, ""));
+        i++;
       }
-
-      currentKey = keyMatch[1];
-      let value = keyMatch[2];
-
-      // Check for YAML block scalar indicators
-      if (value === "|" || value === ">" || value === "|-" || value === ">-" || value === "|+" || value === ">+") {
-        isMultiline = true;
-        currentValue = [];
-      } else {
-        isMultiline = false;
-        value = value.replace(/^["']|["']$/g, "");
-        currentValue = [value];
-      }
-    } else if (isMultiline && currentKey) {
-      // This line is a continuation of the multi-line value
-      currentValue.push(line.replace(/^\s{2}/, ""));
+      result[key] = isFolded ? blockLines.join(" ").trim() : blockLines.join("\n").trim();
+      continue;
     }
+
+    result[key] = rawValue.replace(/^["']|["']$/g, "");
+    i++;
   }
 
-  // Save the last key
-  if (currentKey) {
-    result.data[currentKey] = currentValue.join("\n").trim();
-  }
-
-  return { data: result.data, body };
+  return { data: result, body };
 }
 
-/* ---------- 3. FETCH HOD ---------- */
+/* ---------- 3. FETCH CURRENT HOD ---------- */
 async function fetchHod(slug) {
   try {
     const res = await fetch(`content/hod/${slug}.md`);
@@ -93,7 +81,42 @@ async function fetchHod(slug) {
   }
 }
 
-/* ---------- 4. RENDER HOD ---------- */
+/* ---------- 4. PAST HODs ---------- */
+async function getPastHodSlugs() {
+  try {
+    const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${HOD_HISTORY_FOLDER}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("GitHub API failed");
+    const files = await res.json();
+    return files
+      .filter((f) => f.name.endsWith(".md") && f.name !== ".gitkeep")
+      .map((f) => f.name.replace(".md", ""));
+  } catch (err) {
+    console.warn("Could not fetch past HODs:", err);
+    return [];
+  }
+}
+
+async function fetchPastHod(slug) {
+  try {
+    const res = await fetch(`content/hod-history/${slug}.md`);
+    if (!res.ok) throw new Error("Not found: " + slug);
+    const text = await res.text();
+    const { data } = parseFrontMatter(text);
+    return {
+      slug,
+      name: data.name || slug,
+      photo: data.photo || "images/mass communication logo.jpg",
+      years: data.years || "",
+      order: parseInt(data.order) || 999
+    };
+  } catch (err) {
+    console.warn("Could not load past HOD:", slug, err);
+    return null;
+  }
+}
+
+/* ---------- 5. RENDER CURRENT HOD ---------- */
 async function renderHod() {
   const profileContainer = document.getElementById("hod-profile");
   const messageContainer = document.getElementById("hod-message");
@@ -111,7 +134,6 @@ async function renderHod() {
   const hod = await fetchHod(slug);
   if (!hod) return;
 
-  // Profile card
   profileContainer.innerHTML = `
     <div class="member">
       <img src="${hod.photo}" alt="${hod.name}" />
@@ -120,9 +142,7 @@ async function renderHod() {
     </div>
   `;
 
-  // Welcome message
   if (messageContainer && hod.message) {
-    // Split into paragraphs
     const paragraphs = hod.message
       .split(/\n{2,}/)
       .map((p) => `<p>${p.replace(/\n/g, "<br />")}</p>`)
@@ -142,7 +162,36 @@ async function renderHod() {
   }
 }
 
-/* ---------- 5. RUN ---------- */
+/* ---------- 6. RENDER PAST HODs ---------- */
+async function renderPastHods() {
+  const container = document.getElementById("past-hods-grid");
+  if (!container) return;
+
+  const slugs = await getPastHodSlugs();
+  const hods = (await Promise.all(slugs.map(fetchPastHod))).filter(Boolean);
+
+  // Sort: most recent first (lower order number = newer)
+  hods.sort((a, b) => a.order - b.order);
+
+  if (hods.length === 0) {
+    container.innerHTML = `
+      <p style="text-align:center; width:100%; color:#666;">
+        Past HOD information is being updated. Please check back soon.
+      </p>`;
+    return;
+  }
+
+  container.innerHTML = hods.map((h) => `
+    <div class="member">
+      <img src="${h.photo}" alt="${h.name}" />
+      <h3>${h.name}</h3>
+      <p class="role">${h.years}</p>
+    </div>
+  `).join("");
+}
+
+/* ---------- 7. RUN ---------- */
 document.addEventListener("DOMContentLoaded", () => {
   renderHod();
+  renderPastHods();
 });
