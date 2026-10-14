@@ -111,6 +111,27 @@ collections:
       - { label: "Class Rep Photo", name: "rep_photo", widget: "image" }
       - { label: "Photo Gallery", name: "gallery", widget: "list", field: { label: "Image", name: "image", widget: "image" }, hint: "Add as many photos as you want" }
 
+  - name: "gallery"
+    label: "Gallery Sections"
+    label_singular: "Gallery Section"
+    folder: "content/gallery"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Section Title", name: "title", widget: "string", hint: "e.g. Sports, Press Week, Freshers Orientation" }
+      - { label: "Display Order", name: "order", widget: "number", default: 1, hint: "1 = shows first. Increase for later sections." }
+      - { label: "Photos", name: "photos", widget: "list", field: { label: "Image", name: "image", widget: "image" }, hint: "Add as many photos as you want" }
+
+  - name: "gallery-settings"
+    label: "Gallery Settings"
+    label_singular: "Gallery Setting"
+    folder: "content/gallery-settings"
+    create: false
+    slug: "{{slug}}"
+    fields:
+      - { label: "Page Heading", name: "heading", widget: "string", default: "Photo Gallery" }
+      - { label: "Subtitle", name: "subtitle", widget: "string", default: "Moments from our events and activities" }
+
   - name: "news"
     label: "News"
     label_singular: "News Item"
