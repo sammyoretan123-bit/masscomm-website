@@ -1,7 +1,7 @@
 /* ============================================
    MASS COMMUNICATION DEPARTMENT
    File: js/sets.js
-   Purpose: Auto-load student sets from content/sets/
+   Purpose: Auto-load student sets + lightbox for galleries
    ============================================ */
 
 const GITHUB_REPO = "sammyoretan123-bit/masscomm-website";
@@ -43,7 +43,6 @@ function parseFrontMatter(text) {
     const key = keyMatch[1];
     const rawValue = keyMatch[2].trim();
 
-    // Block scalar
     if (/^[|>][-+]?$/.test(rawValue)) {
       const blockLines = [];
       i++;
@@ -55,7 +54,6 @@ function parseFrontMatter(text) {
       continue;
     }
 
-    // Empty → could be a list
     if (rawValue === "") {
       const listItems = [];
       let j = i + 1;
@@ -102,7 +100,76 @@ async function fetchSet(slug) {
   }
 }
 
-/* ---------- 4. RENDER SETS ---------- */
+/* ---------- 4. LIGHTBOX ---------- */
+function initLightbox() {
+  // Only create once
+  if (document.getElementById("lightbox-overlay")) return;
+
+  const overlay = document.createElement("div");
+  overlay.id = "lightbox-overlay";
+  overlay.style.cssText = `
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    cursor: zoom-out;
+    padding: 30px;
+  `;
+
+  const img = document.createElement("img");
+  img.id = "lightbox-image";
+  img.style.cssText = `
+    max-width: 95%;
+    max-height: 92vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 10px 50px rgba(0,0,0,0.6);
+  `;
+
+  const closeBtn = document.createElement("div");
+  closeBtn.innerHTML = "&times;";
+  closeBtn.style.cssText = `
+    position: absolute;
+    top: 15px;
+    right: 30px;
+    color: white;
+    font-size: 45px;
+    cursor: pointer;
+    font-weight: bold;
+    line-height: 1;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  `;
+  closeBtn.addEventListener("mouseenter", () => closeBtn.style.opacity = "1");
+  closeBtn.addEventListener("mouseleave", () => closeBtn.style.opacity = "0.8");
+
+  overlay.appendChild(closeBtn);
+  overlay.appendChild(img);
+  document.body.appendChild(overlay);
+
+  // Close on click anywhere on overlay
+  overlay.addEventListener("click", () => {
+    overlay.style.display = "none";
+  });
+
+  // Close with Escape key
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") overlay.style.display = "none";
+  });
+
+  // Attach to all gallery images (existing and future)
+  document.addEventListener("click", (e) => {
+    if (e.target.matches(".gallery-grid img, #lightbox-trigger img")) {
+      img.src = e.target.src;
+      overlay.style.display = "flex";
+    }
+  });
+}
+
+/* ---------- 5. RENDER SETS ---------- */
 async function renderSets() {
   const container = document.getElementById("sets-list");
   if (!container) return;
@@ -110,7 +177,6 @@ async function renderSets() {
   const slugs = await getSetSlugs();
   const sets = (await Promise.all(slugs.map(fetchSet))).filter(Boolean);
 
-  // Sort: newest year first
   sets.sort((a, b) => (b.year || "").localeCompare(a.year || ""));
 
   if (sets.length === 0) {
@@ -124,7 +190,6 @@ async function renderSets() {
   container.innerHTML = sets.map((s) => {
     const title = s.set_name || (s.year + " Set");
 
-    // Build gallery HTML
     const galleryHTML = s.gallery.length
       ? `<div class="gallery-grid">
           ${s.gallery.map((img) => `<img src="${img}" alt="${title} photo" />`).join("")}
@@ -134,23 +199,19 @@ async function renderSets() {
     return `
       <div style="background:#fff; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.08); overflow:hidden; margin-bottom:40px;">
 
-        <!-- Header: Set Name + Year + Level -->
         <div style="background:#6a0dad; color:#fff; padding:18px 25px;">
           <h3 style="margin:0; font-size:1.4rem;">${title}</h3>
           <p style="margin:5px 0 0; opacity:0.9; font-size:0.9rem;">${s.year} &bull; ${s.level}</p>
         </div>
 
-        <!-- Content -->
         <div style="padding:25px;">
 
-          <!-- Class Rep -->
           <div style="text-align:center; margin-bottom:25px;">
-            <img src="${s.rep_photo}" alt="${s.rep_name}" style="width:150px; height:150px; object-fit:cover; border-radius:50%; border:4px solid #6a0dad;" />
+            <img src="${s.rep_photo}" alt="${s.rep_name}" style="width:150px; height:150px; object-fit:cover; border-radius:50%; border:4px solid #6a0dad; cursor:pointer;" />
             <h4 style="margin:15px 0 5px; color:#0d0d0d;">${s.rep_name}</h4>
             <p style="margin:0; color:#6a0dad; font-weight:bold; text-transform:uppercase; font-size:0.8rem; letter-spacing:0.5px;">Class Rep</p>
           </div>
 
-          <!-- Photo Gallery -->
           <h4 style="color:#6a0dad; margin-bottom:15px; text-align:center;">Photo Gallery</h4>
           ${galleryHTML}
 
@@ -158,9 +219,12 @@ async function renderSets() {
       </div>
     `;
   }).join("");
+
+  // Activate lightbox on all gallery images
+  initLightbox();
 }
 
-/* ---------- 5. RUN ---------- */
+/* ---------- 6. RUN ---------- */
 document.addEventListener("DOMContentLoaded", () => {
   renderSets();
 });

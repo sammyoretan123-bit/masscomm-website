@@ -652,3 +652,14 @@ a.activity-card:hover {
   color: #ffffff;
   font-size: 0.85rem;
 }
+
+/* ---------- LIGHTBOX CURSOR ---------- */
+.gallery-grid img {
+  cursor: zoom-in;
+}
+
+/* ---------- ACTIVITY / SEQUENCE GALLERIES ---------- */
+/* Make activity photos clickable too */
+.activity-card img {
+  cursor: pointer;
+}
