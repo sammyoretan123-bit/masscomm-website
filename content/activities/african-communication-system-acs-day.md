@@ -9,4 +9,6 @@ gallery:
   - /images/WhatsApp Image 2026-10-14 at 6.55.06 PM.jpeg
   - /images/WhatsApp Image 2026-10-14 at 5.44.10 PM.jpeg
   - /images/WhatsApp Image 2026-10-14 at 6.58.32 PM.jpeg
+  - /images/WhatsApp Image 2026-10-14 at 6.55.13 PM.jpeg
+  - /images/WhatsApp Image 2026-10-14 at 6.58.30 PM.jpeg
 ---
