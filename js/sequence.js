@@ -2,12 +2,14 @@
    MASS COMMUNICATION DEPARTMENT
    File: js/sequence.js
    Purpose: Load sequence page content + lecturers
+   (Filename-independent — finds file by slug_key)
    ============================================ */
 
 const GITHUB_REPO = "sammyoretan123-bit/masscomm-website";
 const LECTURERS_FOLDER = "content/lecturers";
+const SEQUENCES_FOLDER = "content/sequences";
 
-/* ---------- 1. GET CURRENT SEQUENCE SLUG ---------- */
+/* ---------- 1. GET CURRENT SEQUENCE SLUG FROM PAGE URL ---------- */
 function getSequenceSlug() {
   const page = window.location.pathname.split("/").pop().replace(".html", "");
   return page.replace("sequence-", "").toLowerCase();
@@ -71,21 +73,55 @@ function parseFrontMatter(text) {
   return { data: result };
 }
 
-/* ---------- 3. FETCH SEQUENCE DATA ---------- */
-async function fetchSequence(slug) {
+/* ---------- 3. LIST SEQUENCE FILES FROM GITHUB ---------- */
+async function getSequenceSlugs() {
   try {
-    const res = await fetch(`content/sequences/${slug}.md`);
-    if (!res.ok) throw new Error("Not found");
-    const text = await res.text();
-    const { data } = parseFrontMatter(text);
-    return data;
+    const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${SEQUENCES_FOLDER}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("GitHub API failed");
+    const files = await res.json();
+    return files
+      .filter((f) => f.name.endsWith(".md") && f.name !== ".gitkeep")
+      .map((f) => f.name.replace(".md", ""));
   } catch (err) {
-    console.warn("Could not load sequence:", slug, err);
-    return null;
+    console.warn("Could not fetch sequence list:", err);
+    return [];
   }
 }
 
-/* ---------- 4. FETCH LECTURERS ---------- */
+/* ---------- 4. FIND SEQUENCE BY slug_key (filename-independent) ---------- */
+async function fetchSequence(targetSlug) {
+  const slugs = await getSequenceSlugs();
+
+  // Fetch every sequence file in parallel
+  const results = await Promise.all(
+    slugs.map(async (slug) => {
+      try {
+        const res = await fetch(`content/sequences/${slug}.md`);
+        if (!res.ok) return null;
+        const text = await res.text();
+        const { data } = parseFrontMatter(text);
+        return { slug, data };
+      } catch (err) {
+        return null;
+      }
+    })
+  );
+
+  // Primary match: by slug_key field
+  const match = results.find(
+    (r) => r && (r.data.slug_key || "").toLowerCase() === targetSlug
+  );
+  if (match) return match.data;
+
+  // Fallback: filename matches target
+  const fallback = results.find(
+    (r) => r && r.slug.toLowerCase() === targetSlug
+  );
+  return fallback ? fallback.data : null;
+}
+
+/* ---------- 5. FETCH LECTURERS ---------- */
 async function getLecturerSlugs() {
   try {
     const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${LECTURERS_FOLDER}`;
@@ -119,7 +155,7 @@ async function fetchLecturer(slug) {
   }
 }
 
-/* ---------- 5. RENDER SEQUENCE PAGE ---------- */
+/* ---------- 6. RENDER SEQUENCE PAGE ---------- */
 async function renderSequencePage() {
   const slug = getSequenceSlug();
   const seq = await fetchSequence(slug);
@@ -199,6 +235,7 @@ async function renderSequencePage() {
   }
 }
 
+/* ---------- 7. RUN ---------- */
 document.addEventListener("DOMContentLoaded", () => {
   renderSequencePage();
 });
