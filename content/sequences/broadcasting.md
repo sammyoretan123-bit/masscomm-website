@@ -1,6 +1,6 @@
 ---
 slug_key: broadcast
-title: broadcasting
+title: Broadcast
 subtitle: Broadcast Sequence
 description: |-
   The Broadcasting sequence trains students in the art of radio and television production, on-air presentation, and digital broadcast media. It equips future broadcasters with the technical skills, editorial judgment, and creative vision required to excel in today's fast-paced media landscape.
