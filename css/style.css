@@ -663,3 +663,22 @@ a.activity-card:hover {
 .activity-card img {
   cursor: pointer;
 }
+
+/* ---------- LIGHTBOX CURSOR ON ALL CONTENT IMAGES ---------- */
+main img,
+section img,
+.gallery-grid img,
+.member img,
+.blog-card img,
+.news-item img,
+.activity-card img,
+#activity-detail img,
+#blog-detail img,
+#hod-profile img,
+#hod-message img,
+#past-hods-grid img,
+#lecturers-grid img,
+#executives-grid img,
+#sets-list img {
+  cursor: zoom-in;
+}
