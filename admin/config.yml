@@ -31,6 +31,21 @@ collections:
       - { label: "Photo", name: "photo", widget: "image" }
       - { label: "Sequence", name: "sequence", widget: "select", required: false, options: ["PRAD", "Broadcast", "Print"] }
 
+  - name: "sequences"
+    label: "Sequences"
+    label_singular: "Sequence"
+    folder: "content/sequences"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Slug", name: "slug_key", widget: "select", options: ["prad", "broadcast", "print"], hint: "Important: must match the page. Choose 'prad', 'broadcast', or 'print'." }
+      - { label: "Page Title", name: "title", widget: "string", hint: "e.g. Public Relations & Advertising" }
+      - { label: "Subtitle", name: "subtitle", widget: "string", hint: "e.g. PRAD Sequence" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "What You'll Learn", name: "learn", widget: "list", field: { label: "Item", name: "item", widget: "string" } }
+      - { label: "Related Courses", name: "courses", widget: "list", field: { label: "Course", name: "course", widget: "string" } }
+      - { label: "Photo Gallery", name: "gallery", widget: "list", field: { label: "Image", name: "image", widget: "image" } }
+
   - name: "hod"
     label: "HOD"
     label_singular: "HOD Entry"
