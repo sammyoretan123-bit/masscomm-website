@@ -29,6 +29,7 @@ collections:
       - { label: "Name", name: "name", widget: "string" }
       - { label: "Role / Title", name: "role", widget: "string" }
       - { label: "Photo", name: "photo", widget: "image" }
+      - { label: "Sequence", name: "sequence", widget: "select", required: false, options: ["PRAD", "Broadcast", "Print"] }
 
   - name: "hod"
     label: "HOD"
