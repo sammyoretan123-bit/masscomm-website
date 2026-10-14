@@ -82,6 +82,21 @@ collections:
       - { label: "Photo", name: "photo", widget: "image" }
       - { label: "Display Order", name: "order", widget: "number", default: 1, hint: "1 = shows first. President should be 1, VP 2, etc." }
 
+  - name: "past-executives"
+    label: "Past Executives"
+    label_singular: "Past Executive"
+    folder: "content/past-executives"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Administration Name", name: "admin_name", widget: "string", hint: "e.g. Oretan Led-Admin 2026/2027" }
+      - { label: "Set Year", name: "set_year", widget: "string", hint: "e.g. 2023/2024" }
+      - { label: "Admin Order", name: "admin_order", widget: "number", default: 1, hint: "1 = most recent administration. Increase for older ones." }
+      - { label: "Name", name: "name", widget: "string" }
+      - { label: "Position", name: "position", widget: "string", hint: "e.g. President, Vice President, Secretary" }
+      - { label: "Photo", name: "photo", widget: "image" }
+      - { label: "Position Order", name: "order", widget: "number", default: 1, hint: "1 = President, 2 = VP, 3 = Secretary, etc." }
+
   - name: "sets"
     label: "Sets"
     label_singular: "Set"
