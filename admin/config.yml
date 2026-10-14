@@ -89,11 +89,12 @@ collections:
     create: true
     slug: "{{slug}}"
     fields:
+      - { label: "Set Name", name: "set_name", widget: "string", hint: "e.g. Luminary Class 2027" }
       - { label: "Set Year", name: "year", widget: "string", hint: "e.g. 2023/2024" }
       - { label: "Level", name: "level", widget: "select", options: ["100L", "200L", "300L", "400L"] }
       - { label: "Class Rep Name", name: "rep_name", widget: "string" }
       - { label: "Class Rep Photo", name: "rep_photo", widget: "image" }
-      - { label: "Group Photo", name: "group_photo", widget: "image" }
+      - { label: "Photo Gallery", name: "gallery", widget: "list", field: { label: "Image", name: "image", widget: "image" }, hint: "Add as many photos as you want" }
 
   - name: "news"
     label: "News"
