@@ -82,6 +82,19 @@ collections:
       - { label: "Photo", name: "photo", widget: "image" }
       - { label: "Display Order", name: "order", widget: "number", default: 1, hint: "1 = shows first. President should be 1, VP 2, etc." }
 
+  - name: "sets"
+    label: "Sets"
+    label_singular: "Set"
+    folder: "content/sets"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Set Year", name: "year", widget: "string", hint: "e.g. 2023/2024" }
+      - { label: "Level", name: "level", widget: "select", options: ["100L", "200L", "300L", "400L"] }
+      - { label: "Class Rep Name", name: "rep_name", widget: "string" }
+      - { label: "Class Rep Photo", name: "rep_photo", widget: "image" }
+      - { label: "Group Photo", name: "group_photo", widget: "image" }
+
   - name: "news"
     label: "News"
     label_singular: "News Item"
