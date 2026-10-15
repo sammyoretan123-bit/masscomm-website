@@ -46,6 +46,21 @@ collections:
       - { label: "Related Courses", name: "courses", widget: "list", field: { label: "Course", name: "course", widget: "string" } }
       - { label: "Photo Gallery", name: "gallery", widget: "list", field: { label: "Image", name: "image", widget: "image" } }
 
+  - name: "about"
+    label: "About Page"
+    label_singular: "About Entry"
+    folder: "content/about"
+    create: false
+    slug: "{{slug}}"
+    fields:
+      - { label: "Page Heading", name: "heading", widget: "string", default: "About the Department" }
+      - { label: "Page Subtitle", name: "subtitle", widget: "string", default: "Learn more about Mass Communication" }
+      - { label: "Who We Are", name: "who_we_are", widget: "text" }
+      - { label: "Our Mission", name: "mission", widget: "text" }
+      - { label: "Our Vision", name: "vision", widget: "text" }
+      - { label: "Programmes Offered", name: "programmes", widget: "list", field: { label: "Programme", name: "programme", widget: "string" } }
+      - { label: "Student Association", name: "student_association", widget: "text" }
+
   - name: "hod"
     label: "HOD"
     label_singular: "HOD Entry"
