@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Contact | Mass Communication Department</title>
-  <link rel="stylesheet" href="css/style.css" />  
+  <link rel="stylesheet" href="css/style.css" />
   <link rel="icon" type="image/jpeg" href="images/mass communication logo.jpg" />
 </head>
 <body>
@@ -84,7 +84,7 @@
 
       <h2 style="color: #6a0dad; margin-bottom: 20px;">Send Us a Message</h2>
 
-      <form action="https://formspree.io/f/mwlvwbgn" method="POST"></form>
+      <form id="contact-form" action="https://formspree.io/f/mwlvwbgn" method="POST">
 
         <label style="display:block; margin-bottom: 6px; font-weight: bold;">Full Name</label>
         <input type="text" name="name" required
@@ -101,6 +101,8 @@
         <button type="submit" class="btn" style="border: none; cursor: pointer;">
           Send Message
         </button>
+
+        <p id="form-status" style="display:none; margin-top: 20px; padding: 15px; border-radius: 6px; font-weight: bold;"></p>
 
       </form>
 
@@ -122,5 +124,48 @@
 
   <script src="js/main.js"></script>
   <script src="js/contact.js"></script>
+
+  <!-- Custom form handler -->
+  <script>
+    const contactForm = document.getElementById("contact-form");
+    const statusEl = document.getElementById("form-status");
+
+    if (contactForm) {
+      contactForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        statusEl.style.display = "block";
+        statusEl.style.background = "#f0e6fa";
+        statusEl.style.color = "#6a0dad";
+        statusEl.textContent = "Sending...";
+
+        const formData = new FormData(contactForm);
+
+        try {
+          const res = await fetch(contactForm.action, {
+            method: "POST",
+            body: formData,
+            headers: { Accept: "application/json" }
+          });
+
+          if (res.ok) {
+            statusEl.style.background = "#e6f7ea";
+            statusEl.style.color = "#1e7e34";
+            statusEl.textContent = "✓ Thank you! Your message has been sent. We'll get back to you soon.";
+            contactForm.reset();
+          } else {
+            const data = await res.json().catch(() => ({}));
+            statusEl.style.background = "#fdecea";
+            statusEl.style.color = "#c0392b";
+            statusEl.textContent = data.error || "Something went wrong. Please try again.";
+          }
+        } catch (err) {
+          statusEl.style.background = "#fdecea";
+          statusEl.style.color = "#c0392b";
+          statusEl.textContent = "Network error. Please check your connection and try again.";
+        }
+      });
+    }
+  </script>
 </body>
 </html>
