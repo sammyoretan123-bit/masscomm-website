@@ -50,7 +50,7 @@ collections:
     label: "About Page"
     label_singular: "About Entry"
     folder: "content/about"
-    create: false
+    create: true
     slug: "{{slug}}"
     fields:
       - { label: "Page Heading", name: "heading", widget: "string", default: "About the Department" }
@@ -141,7 +141,7 @@ collections:
     label: "Gallery Settings"
     label_singular: "Gallery Setting"
     folder: "content/gallery-settings"
-    create: false
+    create: true
     slug: "{{slug}}"
     fields:
       - { label: "Page Heading", name: "heading", widget: "string", default: "Photo Gallery" }
