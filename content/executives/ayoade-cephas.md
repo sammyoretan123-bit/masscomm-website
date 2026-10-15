@@ -1,6 +1,6 @@
 ---
 name: AYOADE CEPHAS
 position: PUBLIC RELATION OFFICER
-photo: /images/sport 1.jpg
+photo: /images/WhatsApp Image 2026-10-15 at 11.56.06 PM.jpeg
 order: 5
 ---
