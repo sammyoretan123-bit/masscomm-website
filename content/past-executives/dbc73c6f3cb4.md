@@ -5,5 +5,5 @@ admin_order: 2
 name: '?'
 position: TREASURER
 photo: /images/mass communication logo.jpg
-order: 1
+order: 6
 ---
