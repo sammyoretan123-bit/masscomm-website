@@ -8,5 +8,5 @@ gallery:
   - /images/freshers 3.jpg
   - /images/feed 1.jpg
   - /images/freshers ot.jpeg
-  - /images/freshers ot.jpeg
+  - /images/fr.jpeg
 ---
