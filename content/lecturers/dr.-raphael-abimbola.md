@@ -1,6 +1,6 @@
 ---
 name: Dr. Raphael Abimbola
-role: Lecturer
+role: Senior Lecturer
 photo: /images/w4.jpg
 sequence: Print
 ---
