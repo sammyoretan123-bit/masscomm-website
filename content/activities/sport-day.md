@@ -8,4 +8,6 @@ gallery:
   - /images/WhatsApp Image 2026-10-14 at 5.44.08 PM.jpeg
   - /images/461197589_901635791813937_2029634063195156217_n.jpg
   - /images/IMG-20251124-WA0143.jpg
+  - /images/DSC_0972.JPG
+  - /images/DSC_0969.JPG
 ---
