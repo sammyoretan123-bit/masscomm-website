@@ -1,6 +1,6 @@
 ---
-name: Dr. RAPHAEL ABIMBOLA
+name: Dr. Raphael Abimbola
 photo: /images/w4.jpg
 years: '-'
-order: 1
+order: 2
 ---
