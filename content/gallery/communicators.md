@@ -8,4 +8,5 @@ photos:
   - /images/WhatsApp Image 2026-10-14 at 4.10.29 PM.jpeg
   - /images/WhatsApp Image 2026-10-14 at 4.10.19 PM.jpeg
   - /images/WhatsApp Image 2026-10-14 at 4.10.35 PM.jpeg
+  - /images/damskido.jpeg
 ---
