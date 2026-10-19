@@ -9,4 +9,10 @@ photos:
   - /images/WhatsApp Image 2026-10-14 at 4.10.19 PM.jpeg
   - /images/WhatsApp Image 2026-10-14 at 4.10.35 PM.jpeg
   - /images/damskido.jpeg
+  - /images/communicators.jpg
+  - /images/c2.jpg
+  - /images/c1.jpg
+  - /images/c3.jpg
+  - /images/c5.jpg
+  - /images/c4.jpg
 ---
