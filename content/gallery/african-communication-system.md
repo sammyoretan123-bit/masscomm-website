@@ -9,4 +9,5 @@ photos:
   - /images/WhatsApp Image 2026-10-14 at 5.44.11 PM.jpeg
   - /images/WhatsApp Image 2026-10-14 at 6.55.06 PM.jpeg
   - /images/WhatsApp Image 2026-10-14 at 5.44.10 PM.jpeg
+  - /images/oyin.jpeg
 ---
