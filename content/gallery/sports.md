@@ -7,4 +7,5 @@ photos:
   - /images/sport 3.jpg
   - /images/sport 5.jpeg
   - /images/sport 1.jpg
+  - /images/legacy.jpeg
 ---
