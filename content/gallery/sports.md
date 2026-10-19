@@ -8,4 +8,6 @@ photos:
   - /images/sport 5.jpeg
   - /images/sport 1.jpg
   - /images/legacy.jpeg
+  - /images/WhatsApp Image 2026-10-14 at 5.39.05 PM.jpeg
+  - /images/drill.jpeg
 ---
