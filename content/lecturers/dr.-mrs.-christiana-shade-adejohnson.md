@@ -1,6 +1,6 @@
 ---
 name: Dr. Mrs. Christiana Shade Adejohnson
-role: Lecturer
+role: Senior Lecturer
 photo: /images/dr.jpeg
 sequence: PRAD
 ---
