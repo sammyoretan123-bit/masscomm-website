@@ -1,5 +1,5 @@
 ---
-name: Dr. Mrs CHRISTIANA SHADE ADEJOHNSON
+name: Dr. Mrs. Christiana Shade Adejohnson
 photo: /images/dr.jpeg
 years: '-'
 order: 3
