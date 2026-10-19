@@ -1,7 +1,7 @@
 /* ============================================
    MASS COMMUNICATION DEPARTMENT
    File: js/lecturers.js
-   Purpose: Auto-load lecturers from content/lecturers/
+   Purpose: Auto-load lecturers from content/lecturers/ and sort by order
    ============================================ */
 
 const GITHUB_REPO = "sammyoretan123-bit/masscomm-website";
@@ -56,7 +56,8 @@ async function fetchLecturer(slug) {
       slug,
       name: data.name || slug,
       role: data.role || "Lecturer",
-      photo: data.photo || "images/mass communication logo.jpg"
+      photo: data.photo || "images/mass communication logo.jpg",
+      order: parseInt(data.order) || 999
     };
   } catch (err) {
     console.warn("Could not load lecturer:", slug, err);
@@ -71,6 +72,9 @@ async function renderLecturers() {
 
   const slugs = await getLecturerSlugs();
   const lecturers = (await Promise.all(slugs.map(fetchLecturer))).filter(Boolean);
+
+  // Sort the lecturers by the order number
+  lecturers.sort((a, b) => a.order - b.order);
 
   if (lecturers.length === 0) {
     container.innerHTML = `

@@ -30,6 +30,7 @@ collections:
       - { label: "Role / Title", name: "role", widget: "string" }
       - { label: "Photo", name: "photo", widget: "image" }
       - { label: "Sequence", name: "sequence", widget: "select", required: false, options: ["PRAD", "Broadcast", "Print"] }
+      - { label: "Display Order", name: "order", widget: "number", default: 1, hint: "1 = HOD, 2 = Senior Lecturer, etc." }
 
   - name: "sequences"
     label: "Sequences"
