@@ -7,4 +7,5 @@ gallery:
   - /images/freshers 2.jpg
   - /images/freshers 3.jpg
   - /images/feed 1.jpg
+  - /images/freshers ot.jpeg
 ---
