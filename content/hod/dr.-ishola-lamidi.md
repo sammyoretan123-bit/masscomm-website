@@ -1,5 +1,5 @@
 ---
-name: Dr. ISHOLA LAMIDI
+name: Dr. ISHOLA KAMORUDEEN LAMIDI
 role: Head of Department
 photo: /images/Hod.jpg
 message: |-
