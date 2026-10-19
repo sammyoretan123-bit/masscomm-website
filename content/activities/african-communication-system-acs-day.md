@@ -1,6 +1,6 @@
 ---
 title: African Communication System (ACS) DAY
-description: The African Communication System (ACS) refers to the traditional, indigenous modes of communication rooted in African culture and community life. Long before modern mass media, African societies used talking drums, gongs, proverbs, symbols, and oral traditions to share information, preserve culture, and unite communities. This activity explores the core characteristics of ACS — including its credibility, effectiveness in rural areas, and its unique role as a channel for social change. Students will examine how these traditional systems remain relevant today and how they interact with modern media in contemporary African society.
+description: The African Communication System (ACS) refers to traditional communication methods rooted in African culture, such as talking drums, proverbs, symbols, and oral traditions. This activity explores their credibility, effectiveness in rural communities, role in social change, and continued relevance alongside modern media.
 cover: /images/WhatsApp Image 2026-10-14 at 6.58.32 PM.jpeg
 gallery:
   - /images/WhatsApp Image 2026-10-14 at 6.55.07 PM.jpeg
