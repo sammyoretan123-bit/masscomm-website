@@ -3,5 +3,5 @@ name: Mr. Oluwadare Oladipo Oguntomisin
 role: Lecturer
 photo: /images/mass communication logo.jpg
 sequence: ''
-order: 6
+order: 7
 ---
