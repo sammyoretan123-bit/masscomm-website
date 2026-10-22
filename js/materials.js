@@ -114,12 +114,12 @@ function renderMaterials() {
     if (level && m.level !== level) return false;
     if (semester && m.semester !== semester) return false;
     
-    // Case-insensitive match for category (fixes "PAST QUESTION" vs "Past Question")
+    // Case-insensitive match for category
     if (category && (m.category || "").toUpperCase() !== category.toUpperCase()) return false;
     
-    // Search by course code or title
+    // Search by course code, title, OR category
     if (search) {
-      const haystack = `${m.course_code || ""} ${m.title || ""}`.toLowerCase();
+      const haystack = `${m.course_code || ""} ${m.title || ""} ${m.category || ""}`.toLowerCase();
       if (!haystack.includes(search)) return false;
     }
     return true;
