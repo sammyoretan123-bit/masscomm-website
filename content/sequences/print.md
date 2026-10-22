@@ -25,4 +25,6 @@ courses:
 gallery:
   - /images/WhatsApp Image 2026-10-14 at 11.49.03 AM.jpeg
   - /images/WhatsApp Image 2026-10-14 at 11.48.13 AM.jpeg
+  - /images/print 1.jpeg
+  - /images/print.jpeg
 ---
