@@ -110,9 +110,14 @@ function renderMaterials() {
   const search = filterSearch ? filterSearch.value.trim().toLowerCase() : "";
 
   let filtered = allMaterials.filter((m) => {
+    // Exact match for level and semester
     if (level && m.level !== level) return false;
     if (semester && m.semester !== semester) return false;
-    if (category && m.category !== category) return false;
+    
+    // Case-insensitive match for category (fixes "PAST QUESTION" vs "Past Question")
+    if (category && (m.category || "").toUpperCase() !== category.toUpperCase()) return false;
+    
+    // Search by course code or title
     if (search) {
       const haystack = `${m.course_code || ""} ${m.title || ""}`.toLowerCase();
       if (!haystack.includes(search)) return false;
@@ -128,7 +133,12 @@ function renderMaterials() {
     return;
   }
 
-  materialsList.innerHTML = filtered.map((m) => `
+  materialsList.innerHTML = filtered.map((m) => {
+    // Determine badge color (red for past questions, purple for notes)
+    const isPastQuestion = (m.category || "").toUpperCase().includes("PAST QUESTION");
+    const badgeColor = isPastQuestion ? "#c0392b" : "#6a0dad";
+
+    return `
     <div style="background:#fff; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.08); padding:22px 25px; margin-bottom:18px; border-left:6px solid #6a0dad;">
       <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
         <div style="flex:1; min-width:220px;">
@@ -137,7 +147,7 @@ function renderMaterials() {
           </p>
           <h3 style="margin:0 0 8px; color:#0d0d0d;">${m.title || "Untitled"}</h3>
           ${m.description ? `<p style="margin:0 0 10px; color:#555; font-size:0.95rem;">${m.description}</p>` : ""}
-          <span style="display:inline-block; background:${m.category === "Past Question" ? "#c0392b" : "#6a0dad"}; color:white; padding:3px 12px; border-radius:20px; font-size:0.75rem; font-weight:bold; text-transform:uppercase; letter-spacing:0.5px;">
+          <span style="display:inline-block; background:${badgeColor}; color:white; padding:3px 12px; border-radius:20px; font-size:0.75rem; font-weight:bold; text-transform:uppercase; letter-spacing:0.5px;">
             ${m.category || "Material"}
           </span>
         </div>
@@ -148,7 +158,7 @@ function renderMaterials() {
         </div>
       </div>
     </div>
-  `).join("");
+  `}).join("");
 }
 
 /* ---------- FILTER EVENTS ---------- */
