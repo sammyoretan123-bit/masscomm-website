@@ -31,4 +31,5 @@ gallery:
   - /images/c2.jpg
   - /images/WhatsApp Image 2026-10-14 at 10.19.48 AM.jpeg
   - /images/c4.jpg
+  - /images/pr20.jpeg
 ---
