@@ -25,6 +25,13 @@ courses:
 gallery:
   - /images/pr.jpeg
   - /images/WhatsApp Image 2026-10-14 at 10.23.05 AM.jpeg
-  - /images/WhatsApp Image 2026-10-14 at 10.22.11 AM.jpeg
+  - /images/pr10.jpeg
   - /images/WhatsApp Image 2026-10-14 at 10.22.55 AM.jpeg
+  - /images/pr19.jpeg
+  - /images/pr11.jpeg
+  - /images/pr8.jpeg
+  - /images/pr6.jpeg
+  - /images/pr2.jpeg
+  - /images/pr9.jpeg
+  - /images/pr5.jpeg
 ---
