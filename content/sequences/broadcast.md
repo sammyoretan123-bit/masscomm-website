@@ -32,4 +32,7 @@ gallery:
   - /images/WhatsApp Image 2026-10-14 at 10.19.48 AM.jpeg
   - /images/c4.jpg
   - /images/pr20.jpeg
+  - /images/pr13.jpeg
+  - /images/pr3.jpeg
+  - /images/pr17.jpeg
 ---
