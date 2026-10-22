@@ -26,5 +26,4 @@ photos:
   - /images/pr9.jpeg
   - /images/pr6.jpeg
   - /images/pr5.jpeg
-  - /images/pr9.jpeg
 ---
