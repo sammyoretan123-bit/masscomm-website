@@ -27,4 +27,8 @@ gallery:
   - /images/WhatsApp Image 2026-10-14 at 10.22.14 AM.jpeg
   - /images/WhatsApp Image 2026-10-14 at 10.22.01 AM.jpeg
   - /images/WhatsApp Image 2026-10-14 at 10.22.03 AM.jpeg
+  - /images/communicators.jpg
+  - /images/c2.jpg
+  - /images/WhatsApp Image 2026-10-14 at 10.19.48 AM.jpeg
+  - /images/c4.jpg
 ---
