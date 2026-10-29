@@ -91,14 +91,22 @@ async function loadMovies() {
 // --- VIDEO PLAYER LOGIC ---
 function playMovie(videoId) {
   if (!videoId) return;
-  // Using YouTube embed URL
+  
+  // Load the video
   videoContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-  videoModal.style.display = "flex";
+  
+  // Add the 'show' class to trigger the fade-in animation
+  videoModal.classList.add("show");
 }
 
 function closeVideo() {
-  videoModal.style.display = "none";
-  videoContainer.innerHTML = ""; // Stop the video when closed
+  // Remove the 'show' class to trigger the fade-out animation
+  videoModal.classList.remove("show");
+  
+  // Wait for the fade-out (0.3s) to finish before stopping the video and removing the iframe
+  setTimeout(() => {
+    videoContainer.innerHTML = ""; 
+  }, 300);
 }
 
 // --- CHECK SESSION ON LOAD ---
