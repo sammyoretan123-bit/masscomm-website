@@ -75,10 +75,15 @@ async function loadMovies() {
     return;
   }
 
-  // Render the Netflix Grid
+  // Render the Netflix Grid with Hover Overlay
   moviesGrid.innerHTML = data.map((movie) => `
     <div class="movie-card" onclick="playMovie('${movie.video_id}')">
-      <img src="${movie.poster_url || 'images/mass communication logo.jpg'}" alt="${movie.title}" />
+      <div class="poster-container">
+        <img src="${movie.poster_url || 'images/mass communication logo.jpg'}" alt="${movie.title}" />
+        <div class="poster-overlay">
+          <div class="play-circle">▶</div>
+        </div>
+      </div>
       <div class="movie-info">
         <h3 style="color: #fff;">${movie.title}</h3>
         <p>${movie.description || ''}</p>
@@ -95,15 +100,15 @@ function playMovie(videoId) {
   // Load the video
   videoContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
   
-  // Add the 'show' class to trigger the fade-in animation
+  // Add the 'show' class to trigger the fade-in
   videoModal.classList.add("show");
 }
 
 function closeVideo() {
-  // Remove the 'show' class to trigger the fade-out animation
+  // Remove the 'show' class to trigger the fade-out
   videoModal.classList.remove("show");
   
-  // Wait for the fade-out (0.3s) to finish before stopping the video and removing the iframe
+  // Wait for the 0.3s animation to finish before stopping the video
   setTimeout(() => {
     videoContainer.innerHTML = ""; 
   }, 300);
