@@ -152,6 +152,34 @@
     .close-btn:hover { color: #e50914; }
     
     .section-title h2, .section-title p { color: #fff !important; }
+
+    /* --- NEW SEARCH BAR STYLES --- */
+    .search-container {
+      flex: 1; 
+      min-width: 250px;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    
+    .search-container input {
+      width: 100%;
+      padding: 12px 40px 12px 20px; /* Right padding makes room for the icon */
+      border-radius: 6px;
+      border: none;
+      background: #333;
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 15px;
+      color: #aaa;
+      font-size: 1.1rem;
+      pointer-events: none; /* Lets clicks pass through to the input */
+    }
   </style>
 </head>
 <body>
@@ -217,7 +245,7 @@
     <p>Movie premiere for logged-in students</p>
   </section>
 
-  <!-- ============ LOGIN SECTION (Hidden by default, shown by JS) ============ -->
+  <!-- ============ LOGIN SECTION ============ -->
   <section class="team" id="login-section" style="display:none; background: transparent;">
     <div style="max-width: 450px; margin: 0 auto; background: #222; padding: 40px 35px; border-radius: 12px; text-align: left;">
       <h2 style="color: #e50914; margin-bottom: 10px; text-align: center;">Student Login</h2>
@@ -233,12 +261,18 @@
     </div>
   </section>
 
-  <!-- ============ MOVIES SECTION (Hidden by default, shown by JS) ============ -->
+  <!-- ============ MOVIES SECTION ============ -->
   <section class="team" id="movies-section" style="display:none; background: transparent; padding: 0;">
     
     <!-- SEARCH BAR AND LOGOUT BUTTON -->
     <div style="max-width: 1200px; margin: 20px auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; padding: 0 20px; position: relative; z-index: 20;">
-      <input type="text" id="search-bar" placeholder="Search for a movie or documentary..." style="flex: 1; min-width: 250px; padding: 12px 20px; border-radius: 6px; border: none; background: #333; color: #fff; font-size: 1rem; outline: none;" />
+      
+      <!-- NEW SEARCH CONTAINER WITH ICON -->
+      <div class="search-container">
+        <input type="text" id="search-bar" placeholder="Search for a movie or documentary..." />
+        <span class="search-icon">🔍</span>
+      </div>
+
       <button id="logout-btn" class="btn" style="background: #333; color: #fff; border: none; cursor: pointer; padding: 12px 24px; border-radius: 6px;">Log Out</button>
     </div>
 
