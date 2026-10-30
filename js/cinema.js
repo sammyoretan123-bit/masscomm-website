@@ -39,7 +39,6 @@ async function loadMovies() {
   }
 
   // 2. RENDER THE REST OF THE GRID (Starting from the second movie)
-  // If you want the featured movie to ALSO appear in the grid, change data.slice(1) to just data.
   const gridMovies = data.slice(1); 
 
   if (gridMovies.length === 0) {
@@ -76,7 +75,6 @@ function playMovie(videoId) {
   if (!videoId) return;
   
   // Assuming you are using YouTube links. 
-  // If it's a different platform, adjust the iframe source below.
   // We use replace to ensure we get the embed link.
   const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
   
@@ -91,6 +89,5 @@ function closeVideo() {
 }
 
 // --- INITIALIZATION ---
-// Note: Your login logic (in main.js presumably) should call loadMovies() after successful login.
-// If you need it to load immediately on page load regardless of login, uncomment the line below:
-// document.addEventListener("DOMContentLoaded", loadMovies);
+// This forces the movies to load immediately when the page opens
+document.addEventListener("DOMContentLoaded", loadMovies);
