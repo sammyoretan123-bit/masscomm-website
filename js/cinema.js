@@ -75,7 +75,7 @@ async function loadMovies() {
     return;
   }
 
-  // Render the Netflix Grid with Hover Overlay and gold badge
+  // Render the Netflix Grid with Hover Overlay and purple badge
   moviesGrid.innerHTML = data.map((movie) => `
     <div class="movie-card" onclick="playMovie('${movie.video_id}')">
       <div class="poster-container">
