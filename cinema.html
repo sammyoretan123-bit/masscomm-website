@@ -153,10 +153,10 @@
     
     .section-title h2, .section-title p { color: #fff !important; }
 
-    /* --- NEW SEARCH BAR STYLES --- */
+    /* --- SEARCH BAR STYLES --- */
     .search-container {
       flex: 1; 
-      min-width: 250px;
+      max-width: 500px; /* Limits how wide the search bar gets */
       position: relative;
       display: flex;
       align-items: center;
@@ -177,7 +177,8 @@
       position: absolute;
       right: 15px;
       color: #aaa;
-      font-size: 1.1rem;
+      width: 20px;
+      height: 20px;
       pointer-events: none; /* Lets clicks pass through to the input */
     }
   </style>
@@ -267,10 +268,12 @@
     <!-- SEARCH BAR AND LOGOUT BUTTON -->
     <div style="max-width: 1200px; margin: 20px auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; padding: 0 20px; position: relative; z-index: 20;">
       
-      <!-- NEW SEARCH CONTAINER WITH ICON -->
+      <!-- SEARCH CONTAINER WITH SVG ICON -->
       <div class="search-container">
         <input type="text" id="search-bar" placeholder="Search for a movie or documentary..." />
-        <span class="search-icon">🔍</span>
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
       </div>
 
       <button id="logout-btn" class="btn" style="background: #333; color: #fff; border: none; cursor: pointer; padding: 12px 24px; border-radius: 6px;">Log Out</button>
