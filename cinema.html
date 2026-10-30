@@ -153,33 +153,61 @@
     
     .section-title h2, .section-title p { color: #fff !important; }
 
-    /* --- SEARCH BAR STYLES --- */
+    /* --- PREMIUM SEARCH BAR STYLES --- */
     .search-container {
       flex: 1; 
-      max-width: 500px; /* Limits how wide the search bar gets */
+      max-width: 500px;
       position: relative;
       display: flex;
       align-items: center;
+      transition: transform 0.2s ease;
+    }
+
+    .search-container:focus-within {
+      transform: scale(1.02); /* Slight zoom when typing */
     }
     
     .search-container input {
       width: 100%;
-      padding: 12px 40px 12px 20px; /* Right padding makes room for the icon */
-      border-radius: 6px;
-      border: none;
-      background: #333;
+      padding: 14px 50px 14px 20px; 
+      border-radius: 50px; /* Pill shape */
+      border: 1px solid #444;
+      background: rgba(51, 51, 51, 0.8);
       color: #fff;
       font-size: 1rem;
       outline: none;
+      transition: all 0.3s ease;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
     }
 
-    .search-icon {
+    .search-container input:focus {
+      background: #222;
+      border-color: #e50914; /* Netflix Red glow */
+      box-shadow: 0 0 10px rgba(229, 9, 20, 0.3);
+    }
+
+    .search-icon-btn {
       position: absolute;
-      right: 15px;
+      right: 5px;
+      background: none;
+      border: none;
       color: #aaa;
-      width: 20px;
-      height: 20px;
-      pointer-events: none; /* Lets clicks pass through to the input */
+      cursor: pointer;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s ease, transform 0.2s ease;
+    }
+
+    .search-icon-btn:hover, .search-container input:focus + .search-icon-btn {
+      color: #fff;
+      transform: scale(1.1);
+    }
+
+    .search-icon-btn svg {
+      width: 22px;
+      height: 22px;
     }
   </style>
 </head>
@@ -268,12 +296,15 @@
     <!-- SEARCH BAR AND LOGOUT BUTTON -->
     <div style="max-width: 1200px; margin: 20px auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; padding: 0 20px; position: relative; z-index: 20;">
       
-      <!-- SEARCH CONTAINER WITH SVG ICON -->
+      <!-- PREMIUM SEARCH CONTAINER -->
       <div class="search-container">
-        <input type="text" id="search-bar" placeholder="Search for a movie or documentary..." />
-        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
+        <input type="text" id="search-bar" placeholder="Search for a movie or documentary..." autocomplete="off" />
+        <!-- The icon is now a clickable button -->
+        <button class="search-icon-btn" id="search-icon-btn" aria-label="Search">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </button>
       </div>
 
       <button id="logout-btn" class="btn" style="background: #333; color: #fff; border: none; cursor: pointer; padding: 12px 24px; border-radius: 6px;">Log Out</button>
