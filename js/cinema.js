@@ -1,6 +1,6 @@
 /* ============================================
    File: js/cinema.js
-   Purpose: Auth + Netflix-style grid
+   Purpose: Auth + Netflix-style grid + Search
    ============================================ */
 
 const loginSection = document.getElementById("login-section");
@@ -13,6 +13,7 @@ const logoutBtn = document.getElementById("logout-btn");
 const moviesGrid = document.getElementById("movies-grid");
 const videoModal = document.getElementById("video-modal");
 const videoContainer = document.getElementById("video-container");
+const searchBar = document.getElementById("search-bar");
 
 // --- AUTH LOGIC ---
 function showLogin() {
@@ -77,7 +78,7 @@ async function loadMovies() {
     return;
   }
 
-  // Render the Netflix Grid with Hover Overlay and purple badge
+  // Render the Netflix Grid
   moviesGrid.innerHTML = data.map((movie) => `
     <div class="movie-card" onclick="playMovie('${movie.video_id}')">
       <div class="poster-container">
@@ -99,37 +100,27 @@ async function loadMovies() {
 function playMovie(videoId) {
   if (!videoId) return;
   
-  // Load the video
   videoContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-  
-  // Add the 'show' class to trigger the fade-in
   videoModal.classList.add("show");
 }
 
 function closeVideo() {
-  // Remove the 'show' class to trigger the fade-out
   videoModal.classList.remove("show");
-  
-  // Wait for the 0.3s animation to finish before stopping the video
   setTimeout(() => {
     videoContainer.innerHTML = ""; 
   }, 300);
 }
 
 // --- SEARCH FILTER LOGIC ---
-const searchBar = document.getElementById("search-bar");
-
 if (searchBar) {
   searchBar.addEventListener("input", (e) => {
     const searchTerm = e.target.value.toLowerCase();
     const cards = document.querySelectorAll(".movie-card");
 
     cards.forEach((card) => {
-      // Look at the title and description text inside the card
       const title = card.querySelector("h3").textContent.toLowerCase();
       const description = card.querySelector("p").textContent.toLowerCase();
       
-      // If the title or description matches what was typed, show it. Otherwise, hide it.
       if (title.includes(searchTerm) || description.includes(searchTerm)) {
         card.style.display = "block";
       } else {
