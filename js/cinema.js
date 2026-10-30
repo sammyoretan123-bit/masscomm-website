@@ -61,9 +61,11 @@ if (logoutBtn) {
 async function loadMovies() {
   moviesGrid.innerHTML = `<p style="text-align:center; color:#aaa; grid-column: 1/-1;">Loading movies...</p>`;
 
+  // Fetch data and sort by the "order" column
   const { data, error } = await supabaseClient
     .from("cinema")
-    .select("*");
+    .select("*")
+    .order("order", { ascending: true });
 
   if (error) {
     moviesGrid.innerHTML = `<p style="text-align:center; color:#e50914; grid-column: 1/-1;">Error loading movies: ${error.message}</p>`;
