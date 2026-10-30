@@ -2,6 +2,7 @@
 const moviesGrid = document.getElementById("movies-grid");
 const videoModal = document.getElementById("video-modal");
 const videoContainer = document.getElementById("video-container");
+let allMoviesData = []; 
 
 // --- AUTHENTICATION & UI LOGIC ---
 document.addEventListener("DOMContentLoaded", async () => {
@@ -10,17 +11,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   const loginForm = document.getElementById("login-form");
   const loginStatus = document.getElementById("login-status");
   const logoutBtn = document.getElementById("logout-btn");
+  const searchBar = document.getElementById("search-bar");
 
   // 1. Check if user is already logged in on page load
   const { data: { session } } = await supabaseClient.auth.getSession();
   
   if (session) {
-    // User is logged in
     loginSection.style.display = "none";
     moviesSection.style.display = "block";
-    loadMovies(); // Fetch the movies!
+    loadMovies(); 
   } else {
-    // User is NOT logged in
     loginSection.style.display = "block";
     moviesSection.style.display = "none";
   }
@@ -45,11 +45,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       loginStatus.style.background = "#e50914";
       loginStatus.textContent = "Login failed: " + error.message;
     } else {
-      // Login successful!
       loginStatus.style.background = "#28a745";
       loginStatus.textContent = "Login successful! Loading movies...";
       
-      // Switch screens
       loginSection.style.display = "none";
       moviesSection.style.display = "block";
       loadMovies();
@@ -59,8 +57,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 3. Handle Logout Button
   logoutBtn.addEventListener("click", async () => {
     await supabaseClient.auth.signOut();
-    // Refresh the page to reset the view
     window.location.reload();
+  });
+
+  // 4. Handle Search Bar Typing
+  searchBar.addEventListener("input", (e) => {
+    const searchTerm = e.target.value.toLowerCase().trim();
+    handleSearch(searchTerm);
   });
 });
 
@@ -84,6 +87,8 @@ async function loadMovies() {
     return;
   }
 
+  allMoviesData = data;
+
   // 1. SET THE FEATURED BANNER (The first movie)
   const featuredMovie = data[0];
   const banner = document.getElementById("featured-banner");
@@ -91,14 +96,12 @@ async function loadMovies() {
   if (banner && featuredMovie) {
     banner.style.display = "block";
     banner.style.backgroundImage = `url('${featuredMovie.poster_url || 'images/mass communication logo.jpg'}')`;
-    
     document.getElementById("featured-title").textContent = featuredMovie.title;
     document.getElementById("featured-desc").textContent = featuredMovie.description || '';
-    
     window.currentFeaturedVideo = featuredMovie.video_id;
   }
 
-  // 2. RENDER THE REST OF THE GRID
+  // 2. RENDER THE GRID (Exclude the #1 featured movie from the grid)
   const gridMovies = data.slice(1); 
 
   if (gridMovies.length === 0) {
@@ -121,6 +124,54 @@ async function loadMovies() {
       </div>
     </div>
   `).join("");
+}
+
+// --- NEW SEARCH & RENDER LOGIC (NETFLIX STYLE) ---
+function handleSearch(searchTerm) {
+  const searchResultsContainer = document.getElementById("search-results");
+  const normalBrowsingArea = document.getElementById("normal-browsing-area");
+
+  // If the search bar is empty, show the normal banner and grid again
+  if (searchTerm === "") {
+    searchResultsContainer.style.display = "none";
+    normalBrowsingArea.style.display = "block";
+    return;
+  }
+
+  // Otherwise, hide the banner/grid and show search results
+  searchResultsContainer.style.display = "block";
+  normalBrowsingArea.style.display = "none";
+
+  // Filter movies based on title OR description
+  const filteredMovies = allMoviesData.filter(movie => 
+    (movie.title && movie.title.toLowerCase().includes(searchTerm)) || 
+    (movie.description && movie.description.toLowerCase().includes(searchTerm))
+  );
+
+  if (filteredMovies.length === 0) {
+    searchResultsContainer.innerHTML = `<p style="text-align:center; color:#aaa; padding: 40px;">No results found for "${searchTerm}".</p>`;
+    return;
+  }
+
+  // Render the wide Netflix-style layout
+  searchResultsContainer.innerHTML = `
+    <div class="search-result-layout">
+      <h3 style="color: #aaa; margin-bottom: 10px;">Search Results for "${searchTerm}"</h3>
+      ${filteredMovies.map(movie => `
+        <div class="search-item" onclick="playMovie('${movie.video_id}')">
+          <img class="search-item-img" src="${movie.poster_url || 'images/mass communication logo.jpg'}" alt="${movie.title}" />
+          <div class="search-item-info">
+            <h3>${movie.title}</h3>
+            <p>${movie.description || 'No description available.'}</p>
+            <div>
+              <button class="play-btn-wide">▶ Play</button>
+              <span class="movie-category" style="margin-left: 15px;">${movie.category || 'Movie'}</span>
+            </div>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+  `;
 }
 
 // --- PLAY FEATURED MOVIE LOGIC ---

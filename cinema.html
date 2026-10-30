@@ -9,8 +9,46 @@
   <style>
     /* Netflix-style custom styles */
     body { background-color: #141414; color: #fff; }
+    
+    /* Original Grid Layout (For browsing) */
     .cinema-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; padding: 20px; }
     
+    /* NEW: Wide Search Result Layout (Like Netflix) */
+    .search-result-layout { display: flex; flex-direction: column; gap: 20px; max-width: 1200px; margin: 0 auto; padding: 20px; }
+    
+    .search-item { 
+      display: flex; 
+      background: #181818; 
+      border-radius: 8px; 
+      overflow: hidden; 
+      cursor: pointer; 
+      transition: background 0.3s;
+      border: 1px solid #333;
+    }
+    .search-item:hover { background: #282828; }
+    
+    .search-item-img {
+      width: 300px;
+      height: 170px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    
+    .search-item-info {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .search-item-info h3 { font-size: 1.5rem; margin-bottom: 10px; color: #fff; }
+    .search-item-info p { font-size: 0.95rem; color: #aaa; margin-bottom: 15px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    
+    .play-btn-wide {
+      background: #fff; color: #000; border: none; padding: 10px 25px; font-size: 1rem; border-radius: 4px; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; width: fit-content;
+    }
+    .play-btn-wide:hover { background: #e50914; color: #fff; }
+
     /* Movie Card Setup */
     .movie-card { 
       background: #222; 
@@ -209,6 +247,16 @@
       width: 22px;
       height: 22px;
     }
+
+    /* --- FIX FOR UGLY BROWSER AUTOFILL BOXES --- */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus, 
+    input:-webkit-autofill:active{
+        -webkit-box-shadow: 0 0 0 30px #333 inset !important;
+        -webkit-text-fill-color: white !important;
+        transition: background-color 5000s ease-in-out 0s;
+    }
   </style>
 </head>
 <body>
@@ -296,10 +344,8 @@
     <!-- SEARCH BAR AND LOGOUT BUTTON -->
     <div style="max-width: 1200px; margin: 20px auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; padding: 0 20px; position: relative; z-index: 20;">
       
-      <!-- PREMIUM SEARCH CONTAINER -->
       <div class="search-container">
         <input type="text" id="search-bar" placeholder="Search for a movie or documentary..." autocomplete="off" />
-        <!-- The icon is now a clickable button -->
         <button class="search-icon-btn" id="search-icon-btn" aria-label="Search">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -310,20 +356,26 @@
       <button id="logout-btn" class="btn" style="background: #333; color: #fff; border: none; cursor: pointer; padding: 12px 24px; border-radius: 6px;">Log Out</button>
     </div>
 
-    <!-- FEATURED BANNER -->
-    <div id="featured-banner" style="display: none; position: relative; width: 100%; height: 60vh; background-size: cover; background-position: center top; margin-bottom: 40px;">
-      <div style="position: absolute; inset: 0; background: linear-gradient(to right, rgba(20,20,20,1) 0%, rgba(20,20,20,0.7) 50%, rgba(20,20,20,0) 100%), linear-gradient(to top, rgba(20,20,20,1) 0%, rgba(20,20,20,0) 50%);"></div>
-      <div style="position: absolute; bottom: 15%; left: 5%; z-index: 10; max-width: 500px; text-align: left;">
-        <h1 id="featured-title" style="font-size: 3rem; margin-bottom: 15px; text-shadow: 2px 2px 4px #000; color: #fff;">Featured Movie</h1>
-        <p id="featured-desc" style="font-size: 1.1rem; color: #ddd; margin-bottom: 20px; text-shadow: 1px 1px 3px #000; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">Description here</p>
-        <button onclick="playFeatured()" class="btn" style="background: #fff; color: #000; padding: 12px 30px; font-size: 1.1rem; border: none; cursor: pointer; border-radius: 4px;">▶ Play</button>
-      </div>
-    </div>
+    <!-- CONTAINER FOR SEARCH RESULTS (HIDDEN BY DEFAULT) -->
+    <div id="search-results" style="display: none;"></div>
 
-    <!-- MAIN GRID AREA -->
-    <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
-      <div id="movies-grid" class="cinema-grid" style="padding: 0;">
-        <p style="text-align:center; color:#aaa; grid-column: 1/-1;">Loading movies...</p>
+    <!-- NORMAL BROWSING AREA (HIDDEN WHEN SEARCHING) -->
+    <div id="normal-browsing-area">
+      <!-- FEATURED BANNER -->
+      <div id="featured-banner" style="display: none; position: relative; width: 100%; height: 60vh; background-size: cover; background-position: center top; margin-bottom: 40px;">
+        <div style="position: absolute; inset: 0; background: linear-gradient(to right, rgba(20,20,20,1) 0%, rgba(20,20,20,0.7) 50%, rgba(20,20,20,0) 100%), linear-gradient(to top, rgba(20,20,20,1) 0%, rgba(20,20,20,0) 50%);"></div>
+        <div style="position: absolute; bottom: 15%; left: 5%; z-index: 10; max-width: 500px; text-align: left;">
+          <h1 id="featured-title" style="font-size: 3rem; margin-bottom: 15px; text-shadow: 2px 2px 4px #000; color: #fff;">Featured Movie</h1>
+          <p id="featured-desc" style="font-size: 1.1rem; color: #ddd; margin-bottom: 20px; text-shadow: 1px 1px 3px #000; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">Description here</p>
+          <button onclick="playFeatured()" class="btn" style="background: #fff; color: #000; padding: 12px 30px; font-size: 1.1rem; border: none; cursor: pointer; border-radius: 4px;">▶ Play</button>
+        </div>
+      </div>
+
+      <!-- MAIN GRID AREA -->
+      <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+        <div id="movies-grid" class="cinema-grid" style="padding: 0;">
+          <p style="text-align:center; color:#aaa; grid-column: 1/-1;">Loading movies...</p>
+        </div>
       </div>
     </div>
   </section>
