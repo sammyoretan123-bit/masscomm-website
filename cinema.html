@@ -266,7 +266,7 @@
         transition: background-color 5000s ease-in-out 0s;
     }
 
-    /* --- NEW: CONTAINED BANNER STYLES --- */
+    /* --- CONTAINED BANNER STYLES --- */
     .hero-container {
       max-width: 1200px; 
       margin: 0 auto 40px; 
@@ -276,8 +276,8 @@
     #featured-banner {
       position: relative;
       width: 100%;
-      height: 500px; /* Fixed height for the card look */
-      border-radius: 16px; /* Rounded corners */
+      height: 500px; 
+      border-radius: 16px; 
       overflow: hidden;
       background-size: cover;
       background-position: center;
@@ -388,11 +388,12 @@
     <!-- NORMAL BROWSING AREA (HIDDEN WHEN SEARCHING) -->
     <div id="normal-browsing-area">
       
-      <!-- NEW: CONTAINED HERO BANNER -->
+      <!-- CONTAINED HERO BANNER -->
       <div class="hero-container">
         <div id="featured-banner" style="display: none;">
-          <!-- Dark Gradient Overlay -->
-          <div style="position: absolute; inset: 0; background: linear-gradient(to right, rgba(20,20,20,0.9) 0%, rgba(20,20,20,0.4) 50%, rgba(20,20,20,0) 100%), linear-gradient(to top, rgba(20,20,20,1) 0%, rgba(20,20,20,0) 40%);"></div>
+          
+          <!-- NEW: LIGHTER GRADIENT OVERLAY -->
+          <div style="position: absolute; inset: 0; background: linear-gradient(to right, rgba(20,20,20,0.7) 0%, rgba(20,20,20,0.1) 50%, rgba(20,20,20,0) 100%), linear-gradient(to top, rgba(20,20,20,0.9) 0%, rgba(20,20,20,0) 30%);"></div>
           
           <!-- Text Content -->
           <div style="position: absolute; bottom: 20%; left: 5%; z-index: 10; max-width: 500px; text-align: left;">
