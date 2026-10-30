@@ -1,68 +1,12 @@
-/* ============================================
-   File: js/cinema.js
-   Purpose: Auth + Netflix-style grid + Search
-   ============================================ */
-
-const loginSection = document.getElementById("login-section");
-const moviesSection = document.getElementById("movies-section");
-const loginForm = document.getElementById("login-form");
-const loginEmail = document.getElementById("login-email");
-const loginPassword = document.getElementById("login-password");
-const loginStatus = document.getElementById("login-status");
-const logoutBtn = document.getElementById("logout-btn");
+// --- GLOBAL VARIABLES ---
 const moviesGrid = document.getElementById("movies-grid");
 const videoModal = document.getElementById("video-modal");
 const videoContainer = document.getElementById("video-container");
-const searchBar = document.getElementById("search-bar");
-
-// --- AUTH LOGIC ---
-function showLogin() {
-  loginSection.style.display = "block";
-  moviesSection.style.display = "none";
-}
-
-function showMovies() {
-  loginSection.style.display = "none";
-  moviesSection.style.display = "block";
-  loadMovies();
-}
-
-if (loginForm) {
-  loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    loginStatus.style.display = "block";
-    loginStatus.textContent = "Logging in...";
-    loginStatus.style.background = "#333";
-    loginStatus.style.color = "#fff";
-
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-      email: loginEmail.value.trim(),
-      password: loginPassword.value
-    });
-
-    if (error) {
-      loginStatus.textContent = "❌ " + error.message;
-      loginStatus.style.color = "#e50914";
-      return;
-    }
-
-    loginForm.reset();
-    showMovies();
-  });
-}
-
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", async () => {
-    await supabaseClient.auth.signOut();
-    showLogin();
-  });
-}
 
 // --- MOVIE FETCHING LOGIC ---
 async function loadMovies() {
   moviesGrid.innerHTML = `<p style="text-align:center; color:#aaa; grid-column: 1/-1;">Loading movies...</p>`;
 
-  // Fetch data and sort by the "order" column
   const { data, error } = await supabaseClient
     .from("cinema")
     .select("*")
@@ -78,8 +22,32 @@ async function loadMovies() {
     return;
   }
 
-  // Render the Netflix Grid
-  moviesGrid.innerHTML = data.map((movie) => `
+  // 1. SET THE FEATURED BANNER (The first movie)
+  const featuredMovie = data[0];
+  const banner = document.getElementById("featured-banner");
+  
+  if (banner && featuredMovie) {
+    banner.style.display = "block";
+    // Fallback to the department logo if no poster is provided
+    banner.style.backgroundImage = `url('${featuredMovie.poster_url || 'images/mass communication logo.jpg'}')`;
+    
+    document.getElementById("featured-title").textContent = featuredMovie.title;
+    document.getElementById("featured-desc").textContent = featuredMovie.description || '';
+    
+    // Save the video ID to a global variable so the Play button knows what to play
+    window.currentFeaturedVideo = featuredMovie.video_id;
+  }
+
+  // 2. RENDER THE REST OF THE GRID (Starting from the second movie)
+  // If you want the featured movie to ALSO appear in the grid, change data.slice(1) to just data.
+  const gridMovies = data.slice(1); 
+
+  if (gridMovies.length === 0) {
+    moviesGrid.innerHTML = `<p style="text-align:center; color:#aaa; grid-column: 1/-1;"></p>`; // Hide loading text if empty
+    return;
+  }
+
+  moviesGrid.innerHTML = gridMovies.map((movie) => `
     <div class="movie-card" onclick="playMovie('${movie.video_id}')">
       <div class="poster-container">
         <img src="${movie.poster_url || 'images/mass communication logo.jpg'}" alt="${movie.title}" />
@@ -96,48 +64,33 @@ async function loadMovies() {
   `).join("");
 }
 
-// --- VIDEO PLAYER LOGIC ---
+// --- PLAY FEATURED MOVIE LOGIC ---
+function playFeatured() {
+  if (window.currentFeaturedVideo) {
+    playMovie(window.currentFeaturedVideo);
+  }
+}
+
+// --- VIDEO PLAYER MODAL LOGIC ---
 function playMovie(videoId) {
   if (!videoId) return;
   
-  videoContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+  // Assuming you are using YouTube links. 
+  // If it's a different platform, adjust the iframe source below.
+  // We use replace to ensure we get the embed link.
+  const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+  
+  videoContainer.innerHTML = `<iframe src="${embedUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
   videoModal.classList.add("show");
 }
 
 function closeVideo() {
   videoModal.classList.remove("show");
-  setTimeout(() => {
-    videoContainer.innerHTML = ""; 
-  }, 300);
+  // Clear the iframe to stop the video from playing in the background
+  videoContainer.innerHTML = ""; 
 }
 
-// --- SEARCH FILTER LOGIC ---
-if (searchBar) {
-  searchBar.addEventListener("input", (e) => {
-    const searchTerm = e.target.value.toLowerCase();
-    const cards = document.querySelectorAll(".movie-card");
-
-    cards.forEach((card) => {
-      const title = card.querySelector("h3").textContent.toLowerCase();
-      const description = card.querySelector("p").textContent.toLowerCase();
-      
-      if (title.includes(searchTerm) || description.includes(searchTerm)) {
-        card.style.display = "block";
-      } else {
-        card.style.display = "none";
-      }
-    });
-  });
-}
-
-// --- CHECK SESSION ON LOAD ---
-async function checkSession() {
-  const { data } = await supabaseClient.auth.getSession();
-  if (data && data.session && data.session.user) {
-    showMovies();
-  } else {
-    showLogin();
-  }
-}
-
-document.addEventListener("DOMContentLoaded", checkSession);
+// --- INITIALIZATION ---
+// Note: Your login logic (in main.js presumably) should call loadMovies() after successful login.
+// If you need it to load immediately on page load regardless of login, uncomment the line below:
+// document.addEventListener("DOMContentLoaded", loadMovies);

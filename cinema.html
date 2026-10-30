@@ -234,16 +234,31 @@
   </section>
 
   <!-- ============ MOVIES SECTION ============ -->
-  <section class="team" id="movies-section" style="display:none; background: transparent;">
+  <section class="team" id="movies-section" style="display:none; background: transparent; padding: 0;">
     
-    <!-- Search Bar and Logout Button -->
-    <div style="max-width: 1200px; margin: 0 auto 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; padding: 0 20px;">
-      <input type="text" id="search-bar" placeholder="Search for a movie or documentary..." style="flex: 1; min-width: 250px; padding: 12px 20px; border-radius: 6px; border: none; background: #333; color: #fff; font-size: 1rem; outline: none;" />
-      <button id="logout-btn" class="btn" style="background: #333; color: #fff; border: none;">Log Out</button>
+    <!-- FEATURED BANNER (The big movie) -->
+    <div id="featured-banner" style="display: none; position: relative; width: 100%; height: 60vh; background-size: cover; background-position: center top; margin-bottom: 40px;">
+      <div style="position: absolute; inset: 0; background: linear-gradient(to right, rgba(20,20,20,1) 0%, rgba(20,20,20,0.7) 50%, rgba(20,20,20,0) 100%), linear-gradient(to top, rgba(20,20,20,1) 0%, rgba(20,20,20,0) 50%);"></div>
+      <div style="position: absolute; bottom: 15%; left: 5%; z-index: 10; max-width: 500px; text-align: left;">
+        <h1 id="featured-title" style="font-size: 3rem; margin-bottom: 15px; text-shadow: 2px 2px 4px #000; color: #fff;">Featured Movie</h1>
+        <p id="featured-desc" style="font-size: 1.1rem; color: #ddd; margin-bottom: 20px; text-shadow: 1px 1px 3px #000; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">Description here</p>
+        <button onclick="playFeatured()" class="btn" style="background: #fff; color: #000; padding: 12px 30px; font-size: 1.1rem; border: none; cursor: pointer; border-radius: 4px;">▶ Play</button>
+      </div>
     </div>
 
-    <div id="movies-grid" class="cinema-grid">
-      <p style="text-align:center; color:#aaa; grid-column: 1/-1;">Loading movies...</p>
+    <!-- MAIN GRID AREA -->
+    <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+      
+      <!-- Search Bar and Logout Button -->
+      <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <input type="text" id="search-bar" placeholder="Search for a movie or documentary..." style="flex: 1; min-width: 250px; padding: 12px 20px; border-radius: 6px; border: none; background: #333; color: #fff; font-size: 1rem; outline: none;" />
+        <button id="logout-btn" class="btn" style="background: #333; color: #fff; border: none;">Log Out</button>
+      </div>
+
+      <div id="movies-grid" class="cinema-grid" style="padding: 0;">
+        <p style="text-align:center; color:#aaa; grid-column: 1/-1;">Loading movies...</p>
+      </div>
+      
     </div>
   </section>
 
