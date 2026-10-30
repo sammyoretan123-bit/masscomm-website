@@ -101,13 +101,8 @@ async function loadMovies() {
     window.currentFeaturedVideo = featuredMovie.video_id;
   }
 
-  // 2. RENDER THE GRID (Exclude the #1 featured movie from the grid)
-  const gridMovies = data.slice(1); 
-
-  if (gridMovies.length === 0) {
-    moviesGrid.innerHTML = ``; 
-    return;
-  }
+  // 2. RENDER THE GRID (Show ALL movies in the grid below the banner)
+  const gridMovies = allMoviesData; 
 
   moviesGrid.innerHTML = gridMovies.map((movie) => `
     <div class="movie-card" onclick="playMovie('${movie.video_id}')">
