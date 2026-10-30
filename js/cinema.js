@@ -101,7 +101,7 @@ async function loadMovies() {
     window.currentFeaturedVideo = featuredMovie.video_id;
   }
 
-  // 2. RENDER THE GRID (Show ALL movies in the grid below the banner)
+  // 2. RENDER THE GRID (Show ALL movies in the grid)
   const gridMovies = allMoviesData; 
 
   moviesGrid.innerHTML = gridMovies.map((movie) => `
