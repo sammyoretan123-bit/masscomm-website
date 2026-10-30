@@ -235,13 +235,13 @@
     </div>
   </section>
 
-  <!-- ============ MOVIES SECTION ============ -->
+    <!-- ============ MOVIES SECTION ============ -->
   <section class="team" id="movies-section" style="display:none; background: transparent;">
-    <div style="max-width: 1200px; margin: 0 auto 20px; display: flex; justify-content: flex-end;">
+    
+    <!-- Search Bar and Logout Button -->
+    <div style="max-width: 1200px; margin: 0 auto 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; padding: 0 20px;">
+      <input type="text" id="search-bar" placeholder="Search for a movie or documentary..." style="flex: 1; min-width: 250px; padding: 12px 20px; border-radius: 6px; border: none; background: #333; color: #fff; font-size: 1rem; outline: none;" />
       <button id="logout-btn" class="btn" style="background: #333; color: #fff; border: none;">Log Out</button>
-    </div>
-    <div id="movies-grid" class="cinema-grid">
-      <p style="text-align:center; color:#aaa; grid-column: 1/-1;">Loading movies...</p>
     </div>
   </section>
 

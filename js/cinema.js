@@ -116,6 +116,29 @@ function closeVideo() {
   }, 300);
 }
 
+// --- SEARCH FILTER LOGIC ---
+const searchBar = document.getElementById("search-bar");
+
+if (searchBar) {
+  searchBar.addEventListener("input", (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    const cards = document.querySelectorAll(".movie-card");
+
+    cards.forEach((card) => {
+      // Look at the title and description text inside the card
+      const title = card.querySelector("h3").textContent.toLowerCase();
+      const description = card.querySelector("p").textContent.toLowerCase();
+      
+      // If the title or description matches what was typed, show it. Otherwise, hide it.
+      if (title.includes(searchTerm) || description.includes(searchTerm)) {
+        card.style.display = "block";
+      } else {
+        card.style.display = "none";
+      }
+    });
+  });
+}
+
 // --- CHECK SESSION ON LOAD ---
 async function checkSession() {
   const { data } = await supabaseClient.auth.getSession();
