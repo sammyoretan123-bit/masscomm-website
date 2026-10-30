@@ -87,5 +87,3 @@ function closeVideo() {
   // Clear the iframe to stop the video from playing in the background
   videoContainer.innerHTML = ""; 
 }
-
-// Note: The initialization is handled in the HTML file for now to bypass login.
