@@ -3,6 +3,68 @@ const moviesGrid = document.getElementById("movies-grid");
 const videoModal = document.getElementById("video-modal");
 const videoContainer = document.getElementById("video-container");
 
+// --- AUTHENTICATION & UI LOGIC ---
+document.addEventListener("DOMContentLoaded", async () => {
+  const loginSection = document.getElementById("login-section");
+  const moviesSection = document.getElementById("movies-section");
+  const loginForm = document.getElementById("login-form");
+  const loginStatus = document.getElementById("login-status");
+  const logoutBtn = document.getElementById("logout-btn");
+
+  // 1. Check if user is already logged in on page load
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  
+  if (session) {
+    // User is logged in
+    loginSection.style.display = "none";
+    moviesSection.style.display = "block";
+    loadMovies(); // Fetch the movies!
+  } else {
+    // User is NOT logged in
+    loginSection.style.display = "block";
+    moviesSection.style.display = "none";
+  }
+
+  // 2. Handle Login Form Submission
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("login-email").value;
+    const password = document.getElementById("login-password").value;
+
+    loginStatus.style.display = "block";
+    loginStatus.style.background = "#333";
+    loginStatus.style.color = "#fff";
+    loginStatus.textContent = "Logging in...";
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+
+    if (error) {
+      loginStatus.style.background = "#e50914";
+      loginStatus.textContent = "Login failed: " + error.message;
+    } else {
+      // Login successful!
+      loginStatus.style.background = "#28a745";
+      loginStatus.textContent = "Login successful! Loading movies...";
+      
+      // Switch screens
+      loginSection.style.display = "none";
+      moviesSection.style.display = "block";
+      loadMovies();
+    }
+  });
+
+  // 3. Handle Logout Button
+  logoutBtn.addEventListener("click", async () => {
+    await supabaseClient.auth.signOut();
+    // Refresh the page to reset the view
+    window.location.reload();
+  });
+});
+
+
 // --- MOVIE FETCHING LOGIC ---
 async function loadMovies() {
   moviesGrid.innerHTML = `<p style="text-align:center; color:#aaa; grid-column: 1/-1;">Loading movies...</p>`;
@@ -28,21 +90,19 @@ async function loadMovies() {
   
   if (banner && featuredMovie) {
     banner.style.display = "block";
-    // Fallback to the department logo if no poster is provided
     banner.style.backgroundImage = `url('${featuredMovie.poster_url || 'images/mass communication logo.jpg'}')`;
     
     document.getElementById("featured-title").textContent = featuredMovie.title;
     document.getElementById("featured-desc").textContent = featuredMovie.description || '';
     
-    // Save the video ID to a global variable so the Play button knows what to play
     window.currentFeaturedVideo = featuredMovie.video_id;
   }
 
-  // 2. RENDER THE REST OF THE GRID (Starting from the second movie)
+  // 2. RENDER THE REST OF THE GRID
   const gridMovies = data.slice(1); 
 
   if (gridMovies.length === 0) {
-    moviesGrid.innerHTML = `<p style="text-align:center; color:#aaa; grid-column: 1/-1;"></p>`; // Hide loading text if empty
+    moviesGrid.innerHTML = ``; 
     return;
   }
 
@@ -73,17 +133,12 @@ function playFeatured() {
 // --- VIDEO PLAYER MODAL LOGIC ---
 function playMovie(videoId) {
   if (!videoId) return;
-  
-  // Assuming you are using YouTube links. 
-  // We use replace to ensure we get the embed link.
   const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-  
   videoContainer.innerHTML = `<iframe src="${embedUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
   videoModal.classList.add("show");
 }
 
 function closeVideo() {
   videoModal.classList.remove("show");
-  // Clear the iframe to stop the video from playing in the background
   videoContainer.innerHTML = ""; 
 }
