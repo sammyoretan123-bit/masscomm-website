@@ -88,6 +88,4 @@ function closeVideo() {
   videoContainer.innerHTML = ""; 
 }
 
-// --- INITIALIZATION ---
-// This forces the movies to load immediately when the page opens
-document.addEventListener("DOMContentLoaded", loadMovies);
+// Note: The initialization is handled in the HTML file for now to bypass login.

@@ -217,7 +217,7 @@
     <p>Movie premiere for logged-in students</p>
   </section>
 
-  <!-- ============ LOGIN SECTION ============ -->
+  <!-- ============ LOGIN SECTION (Hidden for now) ============ -->
   <section class="team" id="login-section" style="display:none; background: transparent;">
     <div style="max-width: 450px; margin: 0 auto; background: #222; padding: 40px 35px; border-radius: 12px; text-align: left;">
       <h2 style="color: #e50914; margin-bottom: 10px; text-align: center;">Student Login</h2>
@@ -233,8 +233,8 @@
     </div>
   </section>
 
-  <!-- ============ MOVIES SECTION ============ -->
-  <section class="team" id="movies-section" style="display:none; background: transparent; padding: 0;">
+  <!-- ============ MOVIES SECTION (Forced visible) ============ -->
+  <section class="team" id="movies-section" style="display:block; background: transparent; padding: 0;">
     
     <!-- FEATURED BANNER (The big movie) -->
     <div id="featured-banner" style="display: none; position: relative; width: 100%; height: 60vh; background-size: cover; background-position: center top; margin-bottom: 40px;">
@@ -292,5 +292,17 @@
   <script src="js/supabase-client.js"></script>
   <script src="js/main.js"></script>
   <script src="js/cinema.js"></script>
+
+  <!-- FORCE MOVIES TO SHOW FOR TESTING -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Hide login, show movies immediately
+      document.getElementById("login-section").style.display = "none";
+      document.getElementById("movies-section").style.display = "block";
+      
+      // Force load the movies
+      loadMovies();
+    });
+  </script>
 </body>
 </html>
