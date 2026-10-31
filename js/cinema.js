@@ -4,60 +4,14 @@ const videoModal = document.getElementById("video-modal");
 const videoContainer = document.getElementById("video-container");
 let allMoviesData = []; 
 
-// --- AUTHENTICATION & UI LOGIC ---
+// --- INITIALIZATION ---
 document.addEventListener("DOMContentLoaded", async () => {
-  const loginSection = document.getElementById("login-section");
-  const moviesSection = document.getElementById("movies-section");
-  const loginForm = document.getElementById("login-form");
-  const loginStatus = document.getElementById("login-status");
-  const logoutBtn = document.getElementById("logout-btn");
   const searchBar = document.getElementById("search-bar");
 
-  // 1. BYPASS LOGIN: Always show movies section and load movies immediately
-  if (loginSection) loginSection.style.display = "none";
-  if (moviesSection) moviesSection.style.display = "block";
+  // 1. Load the movies immediately on page load
   loadMovies(); 
 
-  // 2. Handle Login Form Submission (Kept in case you want to use it later)
-  if (loginForm) {
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("login-email").value;
-      const password = document.getElementById("login-password").value;
-
-      loginStatus.style.display = "block";
-      loginStatus.style.background = "#333";
-      loginStatus.style.color = "#fff";
-      loginStatus.textContent = "Logging in...";
-
-      const { data, error } = await supabaseClient.auth.signInWithPassword({
-        email: email,
-        password: password,
-      });
-
-      if (error) {
-        loginStatus.style.background = "#e50914";
-        loginStatus.textContent = "Login failed: " + error.message;
-      } else {
-        loginStatus.style.background = "#28a745";
-        loginStatus.textContent = "Login successful! Loading movies...";
-        
-        loginSection.style.display = "none";
-        moviesSection.style.display = "block";
-        loadMovies();
-      }
-    });
-  }
-
-  // 3. Handle Logout Button
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", async () => {
-      await supabaseClient.auth.signOut();
-      window.location.reload();
-    });
-  }
-
-  // 4. Handle Search Bar Typing
+  // 2. Handle Search Bar Typing
   if (searchBar) {
     searchBar.addEventListener("input", (e) => {
       const searchTerm = e.target.value.toLowerCase().trim();
@@ -179,7 +133,7 @@ function playFeatured() {
 function playMovie(videoId) {
   if (!videoId) return;
   const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-  videoContainer.innerHTML = `<iframe src="${embedUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+  videoContainer.innerHTML = `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
   videoModal.classList.add("show");
 }
 
