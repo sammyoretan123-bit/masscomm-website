@@ -13,58 +13,57 @@ document.addEventListener("DOMContentLoaded", async () => {
   const logoutBtn = document.getElementById("logout-btn");
   const searchBar = document.getElementById("search-bar");
 
-  // 1. Check if user is already logged in on page load
-  const { data: { session } } = await supabaseClient.auth.getSession();
-  
-  if (session) {
-    loginSection.style.display = "none";
-    moviesSection.style.display = "block";
-    loadMovies(); 
-  } else {
-    loginSection.style.display = "block";
-    moviesSection.style.display = "none";
+  // 1. BYPASS LOGIN: Always show movies section and load movies immediately
+  if (loginSection) loginSection.style.display = "none";
+  if (moviesSection) moviesSection.style.display = "block";
+  loadMovies(); 
+
+  // 2. Handle Login Form Submission (Kept in case you want to use it later)
+  if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value;
+      const password = document.getElementById("login-password").value;
+
+      loginStatus.style.display = "block";
+      loginStatus.style.background = "#333";
+      loginStatus.style.color = "#fff";
+      loginStatus.textContent = "Logging in...";
+
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
+
+      if (error) {
+        loginStatus.style.background = "#e50914";
+        loginStatus.textContent = "Login failed: " + error.message;
+      } else {
+        loginStatus.style.background = "#28a745";
+        loginStatus.textContent = "Login successful! Loading movies...";
+        
+        loginSection.style.display = "none";
+        moviesSection.style.display = "block";
+        loadMovies();
+      }
+    });
   }
 
-  // 2. Handle Login Form Submission
-  loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const email = document.getElementById("login-email").value;
-    const password = document.getElementById("login-password").value;
-
-    loginStatus.style.display = "block";
-    loginStatus.style.background = "#333";
-    loginStatus.style.color = "#fff";
-    loginStatus.textContent = "Logging in...";
-
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
-
-    if (error) {
-      loginStatus.style.background = "#e50914";
-      loginStatus.textContent = "Login failed: " + error.message;
-    } else {
-      loginStatus.style.background = "#28a745";
-      loginStatus.textContent = "Login successful! Loading movies...";
-      
-      loginSection.style.display = "none";
-      moviesSection.style.display = "block";
-      loadMovies();
-    }
-  });
-
   // 3. Handle Logout Button
-  logoutBtn.addEventListener("click", async () => {
-    await supabaseClient.auth.signOut();
-    window.location.reload();
-  });
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", async () => {
+      await supabaseClient.auth.signOut();
+      window.location.reload();
+    });
+  }
 
   // 4. Handle Search Bar Typing
-  searchBar.addEventListener("input", (e) => {
-    const searchTerm = e.target.value.toLowerCase().trim();
-    handleSearch(searchTerm);
-  });
+  if (searchBar) {
+    searchBar.addEventListener("input", (e) => {
+      const searchTerm = e.target.value.toLowerCase().trim();
+      handleSearch(searchTerm);
+    });
+  }
 });
 
 
