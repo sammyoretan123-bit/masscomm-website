@@ -1,18 +1,10 @@
 /* ============================================
    MASS COMMUNICATION DEPARTMENT
    File: js/materials.js
-   Purpose: Handle login + display materials
+   Purpose: Display materials (Public)
    ============================================ */
 
 /* ---------- DOM ELEMENTS ---------- */
-const loginSection = document.getElementById("login-section");
-const materialsSection = document.getElementById("materials-section");
-const loginForm = document.getElementById("login-form");
-const loginEmail = document.getElementById("login-email");
-const loginPassword = document.getElementById("login-password");
-const loginStatus = document.getElementById("login-status");
-const userEmailEl = document.getElementById("user-email");
-const logoutBtn = document.getElementById("logout-btn");
 const materialsList = document.getElementById("materials-list");
 
 const filterLevel = document.getElementById("filter-level");
@@ -23,69 +15,10 @@ const filterSearch = document.getElementById("filter-search");
 /* ---------- STATE ---------- */
 let allMaterials = [];
 
-/* ---------- STATUS HELPER ---------- */
-function showStatus(el, message, type) {
-  el.style.display = "block";
-  el.textContent = message;
-  if (type === "error") {
-    el.style.background = "#fdecea";
-    el.style.color = "#c0392b";
-  } else if (type === "success") {
-    el.style.background = "#e6f7ea";
-    el.style.color = "#1e7e34";
-  } else {
-    el.style.background = "#f0e6fa";
-    el.style.color = "#6a0dad";
-  }
-}
-
-/* ---------- SHOW / HIDE SECTIONS ---------- */
-function showLogin() {
-  loginSection.style.display = "block";
-  materialsSection.style.display = "none";
-}
-
-function showMaterials(email) {
-  loginSection.style.display = "none";
-  materialsSection.style.display = "block";
-  userEmailEl.textContent = email;
-}
-
-/* ---------- LOGIN ---------- */
-if (loginForm) {
-  loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    showStatus(loginStatus, "Logging in...", "info");
-
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-      email: loginEmail.value.trim(),
-      password: loginPassword.value
-    });
-
-    if (error) {
-      showStatus(loginStatus, "❌ " + error.message, "error");
-      return;
-    }
-
-    showStatus(loginStatus, "✅ Login successful!", "success");
-    loginForm.reset();
-
-    // Show materials and load them
-    showMaterials(data.user.email);
-    loadMaterials();
-  });
-}
-
-/* ---------- LOGOUT ---------- */
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", async () => {
-    await supabaseClient.auth.signOut();
-    showLogin();
-  });
-}
-
 /* ---------- LOAD MATERIALS ---------- */
 async function loadMaterials() {
+  if(!materialsList) return; // Safety check
+
   materialsList.innerHTML = `<p style="text-align:center; color:#666;">Loading materials...</p>`;
 
   const { data, error } = await supabaseClient
@@ -170,15 +103,7 @@ if (filterSearch) {
   filterSearch.addEventListener("input", renderMaterials);
 }
 
-/* ---------- CHECK SESSION ON LOAD ---------- */
-async function checkSession() {
-  const { data } = await supabaseClient.auth.getSession();
-  if (data && data.session && data.session.user) {
-    showMaterials(data.session.user.email);
-    loadMaterials();
-  } else {
-    showLogin();
-  }
-}
-
-document.addEventListener("DOMContentLoaded", checkSession);
+/* ---------- INITIALIZATION ---------- */
+document.addEventListener("DOMContentLoaded", () => {
+  loadMaterials();
+});
