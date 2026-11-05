@@ -17,6 +17,11 @@
       height: 70vh; 
       min-height: 500px;
       background: #0a0a0a; 
+      cursor: grab; /* Shows the hand cursor */
+    }
+    
+    .hero-slider:active {
+      cursor: grabbing; /* Shows the closed hand when dragging */
     }
     
     .swiper-slide {
@@ -485,7 +490,7 @@
           `;
         }).join('');
 
-        // Add a small delay before initializing Swiper to prevent the overlap
+        // Initialize Swiper with grab cursor enabled
         setTimeout(() => {
           new Swiper(".hero-slider", {
             spaceBetween: 0,
@@ -494,7 +499,9 @@
             pagination: { el: ".swiper-pagination", clickable: true },
             effect: "fade", 
             loop: true, 
-            speed: 800
+            speed: 800,
+            grabCursor: true, // THIS ENABLES THE DRAG FEATURE
+            allowTouchMove: true // Allows dragging on phones
           });
         }, 100);
 
