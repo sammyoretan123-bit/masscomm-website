@@ -16,7 +16,7 @@
       width: 100%;
       height: 70vh; 
       min-height: 500px;
-      background: #0a0a0a; /* Deep black base */
+      background: #0a0a0a; 
     }
     
     .swiper-slide {
@@ -27,18 +27,16 @@
       justify-content: center;
       align-items: center;
       text-align: center;
-      overflow: hidden; /* Keeps the glowing orbs contained */
+      overflow: hidden; 
     }
 
-    /* --- CATCHY PURPLE & BLACK GRADIENT DESIGN FOR SLIDE 1 --- */
     .slide-1-bg {
-      background-color: #0d0214; /* Very dark purple/black */
+      background-color: #0d0214; 
       background-image: 
         radial-gradient(circle at 15% 50%, rgba(106, 13, 173, 0.4), transparent 40%),
         radial-gradient(circle at 85% 30%, rgba(142, 45, 226, 0.3), transparent 40%);
     }
 
-    /* Floating glowing orbs for a dynamic feel */
     .glow-orb {
       position: absolute;
       border-radius: 50%;
@@ -46,19 +44,8 @@
       z-index: 1;
       animation: float 8s ease-in-out infinite;
     }
-    .orb-1 {
-      width: 400px; height: 400px;
-      background: #6a0dad;
-      top: -100px; left: -100px;
-      opacity: 0.5;
-    }
-    .orb-2 {
-      width: 300px; height: 300px;
-      background: #9b51e0;
-      bottom: -50px; right: -50px;
-      animation-delay: -4s;
-      opacity: 0.4;
-    }
+    .orb-1 { width: 400px; height: 400px; background: #6a0dad; top: -100px; left: -100px; opacity: 0.5; }
+    .orb-2 { width: 300px; height: 300px; background: #9b51e0; bottom: -50px; right: -50px; animation-delay: -4s; opacity: 0.4; }
 
     @keyframes float {
       0% { transform: translate(0, 0) scale(1); }
@@ -66,7 +53,6 @@
       100% { transform: translate(0, 0) scale(1); }
     }
 
-    /* The dark overlay so text is readable */
     .slide-overlay {
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -74,7 +60,6 @@
       z-index: 2;
     }
 
-    /* Text Content */
     .slide-content {
       position: relative;
       z-index: 3;
@@ -113,7 +98,7 @@
       font-size: 1.1rem;
       font-weight: bold;
       text-decoration: none;
-      border-radius: 50px; /* Pill shape */
+      border-radius: 50px;
       transition: all 0.3s ease;
       box-shadow: 0 4px 15px rgba(106, 13, 173, 0.4);
       border: 1px solid rgba(255,255,255,0.2);
@@ -125,11 +110,71 @@
       box-shadow: 0 6px 20px rgba(142, 45, 226, 0.6);
     }
 
-    /* Swiper Pagination Dots */
     .swiper-pagination-bullet-active {
       background: #6a0dad !important;
       width: 24px !important;
       border-radius: 5px !important;
+    }
+
+    /* --- STATISTICS SECTION STYLES --- */
+    .stats-section {
+      background-color: #0d0d0d; 
+      padding: 80px 20px;
+      text-align: center;
+      border-top: 1px solid #222;
+      border-bottom: 1px solid #222;
+    }
+
+    .stats-section h2 {
+      color: #fff;
+      font-size: 2.5rem;
+      margin-bottom: 50px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 30px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .stat-card {
+      background: rgba(106, 13, 173, 0.1); 
+      border: 1px solid rgba(106, 13, 173, 0.3);
+      padding: 40px 20px;
+      border-radius: 12px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 30px rgba(106, 13, 173, 0.2);
+      border-color: #6a0dad;
+    }
+
+    .stat-number {
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .stat-number span {
+      color: #9b51e0; 
+    }
+
+    .stat-label {
+      color: #aaa;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -187,9 +232,8 @@
   <div class="swiper hero-slider">
     <div class="swiper-wrapper">
       
-      <!-- SLIDE 1 (Premium Purple/Black Design) -->
+      <!-- SLIDE 1 -->
       <div class="swiper-slide slide-1-bg">
-        <!-- Glowing Orbs -->
         <div class="glow-orb orb-1"></div>
         <div class="glow-orb orb-2"></div>
         
@@ -201,7 +245,7 @@
         </div>
       </div>
 
-      <!-- SLIDE 2 (NAMACOS TV) -->
+      <!-- SLIDE 2 -->
       <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
         <div class="slide-overlay"></div>
         <div class="slide-content">
@@ -211,7 +255,7 @@
         </div>
       </div>
 
-      <!-- SLIDE 3 (Course Materials) -->
+      <!-- SLIDE 3 -->
       <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
         <div class="slide-overlay"></div>
         <div class="slide-content">
@@ -222,33 +266,35 @@
       </div>
 
     </div>
-    <!-- Add Pagination Dots -->
     <div class="swiper-pagination"></div>
   </div>
 
-  <!-- ============ EXPLORE SECTION ============ -->
-  <section class="section-title">
-    <h2>Explore Our Department</h2>
-  </section>
+  <!-- ============ STATISTICS SECTION ============ -->
+  <section class="stats-section">
+    <h2>Our Department in Numbers</h2>
+    <div class="stats-grid">
+      
+      <!-- CHANGED TO 1000+ -->
+      <div class="stat-card">
+        <div class="stat-number"><span class="counter" data-target="1000">0</span>+</div>
+        <div class="stat-label">Active Students</div>
+      </div>
 
-  <section class="team">
-    <div class="team-grid">
-      <div class="member">
-        <h3>Our HOD</h3>
-        <p>Meet the Head of Department.</p>
+      <div class="stat-card">
+        <div class="stat-number"><span class="counter" data-target="15">0</span>+</div>
+        <div class="stat-label">Expert Lecturers</div>
       </div>
-      <div class="member">
-        <h3>Lecturers</h3>
-        <p>Meet our dedicated teaching staff.</p>
+
+      <div class="stat-card">
+        <div class="stat-number"><span class="counter" data-target="3">0</span></div>
+        <div class="stat-label">Specializations</div>
       </div>
-      <div class="member">
-        <h3>Student Executives</h3>
-        <p>President & EXCO members.</p>
+
+      <div class="stat-card">
+        <div class="stat-number"><span class="counter" data-target="20">0</span>+</div>
+        <div class="stat-label">Years of Excellence</div>
       </div>
-      <div class="member">
-        <h3>Activities</h3>
-        <p>Sports, Press Week, Freshers Orientation & more.</p>
-      </div>
+
     </div>
   </section>
 
@@ -270,8 +316,8 @@
   <!-- Swiper JS -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-  <!-- Initialize Swiper -->
   <script>
+    // 1. Initialize Hero Slider
     var swiper = new Swiper(".hero-slider", {
       spaceBetween: 0,
       centeredSlides: true,
@@ -285,6 +331,36 @@
       },
       effect: "fade", 
       loop: true, 
+    });
+
+    // 2. Animated Counter Logic
+    const counters = document.querySelectorAll('.counter');
+    const speed = 200; 
+
+    const observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const counter = entry.target;
+          const updateCount = () => {
+            const target = +counter.getAttribute('data-target');
+            const count = +counter.innerText;
+            const inc = target / speed;
+
+            if (count < target) {
+              counter.innerText = Math.ceil(count + inc);
+              setTimeout(updateCount, 1);
+            } else {
+              counter.innerText = target;
+            }
+          };
+          updateCount();
+          observer.unobserve(counter); 
+        }
+      });
+    }, { threshold: 0.5 }); 
+
+    counters.forEach(counter => {
+      observer.observe(counter);
     });
   </script>
 </body>
