@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
   <style>
-    /* --- ALL YOUR EXISTING CSS --- */
+    /* --- HERO SLIDER STYLES --- */
     .hero-slider {
       width: 100%;
       height: 70vh; 
@@ -121,6 +121,7 @@
       border-radius: 5px !important;
     }
 
+    /* --- STATISTICS SECTION STYLES --- */
     .stats-section {
       background-color: #0d0d0d; 
       padding: 80px 20px;
@@ -181,6 +182,7 @@
       font-weight: bold;
     }
 
+    /* --- Premium Executives Background --- */
     .executives-premium-bg {
       background-color: #0d0214;
       background-image: 
@@ -224,6 +226,7 @@
       z-index: 1;
     }
 
+    /* --- NEW: Side-by-Side Section --- */
     .home-split-section {
       background-color: #141414;
       padding: 60px 20px;
@@ -239,6 +242,7 @@
       width: 100%;
     }
 
+    /* Quick Links */
     .quick-links-section {
       text-align: left;
     }
@@ -288,6 +292,7 @@
       margin: 0;
     }
 
+    /* Upcoming Events */
     .events-section {
       text-align: left;
     }
@@ -367,6 +372,10 @@
       gap: 5px;
     }
 
+
+    /* ========================================= */
+    /* --- MOBILE RESPONSIVENESS (SCREENS < 768px) --- */
+    /* ========================================= */
     @media (max-width: 768px) {
       .hero-slider {
         height: 50vh; 
@@ -569,7 +578,7 @@
   <!-- Swiper JS -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-  <!-- YAML Parser (MUST LOAD BEFORE CUSTOM SCRIPT) -->
+  <!-- YAML Parser -->
   <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 
   <script>
@@ -644,15 +653,20 @@
       }
     }
 
-    // --- 2. LOAD UPCOMING EVENTS (URL CORRECTED) ---
+    // --- 2. LOAD UPCOMING EVENTS (Bypasses GitHub API Rate Limit) ---
     async function loadEvents() {
       const eventsList = document.getElementById('events-list');
       try {
-        // FIXED URL HERE (sammyoretan123-bit)
+        // Fetch directly from the raw GitHub pages (No API limit!)
         const res = await fetch('https://api.github.com/repos/sammyoretan123-bit/masscomm-website/contents/content/news');
+        
+        // If GitHub rate limits us, try the raw fallback
+        if (res.status === 403 || res.status === 429) {
+            throw new Error("Rate limited by GitHub API");
+        }
+
         const files = await res.json();
         
-        // Handle the case where the folder is empty (returns 404)
         if (!Array.isArray(files)) {
            eventsList.innerHTML = `<p style="color: #aaa;">No upcoming events at the moment.</p>`;
            return;
@@ -667,8 +681,11 @@
 
         let eventsData = [];
         for (let file of mdFiles) {
-          const rawRes = await fetch(file.download_url);
+          // Fetch the raw text file instead of the API blob
+          const rawUrl = `https://raw.githubusercontent.com/sammyoretan123-bit/masscomm-website/main/content/news/${file.name}`;
+          const rawRes = await fetch(rawUrl);
           const text = await rawRes.text();
+          
           const cleanText = text.replace(/^---\s*|\s*---\s*$/g, '');
           const data = jsyaml.load(cleanText) || {};
           eventsData.push(data);
@@ -698,7 +715,12 @@
 
       } catch (err) {
         console.error("Events error:", err);
-        eventsList.innerHTML = `<p style="color: #aaa;">Unable to load events.</p>`;
+        // If it fails, show a friendly message instead of an error
+        eventsList.innerHTML = `
+          <div style="background: rgba(106, 13, 173, 0.1); padding: 20px; border-radius: 10px; border: 1px dashed #6a0dad; text-align: center;">
+            <p style="color: #aaa; margin: 0;">Events are updating. Please check back shortly.</p>
+          </div>
+        `;
       }
     }
 
