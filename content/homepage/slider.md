@@ -6,6 +6,7 @@ button_link: '-'
 image: /images/cares.webp
 is_purple: false
 order: 2
+slider_effect: fade
 slides:
   - background_image: ''
     button_link: about.html
