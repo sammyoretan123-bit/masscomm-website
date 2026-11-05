@@ -578,7 +578,7 @@
   <!-- Swiper JS -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-  <!-- YAML Parser -->
+  <!-- YAML Parser (Only needed for the Slider, not Events) -->
   <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 
   <script>
@@ -653,69 +653,42 @@
       }
     }
 
-    // --- 2. LOAD UPCOMING EVENTS (Custom Safe Parser) ---
+    // --- 2. LOAD UPCOMING EVENTS (Bulletproof Regex Extractor) ---
     async function loadEvents() {
       const eventsList = document.getElementById('events-list');
+      
+      // List the exact filenames of the news items you create here!
+      const newsFiles = ["namacos-press-week.md"]; 
+
       try {
-        // Fetch the list of files in the news folder
-        const res = await fetch('https://api.github.com/repos/sammyoretan123-bit/masscomm-website/contents/content/news');
-        
-        // Handle empty folder or errors
-        if (!res.ok) {
-            eventsList.innerHTML = `<p style="color: #aaa;">No upcoming events at the moment.</p>`;
-            return;
-        }
-
-        const files = await res.json();
-        
-        if (!Array.isArray(files)) {
-           eventsList.innerHTML = `<p style="color: #aaa;">No upcoming events at the moment.</p>`;
-           return;
-        }
-
-        const mdFiles = files.filter(f => f.name.endsWith('.md'));
-
-        if (mdFiles.length === 0) {
-           eventsList.innerHTML = `<p style="color: #aaa;">No upcoming events at the moment.</p>`;
-           return;
-        }
-
         let eventsData = [];
-        for (let file of mdFiles) {
-          const rawRes = await fetch(file.download_url);
-          const text = await rawRes.text();
+
+        for (let fileName of newsFiles) {
+          const rawUrl = `https://raw.githubusercontent.com/sammyoretan123-bit/masscomm-website/main/content/news/${fileName}`;
+          const res = await fetch(rawUrl);
           
-          // Custom line-by-line parser that handles multi-line text
-          const cleanText = text.replace(/^---\s*|\s*---\s*$/g, '');
-          const data = {};
-          let currentKey = null;
-          let currentValue = '';
+          if (res.ok) {
+            const text = await res.text();
+            
+            // Extract only the title, author, and date using Regex
+            const titleMatch = text.match(/title:\s*(.*)/);
+            const authorMatch = text.match(/author:\s*(.*)/);
+            const dateMatch = text.match(/date:\s*(.*)/);
 
-          cleanText.split('\n').forEach(line => {
-            if (line.trim() === '') return; // Skip empty lines
-
-            const match = line.match(/^([a-zA-Z0-9_]+):\s*(.*)$/);
-            if (match) {
-              // If there was a previous key, save it
-              if (currentKey) data[currentKey] = currentValue.trim().replace(/^["']|["']$/g, '');
-              
-              currentKey = match[1].trim();
-              currentValue = match[2];
-            } else if (currentKey) {
-              // If it's a continuation of a multi-line string, add it
-              currentValue += ' ' + line.trim();
-            }
-          });
-          // Save the last key
-          if (currentKey) data[currentKey] = currentValue.trim().replace(/^["']|["']$/g, '');
-
-          eventsData.push(data);
+            eventsData.push({
+              title: titleMatch ? titleMatch[1].replace(/['"]/g, '') : 'Untitled Event',
+              author: authorMatch ? authorMatch[1].replace(/['"]/g, '') : 'Department Event',
+              date: dateMatch ? dateMatch[1].replace(/['"]/g, '') : new Date().toISOString()
+            });
+          }
         }
 
-        eventsData.sort((a, b) => new Date(b.date) - new Date(a.date));
-        const recentEvents = eventsData.slice(0, 3);
+        if (eventsData.length === 0) {
+           eventsList.innerHTML = `<p style="color: #aaa;">No upcoming events at the moment.</p>`;
+           return;
+        }
 
-        eventsList.innerHTML = recentEvents.map(event => {
+        eventsList.innerHTML = eventsData.map(event => {
           const dateObj = new Date(event.date);
           const day = isNaN(dateObj) ? "01" : dateObj.getDate().toString().padStart(2, '0');
           const month = isNaN(dateObj) ? "JAN" : dateObj.toLocaleString('default', { month: 'short' }).toUpperCase();
@@ -727,8 +700,8 @@
                 <div class="event-date-month">${month}</div>
               </div>
               <div class="event-info">
-                <h3>${event.title || 'Untitled Event'}</h3>
-                <p>🕒 ${event.author ? 'By ' + event.author : 'Department Event'}</p>
+                <h3>${event.title}</h3>
+                <p>🕒 By ${event.author}</p>
               </div>
             </a>
           `;
