@@ -414,15 +414,18 @@
           `;
         }).join('');
 
-        // Initialize Swiper AFTER the slides are built
-        new Swiper(".hero-slider", {
-          spaceBetween: 0,
-          centeredSlides: true,
-          autoplay: { delay: 5000, disableOnInteraction: false },
-          pagination: { el: ".swiper-pagination", clickable: true },
-          effect: "fade", 
-          loop: true, 
-        });
+        // Initialize Swiper AFTER the slides are built, with a small delay to prevent overlap
+        setTimeout(() => {
+          new Swiper(".hero-slider", {
+            spaceBetween: 0,
+            centeredSlides: true,
+            autoplay: { delay: 5000, disableOnInteraction: false },
+            pagination: { el: ".swiper-pagination", clickable: true },
+            effect: "fade", 
+            loop: true, 
+            speed: 800 // Smooth fade transition
+          });
+        }, 100);
 
       } catch (err) {
         console.error("Slider error:", err);
