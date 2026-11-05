@@ -218,3 +218,19 @@ collections:
       - { label: "Background Image", name: "image", widget: "image", required: false, hint: "Leave empty if you want the purple animated background." }
       - { label: "Use Purple Animated Theme?", name: "is_purple", widget: "boolean", default: false, required: false }
       - { label: "Display Order", name: "order", widget: "number", default: 1, hint: "1 = shows first." }
+
+  # --- ALUMNI SECTION (NEW) ---
+  - name: "alumni"
+    label: "Alumni"
+    label_singular: "Alumnus"
+    folder: "content/alumni"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Full Name", name: "name", widget: "string" }
+      - { label: "Graduation Year", name: "year", widget: "string", hint: "e.g. 2018" }
+      - { label: "Current Job Title / Role", name: "role", widget: "string", hint: "e.g. Broadcast Journalist" }
+      - { label: "Company / Organization", name: "company", widget: "string", hint: "e.g. BBC Africa" }
+      - { label: "Photo", name: "photo", widget: "image" }
+      - { label: "Short Bio / Success Story", name: "bio", widget: "text" }
+      - { label: "Display Order", name: "order", widget: "number", default: 1 }

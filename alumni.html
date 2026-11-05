@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alumni | Mass Communication Department</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" type="image/jpeg" href="images/mass communication logo.jpg" />
+</head>
+<body>
+
+  <!-- ============ NAVBAR ============ -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <img src="images/mass communication logo.jpg" alt="Department Logo" />
+        <span>Mass Communication AAUA</span>
+      </div>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="#">About <span class="arrow">&#9662;</span></a>
+          <ul class="dropdown">
+            <li><a href="about.html">About Department</a></li>
+            <li><a href="courses.html">Courses</a></li>
+            <li><a href="materials.html">Course Materials</a></li>
+            <li><a href="sequence-prad.html">PRAD</a></li>
+            <li><a href="sequence-broadcast.html">Broadcast</a></li>
+            <li><a href="sequence-print.html">Print</a></li>
+          </ul>
+        </li>
+        <li><a href="#">People <span class="arrow">&#9662;</span></a>
+          <ul class="dropdown">
+            <li><a href="hod.html">HOD</a></li>
+            <li><a href="lecturers.html">Lecturers</a></li>
+            <li><a href="executives.html">Student Executives</a></li>
+            <li><a href="alumni.html">Alumni</a></li>
+          </ul>
+        </li>
+        <li><a href="#">Students <span class="arrow">&#9662;</span></a>
+          <ul class="dropdown"><li><a href="sets.html">Sets</a></li></ul>
+        </li>
+        <li><a href="#">Activities <span class="arrow">&#9662;</span></a>
+          <ul class="dropdown">
+            <li><a href="activities.html">Activities</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+          </ul>
+        </li>
+        <li><a href="#">Media <span class="arrow">&#9662;</span></a>
+          <ul class="dropdown">
+            <li><a href="news.html">News</a></li>
+            <li><a href="blog.html">Blog</a></li>
+          </ul>
+        </li>
+        <li><a href="cinema.html">NAMACOS TV</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="menu-toggle" id="menu-toggle">&#9776;</div>
+    </nav>
+  </header>
+
+  <!-- ============ PAGE TITLE ============ -->
+  <section class="section-title">
+    <h2>Our Alumni</h2>
+    <p>Meet our graduates making waves in the media industry</p>
+  </section>
+
+  <!-- ============ ALUMNI GRID ============ -->
+  <section class="team">
+    <div class="team-grid" id="alumni-list">
+      <p style="text-align:center; width:100%; color:#666;">Loading alumni stories...</p>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer>
+    <p>&copy; 2026 Mass Communication Department &mdash; Student Association.</p>
+    <div class="footer-credit">
+      <img src="images/the-vanguard-logo.jpg" alt="The Vanguard Movement Logo" />
+      <div class="footer-credit-text">
+        <div class="powered-by">Built &amp; Managed by</div>
+        <div class="movement-name">The Vanguard Movement</div>
+        <div class="admin-name">Oretan Led-Admin &bull; 2026/2027</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+
+  <!-- Load the YAML parser -->
+  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+
+  <script>
+    async function loadAlumni() {
+      const container = document.getElementById('alumni-list');
+      
+      try {
+        const res = await fetch('https://api.github.com/repos/sammyoretan123-bit/masscomm-website/contents/content/alumni');
+        const files = await res.json();
+        const mdFiles = files.filter(f => f.name.endsWith('.md'));
+
+        let alumniData = [];
+
+        for (let file of mdFiles) {
+          const rawRes = await fetch(file.download_url);
+          const text = await rawRes.text();
+          
+          const cleanText = text.replace(/^---\s*|\s*---\s*$/g, '');
+          const data = jsyaml.load(cleanText) || {};
+          alumniData.push(data);
+        }
+
+        alumniData.sort((a, b) => (Number(a.order) || 99) - (Number(b.order) || 99));
+
+        if (alumniData.length === 0) {
+          container.innerHTML = `<p style="text-align:center; width:100%; color:#666;">No alumni added yet.</p>`;
+          return;
+        }
+
+        container.innerHTML = alumniData.map(alum => `
+          <div class="member" style="background: #fff; border-radius: 12px; padding: 30px 20px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); display: flex; flex-direction: column; align-items: center;">
+            <img src="${alum.photo || 'images/mass communication logo.jpg'}" alt="${alum.name}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid #6a0dad; margin-bottom: 15px;" />
+            <h3 style="color: #0d0d0d; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">${alum.name}</h3>
+            <p style="color: #6a0dad; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; text-transform: uppercase;">Class of ${alum.year}</p>
+            <p style="color: #555; font-weight: bold; margin-bottom: 10px; text-align: center;">${alum.role} at ${alum.company}</p>
+            <p style="color: #666; font-size: 0.9rem; text-align: center; line-height: 1.5;">${alum.bio || ''}</p>
+          </div>
+        `).join('');
+
+      } catch (err) {
+        console.error("Alumni error:", err);
+        container.innerHTML = `<p style="text-align:center; width:100%; color:#666;">Alumni stories are currently updating.</p>`;
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadAlumni);
+  </script>
+</body>
+</html>
