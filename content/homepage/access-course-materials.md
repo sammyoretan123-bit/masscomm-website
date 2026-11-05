@@ -6,4 +6,5 @@ button_link: materials.html
 image: /images/trnava-university-BEEyeib-am8-unsplash.jpg
 is_purple: false
 order: 3
+slider_effect: fade
 ---
