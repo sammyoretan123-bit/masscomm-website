@@ -56,7 +56,7 @@
     .slide-overlay {
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.3); 
+      background: rgba(0, 0, 0, 0.65); /* Darker overlay for readability on photos */
       z-index: 2;
     }
 
@@ -232,11 +232,10 @@
   <div class="swiper hero-slider">
     <div class="swiper-wrapper">
       
-      <!-- SLIDE 1 -->
+      <!-- SLIDE 1: Welcome (Purple/Black Design) -->
       <div class="swiper-slide slide-1-bg">
         <div class="glow-orb orb-1"></div>
         <div class="glow-orb orb-2"></div>
-        
         <div class="slide-overlay"></div>
         <div class="slide-content">
           <h1>Mass Communication Department</h1>
@@ -245,7 +244,7 @@
         </div>
       </div>
 
-      <!-- SLIDE 2 -->
+      <!-- SLIDE 2: NAMACOS TV -->
       <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
         <div class="slide-overlay"></div>
         <div class="slide-content">
@@ -255,13 +254,43 @@
         </div>
       </div>
 
-      <!-- SLIDE 3 -->
+      <!-- SLIDE 3: Course Materials -->
       <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
         <div class="slide-overlay"></div>
         <div class="slide-content">
           <h1>Access Course Materials</h1>
           <p>Download lecture notes, past questions, and study guides for all levels of the Mass Communication department.</p>
           <a href="materials.html" class="slide-btn">Browse Materials</a>
+        </div>
+      </div>
+
+      <!-- SLIDE 4: Student Executives -->
+      <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
+        <div class="slide-overlay"></div>
+        <div class="slide-content">
+          <h1>Meet Your Student Executives</h1>
+          <p>The NAMACOS EXCO is here to serve you. Get to know the President, Vice President, and the rest of the team working hard to make your time in the department memorable.</p>
+          <a href="executives.html" class="slide-btn">Meet the Team</a>
+        </div>
+      </div>
+
+      <!-- SLIDE 5: Gallery -->
+      <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1511578314322-379afb476865?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
+        <div class="slide-overlay"></div>
+        <div class="slide-content">
+          <h1>Explore Our Vibrant Campus Life</h1>
+          <p>From Press Week to Sports, from Award Nights to Industry Visits. Discover the activities that make Mass Comm AAUA a family.</p>
+          <a href="gallery.html" class="slide-btn">View Gallery</a>
+        </div>
+      </div>
+
+      <!-- SLIDE 6: Admissions / Courses -->
+      <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
+        <div class="slide-overlay"></div>
+        <div class="slide-content">
+          <h1>Join the Next Generation of Media Leaders</h1>
+          <p>Are you ready to shape the future of media? Learn about our world-class courses, experienced lecturers, and career opportunities.</p>
+          <a href="courses.html" class="slide-btn">Explore Courses</a>
         </div>
       </div>
 
@@ -274,7 +303,6 @@
     <h2>Our Department in Numbers</h2>
     <div class="stats-grid">
       
-      <!-- CHANGED TO 1000+ -->
       <div class="stat-card">
         <div class="stat-number"><span class="counter" data-target="1000">0</span>+</div>
         <div class="stat-label">Active Students</div>
