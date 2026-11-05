@@ -35,7 +35,6 @@
       overflow: hidden; 
     }
 
-    /* The standard purple background for the first slide */
     .slide-1-bg {
       background-color: #0d0214; 
       background-image: 
@@ -227,57 +226,152 @@
       z-index: 1;
     }
 
-    /* --- Quick Links Section --- */
-    .quick-links-section {
+    /* --- NEW: Side-by-Side Section --- */
+    .home-split-section {
       background-color: #141414;
       padding: 60px 20px;
-      text-align: center;
+      display: flex;
+      justify-content: center;
+    }
+
+    .split-container {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr; /* Quick links are narrower, events are wider */
+      gap: 40px;
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    /* Quick Links */
+    .quick-links-section {
+      text-align: left;
     }
 
     .quick-links-section h2 {
       color: #fff;
-      font-size: 2rem;
-      margin-bottom: 40px;
+      font-size: 1.8rem;
+      margin-bottom: 25px;
       text-transform: uppercase;
       letter-spacing: 2px;
+      border-bottom: 2px solid #6a0dad;
+      padding-bottom: 10px;
+      display: inline-block;
     }
 
     .quick-links-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      max-width: 1100px;
-      margin: 0 auto;
+      grid-template-columns: 1fr; /* Stack vertically */
+      gap: 15px;
     }
 
     .quick-link-card {
       background: linear-gradient(135deg, rgba(106, 13, 173, 0.2) 0%, rgba(20, 20, 20, 0.8) 100%);
       border: 1px solid rgba(106, 13, 173, 0.4);
       border-radius: 12px;
-      padding: 30px 20px;
+      padding: 20px;
       text-decoration: none;
       color: #fff;
       display: flex;
-      flex-direction: column;
       align-items: center;
+      gap: 15px;
       transition: all 0.3s ease;
     }
 
     .quick-link-card:hover {
-      transform: translateY(-5px);
+      transform: translateX(5px);
       border-color: #6a0dad;
-      box-shadow: 0 10px 25px rgba(106, 13, 173, 0.3);
+      box-shadow: 0 5px 15px rgba(106, 13, 173, 0.3);
     }
 
     .quick-link-icon {
-      font-size: 2.5rem;
-      margin-bottom: 15px;
+      font-size: 1.8rem;
     }
 
     .quick-link-card h3 {
       font-size: 1.1rem;
       margin: 0;
     }
+
+    /* Upcoming Events */
+    .events-section {
+      text-align: left;
+    }
+
+    .events-section h2 {
+      color: #fff;
+      font-size: 1.8rem;
+      margin-bottom: 25px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      border-bottom: 2px solid #6a0dad;
+      padding-bottom: 10px;
+      display: inline-block;
+    }
+
+    .events-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .event-item {
+      display: flex;
+      gap: 20px;
+      background: #1f1f1f;
+      padding: 20px;
+      border-radius: 10px;
+      transition: background 0.3s ease;
+      text-decoration: none;
+      color: #fff;
+    }
+
+    .event-item:hover {
+      background: #2a2a2a;
+    }
+
+    .event-date-box {
+      background: #6a0dad;
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 8px;
+      text-align: center;
+      min-width: 70px;
+      height: fit-content;
+    }
+
+    .event-date-day {
+      font-size: 1.8rem;
+      font-weight: bold;
+      line-height: 1;
+    }
+
+    .event-date-month {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
+    .event-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .event-info h3 {
+      color: #fff;
+      font-size: 1.1rem;
+      margin: 0 0 5px;
+    }
+
+    .event-info p {
+      color: #9b51e0;
+      font-size: 0.9rem;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
 
     /* ========================================= */
     /* --- MOBILE RESPONSIVENESS (SCREENS < 768px) --- */
@@ -310,7 +404,7 @@
         font-size: 0.9rem;
       }
 
-      .stats-section h2, .quick-links-section h2 {
+      .stats-section h2, .quick-links-section h2, .events-section h2 {
         font-size: 1.5rem;
       }
 
@@ -318,15 +412,20 @@
         font-size: 2.5rem;
       }
 
-      .stats-grid, .quick-links-grid {
+      .stats-grid {
         grid-template-columns: repeat(2, 1fr); 
         gap: 15px;
       }
+
+      /* Stack the Split Section on mobile */
+      .split-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
     }
 
-    /* Extra small screens */
     @media (max-width: 480px) {
-      .stats-grid, .quick-links-grid {
+      .stats-grid {
         grid-template-columns: 1fr; 
       }
       .slide-content h1 {
@@ -404,55 +503,59 @@
   <section class="stats-section">
     <h2>Our Department in Numbers</h2>
     <div class="stats-grid">
-      
       <div class="stat-card">
         <div class="stat-number"><span class="counter" data-target="1000">0</span>+</div>
         <div class="stat-label">Active Students</div>
       </div>
-
       <div class="stat-card">
         <div class="stat-number"><span class="counter" data-target="15">0</span>+</div>
         <div class="stat-label">Expert Lecturers</div>
       </div>
-
       <div class="stat-card">
         <div class="stat-number"><span class="counter" data-target="3">0</span></div>
         <div class="stat-label">Specializations</div>
       </div>
-
       <div class="stat-card">
         <div class="stat-number"><span class="counter" data-target="20">0</span>+</div>
         <div class="stat-label">Years of Excellence</div>
       </div>
-
     </div>
   </section>
 
-  <!-- ============ QUICK LINKS SECTION ============ -->
-  <section class="quick-links-section">
-    <h2>Quick Links</h2>
-    <div class="quick-links-grid">
+  <!-- ============ SPLIT SECTION (QUICK LINKS & EVENTS) ============ -->
+  <section class="home-split-section">
+    <div class="split-container">
       
-      <a href="materials.html" class="quick-link-card">
-        <div class="quick-link-icon">📚</div>
-        <h3>Course Materials</h3>
-      </a>
+      <!-- LEFT SIDE: Quick Links -->
+      <div class="quick-links-section">
+        <h2>Quick Links</h2>
+        <div class="quick-links-grid">
+          <a href="materials.html" class="quick-link-card">
+            <div class="quick-link-icon">📚</div>
+            <h3>Course Materials</h3>
+          </a>
+          <a href="cinema.html" class="quick-link-card">
+            <div class="quick-link-icon">🎬</div>
+            <h3>NAMACOS TV</h3>
+          </a>
+          <a href="news.html" class="quick-link-card">
+            <div class="quick-link-icon">📰</div>
+            <h3>Latest News</h3>
+          </a>
+          <a href="hod.html" class="quick-link-card">
+            <div class="quick-link-icon">👔</div>
+            <h3>Meet the HOD</h3>
+          </a>
+        </div>
+      </div>
 
-      <a href="cinema.html" class="quick-link-card">
-        <div class="quick-link-icon">🎬</div>
-        <h3>NAMACOS TV</h3>
-      </a>
-
-      <a href="news.html" class="quick-link-card">
-        <div class="quick-link-icon">📰</div>
-        <h3>Latest News</h3>
-      </a>
-
-      <!-- CHANGED TO MEET THE HOD -->
-      <a href="hod.html" class="quick-link-card">
-        <div class="quick-link-icon">👔</div>
-        <h3>Meet the HOD</h3>
-      </a>
+      <!-- RIGHT SIDE: Upcoming Events -->
+      <div class="events-section">
+        <h2>Upcoming Events</h2>
+        <div class="events-list" id="events-list">
+          <p style="color: #aaa;">Loading events...</p>
+        </div>
+      </div>
 
     </div>
   </section>
@@ -475,26 +578,22 @@
   <!-- Swiper JS -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-  <!-- YAML Parser for reading CMS files -->
+  <!-- YAML Parser -->
   <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 
   <script>
-    // --- 1. LOAD SLIDER FROM CMS ---
+    // --- 1. LOAD SLIDER ---
     async function loadSlider() {
       const container = document.getElementById('slider-container');
-      
       try {
         const res = await fetch('https://api.github.com/repos/sammyoretan123-bit/masscomm-website/contents/content/homepage');
         const files = await res.json();
-        
         const mdFiles = files.filter(f => f.name.endsWith('.md'));
 
         let slidesData = [];
-
         for (let file of mdFiles) {
           const rawRes = await fetch(file.download_url);
           const text = await rawRes.text();
-          
           const cleanText = text.replace(/^---\s*|\s*---\s*$/g, '');
           const data = {};
           cleanText.split('\n').forEach(line => {
@@ -504,20 +603,15 @@
               data[match[1].trim()] = val;
             }
           });
-          
           slidesData.push(data);
         }
 
         slidesData.sort((a, b) => (Number(a.order) || 99) - (Number(b.order) || 99));
-
-        const globalEffect = slidesData[0] && slidesData[0].slider_effect 
-            ? slidesData[0].slider_effect 
-            : 'slide';
+        const globalEffect = slidesData[0] && slidesData[0].slider_effect ? slidesData[0].slider_effect : 'slide';
 
         container.innerHTML = slidesData.map((slide, index) => {
           const isPurple = slide.is_purple === 'true';
           const bgStyle = !isPurple && slide.image ? `background-image: url('${slide.image}');` : '';
-          
           let slideClass = '';
           let orbs = '';
 
@@ -532,9 +626,7 @@
             orbs = '<div class="glow-orb orb-1"></div><div class="glow-orb orb-2"></div>';
           }
 
-          const buttonHTML = slide.button_text 
-            ? `<a href="${slide.button_link || '#'}" class="slide-btn">${slide.button_text}</a>` 
-            : '';
+          const buttonHTML = slide.button_text ? `<a href="${slide.button_link || '#'}" class="slide-btn">${slide.button_text}</a>` : '';
 
           return `
             <div class="swiper-slide ${slideClass}" style="${bgStyle}">
@@ -560,22 +652,69 @@
             speed: 800,
             grabCursor: true, 
             allowTouchMove: true,
-            fadeEffect: {
-              crossFade: true
-            }
+            fadeEffect: { crossFade: true }
           });
         }, 100);
-
       } catch (err) {
         console.error("Slider error:", err);
-        container.innerHTML = `<div class="swiper-slide slide-1-bg"><div class="slide-content"><h1>Welcome</h1><p>Slider is currently updating...</p></div></div>`;
       }
     }
 
-    // --- 2. ANIMATED COUNTERS ---
+    // --- 2. LOAD UPCOMING EVENTS ---
+    async function loadEvents() {
+      const eventsList = document.getElementById('events-list');
+      try {
+        const res = await fetch('https://api.github.com/repos/sammyoretan123-bit/masscomm-website/contents/content/news');
+        const files = await res.json();
+        const mdFiles = files.filter(f => f.name.endsWith('.md'));
+
+        let eventsData = [];
+        for (let file of mdFiles) {
+          const rawRes = await fetch(file.download_url);
+          const text = await rawRes.text();
+          const cleanText = text.replace(/^---\s*|\s*---\s*$/g, '');
+          const data = jsyaml.load(cleanText) || {};
+          eventsData.push(data);
+        }
+
+        // Sort by date (newest first) and take the top 3
+        eventsData.sort((a, b) => new Date(b.date) - new Date(a.date));
+        const recentEvents = eventsData.slice(0, 3);
+
+        if (recentEvents.length === 0) {
+          eventsList.innerHTML = `<p style="color: #aaa;">No upcoming events at the moment.</p>`;
+          return;
+        }
+
+        eventsList.innerHTML = recentEvents.map(event => {
+          // Parse the date for the little purple box
+          const dateObj = new Date(event.date);
+          const day = isNaN(dateObj) ? "01" : dateObj.getDate().toString().padStart(2, '0');
+          const month = isNaN(dateObj) ? "JAN" : dateObj.toLocaleString('default', { month: 'short' }).toUpperCase();
+
+          return `
+            <a href="news.html" class="event-item">
+              <div class="event-date-box">
+                <div class="event-date-day">${day}</div>
+                <div class="event-date-month">${month}</div>
+              </div>
+              <div class="event-info">
+                <h3>${event.title || 'Untitled Event'}</h3>
+                <p>🕒 ${event.author ? 'By ' + event.author : 'Department Event'}</p>
+              </div>
+            </a>
+          `;
+        }).join('');
+
+      } catch (err) {
+        console.error("Events error:", err);
+        eventsList.innerHTML = `<p style="color: #aaa;">Unable to load events.</p>`;
+      }
+    }
+
+    // --- 3. ANIMATED COUNTERS ---
     const counters = document.querySelectorAll('.counter');
     const speed = 200; 
-
     const observer = new IntersectionObserver((entries, observer) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -584,7 +723,6 @@
             const target = +counter.getAttribute('data-target');
             const count = +counter.innerText;
             const inc = target / speed;
-
             if (count < target) {
               counter.innerText = Math.ceil(count + inc);
               setTimeout(updateCount, 1);
@@ -597,13 +735,13 @@
         }
       });
     }, { threshold: 0.5 }); 
+    counters.forEach(counter => observer.observe(counter));
 
-    counters.forEach(counter => {
-      observer.observe(counter);
+    // --- 4. START EVERYTHING ON PAGE LOAD ---
+    document.addEventListener("DOMContentLoaded", () => {
+      loadSlider();
+      loadEvents();
     });
-
-    // --- 3. START EVERYTHING ON PAGE LOAD ---
-    document.addEventListener("DOMContentLoaded", loadSlider);
   </script>
 </body>
 </html>
