@@ -183,7 +183,7 @@
       font-weight: bold;
     }
 
-    /* --- NEW: Premium Executives Background --- */
+    /* --- Premium Executives Background --- */
     .executives-premium-bg {
       background-color: #0d0214;
       background-image: 
@@ -227,7 +227,7 @@
       z-index: 1;
     }
 
-    /* --- NEW: Quick Links Section --- */
+    /* --- Quick Links Section --- */
     .quick-links-section {
       background-color: #141414;
       padding: 60px 20px;
@@ -390,7 +390,6 @@
   <!-- ============ HERO SLIDER (Dynamic) ============ -->
   <div class="swiper hero-slider">
     <div class="swiper-wrapper" id="slider-container">
-      <!-- Slides will be loaded from the CMS by JavaScript -->
       <div class="swiper-slide slide-1-bg">
         <div class="slide-content">
           <h1>Loading Slides...</h1>
@@ -449,9 +448,10 @@
         <h3>Latest News</h3>
       </a>
 
-      <a href="executives.html" class="quick-link-card">
-        <div class="quick-link-icon">👥</div>
-        <h3>Student Executives</h3>
+      <!-- CHANGED TO MEET THE HOD -->
+      <a href="hod.html" class="quick-link-card">
+        <div class="quick-link-icon">👔</div>
+        <h3>Meet the HOD</h3>
       </a>
 
     </div>
@@ -510,7 +510,6 @@
 
         slidesData.sort((a, b) => (Number(a.order) || 99) - (Number(b.order) || 99));
 
-        // 1. Get the slider effect from the CMS (defaults to 'slide' if not set)
         const globalEffect = slidesData[0] && slidesData[0].slider_effect 
             ? slidesData[0].slider_effect 
             : 'slide';
@@ -550,20 +549,19 @@
           `;
         }).join('');
 
-        // 2. Initialize Swiper with the chosen effect
         setTimeout(() => {
           new Swiper(".hero-slider", {
             spaceBetween: 0,
             centeredSlides: true,
             autoplay: { delay: 5000, disableOnInteraction: false },
             pagination: { el: ".swiper-pagination", clickable: true },
-            effect: globalEffect, // Uses the effect chosen in the CMS!
+            effect: globalEffect,
             loop: true, 
             speed: 800,
             grabCursor: true, 
             allowTouchMove: true,
             fadeEffect: {
-              crossFade: true // Makes the fade effect smoother if 'fade' is chosen
+              crossFade: true
             }
           });
         }, 100);
