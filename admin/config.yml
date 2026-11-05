@@ -218,8 +218,9 @@ collections:
       - { label: "Background Image", name: "image", widget: "image", required: false, hint: "Leave empty if you want the purple animated background." }
       - { label: "Use Purple Animated Theme?", name: "is_purple", widget: "boolean", default: false, required: false }
       - { label: "Display Order", name: "order", widget: "number", default: 1, hint: "1 = shows first." }
+      - { label: "Slider Effect", name: "slider_effect", widget: "select", options: ["slide", "fade"], default: "slide", hint: "Choose how the slides transition." }
 
-  # --- ALUMNI SECTION (NEW) ---
+  # --- ALUMNI SECTION ---
   - name: "alumni"
     label: "Alumni"
     label_singular: "Alumnus"
@@ -234,3 +235,15 @@ collections:
       - { label: "Photo", name: "photo", widget: "image" }
       - { label: "Short Bio / Success Story", name: "bio", widget: "text" }
       - { label: "Display Order", name: "order", widget: "number", default: 1 }
+
+  # --- NAMACOS ANTHEM SECTION ---
+  - name: "anthem"
+    label: "NAMACOS Anthem"
+    label_singular: "Anthem Settings"
+    folder: "content/anthem"
+    create: false
+    slug: "anthem"
+    fields:
+      - { label: "Anthem Title", name: "title", widget: "string", default: "NAMACOS Anthem" }
+      - { label: "Audio File (MP3)", name: "audio", widget: "file", required: false, hint: "Upload the MP3 file here." }
+      - { label: "Lyrics", name: "lyrics", widget: "text", hint: "Type or paste the anthem lyrics here." }
