@@ -203,7 +203,7 @@ collections:
       - { label: "Facebook", name: "facebook", widget: "string", required: false }
       - { label: "TikTok", name: "tiktok", widget: "string", required: false }
 
-  # --- NEW HOMEPAGE SLIDER SECTION ---
+  # --- HOMEPAGE SLIDER SECTION ---
   - name: "homepage-slider"
     label: "Homepage Slider"
     label_singular: "Slide"
@@ -213,8 +213,8 @@ collections:
     fields:
       - { label: "Slide Title", name: "title", widget: "string" }
       - { label: "Description", name: "text", widget: "text" }
-      - { label: "Button Text", name: "button_text", widget: "string" }
-      - { label: "Button Link", name: "button_link", widget: "string", hint: "e.g. about.html or cinema.html" }
+      - { label: "Button Text", name: "button_text", widget: "string", required: false, hint: "Leave blank if you don't want a button." }
+      - { label: "Button Link", name: "button_link", widget: "string", required: false, hint: "e.g. about.html. Leave blank if no button." }
       - { label: "Background Image", name: "image", widget: "image", required: false, hint: "Leave empty if you want the purple animated background." }
       - { label: "Use Purple Animated Theme?", name: "is_purple", widget: "boolean", default: false, required: false }
       - { label: "Display Order", name: "order", widget: "number", default: 1, hint: "1 = shows first." }
