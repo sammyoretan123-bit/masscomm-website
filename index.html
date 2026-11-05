@@ -3,9 +3,83 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mass Communication Department | Student Association</title>
+  <title>Mass Communication Department | AAUA</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="icon" type="image/jpeg" href="images/mass communication logo.jpg" />
+  
+  <!-- Swiper CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+  <style>
+    /* Custom Styles for the Hero Slider */
+    .hero-slider {
+      width: 100%;
+      height: 70vh; /* Adjust height as needed */
+      min-height: 500px;
+      background: #141414;
+    }
+    
+    .swiper-slide {
+      position: relative;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* The dark purple overlay so text is readable */
+    .slide-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(106, 13, 173, 0.75); /* Purple with transparency */
+      z-index: 1;
+    }
+
+    .slide-content {
+      position: relative;
+      z-index: 2;
+      max-width: 800px;
+      padding: 20px;
+      color: #fff;
+    }
+
+    .slide-content h1 {
+      font-size: 3.5rem;
+      margin-bottom: 15px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .slide-content p {
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+      line-height: 1.6;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    }
+
+    .slide-btn {
+      display: inline-block;
+      background: #fff;
+      color: #6a0dad;
+      padding: 12px 30px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: 0.3s;
+    }
+
+    .slide-btn:hover {
+      background: #6a0dad;
+      color: #fff;
+    }
+
+    /* Swiper Pagination Dots */
+    .swiper-pagination-bullet-active {
+      background: #fff !important;
+    }
+  </style>
 </head>
 <body>
 
@@ -16,13 +90,9 @@
         <img src="images/mass communication logo.jpg" alt="Department Logo" />
         <span>Mass Communication AAUA</span>
       </div>
-
       <ul class="nav-links" id="navLinks">
-
         <li><a href="index.html">Home</a></li>
-
-        <li>
-          <a href="#">About <span class="arrow">&#9662;</span></a>
+        <li><a href="#">About <span class="arrow">&#9662;</span></a>
           <ul class="dropdown">
             <li><a href="about.html">About Department</a></li>
             <li><a href="courses.html">Courses</a></li>
@@ -32,87 +102,97 @@
             <li><a href="sequence-print.html">Print</a></li>
           </ul>
         </li>
-
-        <li>
-          <a href="#">People <span class="arrow">&#9662;</span></a>
+        <li><a href="#">People <span class="arrow">&#9662;</span></a>
           <ul class="dropdown">
             <li><a href="hod.html">HOD</a></li>
             <li><a href="lecturers.html">Lecturers</a></li>
             <li><a href="executives.html">Student Executives</a></li>
           </ul>
         </li>
-
-        <li>
-          <a href="#">Students <span class="arrow">&#9662;</span></a>
-          <ul class="dropdown">
-            <li><a href="sets.html">Sets</a></li>
-          </ul>
+        <li><a href="#">Students <span class="arrow">&#9662;</span></a>
+          <ul class="dropdown"><li><a href="sets.html">Sets</a></li></ul>
         </li>
-
-        <li>
-          <a href="#">Activities <span class="arrow">&#9662;</span></a>
+        <li><a href="#">Activities <span class="arrow">&#9662;</span></a>
           <ul class="dropdown">
             <li><a href="activities.html">Activities</a></li>
             <li><a href="gallery.html">Gallery</a></li>
-            
           </ul>
         </li>
-
-        <li>
-          <a href="#">Media <span class="arrow">&#9662;</span></a>
+        <li><a href="#">Media <span class="arrow">&#9662;</span></a>
           <ul class="dropdown">
             <li><a href="news.html">News</a></li>
             <li><a href="blog.html">Blog</a></li>
           </ul>
         </li>
-
         <li><a href="cinema.html">NAMACOS TV</a></li>
-<li><a href="contact.html">Contact</a></li>`
-
+        <li><a href="contact.html">Contact</a></li>
       </ul>
-
       <div class="menu-toggle" id="menu-toggle">&#9776;</div>
     </nav>
   </header>
 
-  <!-- ============ HERO ============ -->
-  <section class="hero">
-    <div class="hero-overlay"></div>
-    <div class="hero-content">
-      <h1>Mass Communication Department</h1>
-      <p>Shaping the voices of tomorrow &mdash; news, media, and society.</p>
-      <p style="font-size: 0.95rem; max-width: 720px; margin: 0 auto 30px; opacity: 0.85; line-height: 1.7;">
-        The Department of Mass Communication, Adekunle Ajasin University, Akungba-Akoko (AAUA), trains the next generation of journalists, broadcasters, PR practitioners, and media scholars &mdash; blending rigorous academics with hands-on practice to prepare our students for the dynamic world of media and communication.
-      </p>
-      <a href="about.html" class="btn">Explore More</a>
+  <!-- ============ HERO SLIDER ============ -->
+  <div class="swiper hero-slider">
+    <div class="swiper-wrapper">
+      
+      <!-- SLIDE 1 -->
+      <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
+        <div class="slide-overlay"></div>
+        <div class="slide-content">
+          <h1>Mass Communication Department</h1>
+          <p>Shaping the voices of tomorrow — news, media, and society. The Department of Mass Communication, Adekunle Ajasin University, Akungba-Akoko (AAUA), trains the next generation of journalists, broadcasters, PR practitioners, and media scholars.</p>
+          <a href="about.html" class="slide-btn">Explore More</a>
+        </div>
+      </div>
+
+      <!-- SLIDE 2 -->
+      <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1478737270239-2f02b77fc618?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
+        <div class="slide-overlay"></div>
+        <div class="slide-content">
+          <h1>Watch NAMACOS TV</h1>
+          <p>Stream the latest movie premieres, documentaries, and student projects directly from our cinema platform.</p>
+          <a href="cinema.html" class="slide-btn">Go to Cinema</a>
+        </div>
+      </div>
+
+      <!-- SLIDE 3 -->
+      <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
+        <div class="slide-overlay"></div>
+        <div class="slide-content">
+          <h1>Access Course Materials</h1>
+          <p>Download lecture notes, past questions, and study guides for all levels of the Mass Communication department.</p>
+          <a href="materials.html" class="slide-btn">Browse Materials</a>
+        </div>
+      </div>
+
     </div>
+    <!-- Add Pagination Dots -->
+    <div class="swiper-pagination"></div>
+  </div>
+
+  <!-- ============ EXPLORE SECTION ============ -->
+  <section class="section-title">
+    <h2>Explore Our Department</h2>
   </section>
 
-  <!-- ============ QUICK HIGHLIGHTS ============ -->
-  <section class="highlights">
-    <h2>Explore Our Department</h2>
-    <div class="cards">
-
-      <a href="hod.html" class="card">
+  <section class="team">
+    <div class="team-grid">
+      <div class="member">
         <h3>Our HOD</h3>
         <p>Meet the Head of Department.</p>
-      </a>
-
-      <a href="lecturers.html" class="card">
+      </div>
+      <div class="member">
         <h3>Lecturers</h3>
         <p>Meet our dedicated teaching staff.</p>
-      </a>
-
-      <a href="executives.html" class="card">
+      </div>
+      <div class="member">
         <h3>Student Executives</h3>
-        <p>President &amp; EXCO members.</p>
-      </a>
-
-      <a href="activities.html" class="card">
+        <p>President & EXCO members.</p>
+      </div>
+      <div class="member">
         <h3>Activities</h3>
-        <p>Sports, Press Week, Freshers Orientation &amp; more.</p>
-      </a>
-
+        <p>Sports, Press Week, Freshers Orientation & more.</p>
+      </div>
     </div>
   </section>
 
@@ -130,5 +210,26 @@
   </footer>
 
   <script src="js/main.js"></script>
+
+  <!-- Swiper JS -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+  <!-- Initialize Swiper -->
+  <script>
+    var swiper = new Swiper(".hero-slider", {
+      spaceBetween: 0,
+      centeredSlides: true,
+      autoplay: {
+        delay: 5000, // Changes slide every 5 seconds
+        disableOnInteraction: false,
+      },
+      pagination: {
+        el: ".swiper-pagination",
+        clickable: true,
+      },
+      effect: "fade", // You can change this to "slide" for a sliding effect
+      loop: true, // Makes it loop infinitely
+    });
+  </script>
 </body>
 </html>
