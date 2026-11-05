@@ -5,4 +5,4 @@ date: 21 June 2027
 cover: /images/w 1.jpg
 ---
 
-`Join us for an exciting week of debates, sports, and media activities. Don't miss out!`
+`Join us for an existing week of debates, sports, and media activities. Don't miss out!`
