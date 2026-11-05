@@ -5,7 +5,7 @@ button_text: Watch Now
 button_link: '-'
 image: /images/cares.webp
 is_purple: false
-order: 1
+order: 2
 slides:
   - background_image: ''
     button_link: about.html
