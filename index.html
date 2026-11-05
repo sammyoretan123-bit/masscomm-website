@@ -221,6 +221,58 @@
       animation: float 8s ease-in-out infinite reverse;
       z-index: 1;
     }
+
+    /* --- NEW: Quick Links Section --- */
+    .quick-links-section {
+      background-color: #141414;
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    .quick-links-section h2 {
+      color: #fff;
+      font-size: 2rem;
+      margin-bottom: 40px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .quick-links-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .quick-link-card {
+      background: linear-gradient(135deg, rgba(106, 13, 173, 0.2) 0%, rgba(20, 20, 20, 0.8) 100%);
+      border: 1px solid rgba(106, 13, 173, 0.4);
+      border-radius: 12px;
+      padding: 30px 20px;
+      text-decoration: none;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .quick-link-card:hover {
+      transform: translateY(-5px);
+      border-color: #6a0dad;
+      box-shadow: 0 10px 25px rgba(106, 13, 173, 0.3);
+    }
+
+    .quick-link-icon {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+    }
+
+    .quick-link-card h3 {
+      font-size: 1.1rem;
+      margin: 0;
+    }
   </style>
 </head>
 <body>
@@ -259,6 +311,7 @@
           <ul class="dropdown">
             <li><a href="activities.html">Activities</a></li>
             <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="anthem.html">NAMACOS Anthem</a></li>
           </ul>
         </li>
         <li><a href="#">Media <span class="arrow">&#9662;</span></a>
@@ -316,6 +369,34 @@
     </div>
   </section>
 
+  <!-- ============ QUICK LINKS SECTION ============ -->
+  <section class="quick-links-section">
+    <h2>Quick Links</h2>
+    <div class="quick-links-grid">
+      
+      <a href="materials.html" class="quick-link-card">
+        <div class="quick-link-icon">📚</div>
+        <h3>Course Materials</h3>
+      </a>
+
+      <a href="cinema.html" class="quick-link-card">
+        <div class="quick-link-icon">🎬</div>
+        <h3>NAMACOS TV</h3>
+      </a>
+
+      <a href="news.html" class="quick-link-card">
+        <div class="quick-link-icon">📰</div>
+        <h3>Latest News</h3>
+      </a>
+
+      <a href="executives.html" class="quick-link-card">
+        <div class="quick-link-icon">👥</div>
+        <h3>Student Executives</h3>
+      </a>
+
+    </div>
+  </section>
+
   <!-- ============ FOOTER ============ -->
   <footer>
     <p>&copy; 2026 Mass Communication Department &mdash; Student Association.</p>
@@ -343,21 +424,17 @@
       const container = document.getElementById('slider-container');
       
       try {
-        // Fetch the list of slide files from GitHub API
         const res = await fetch('https://api.github.com/repos/sammyoretan123-bit/masscomm-website/contents/content/homepage');
         const files = await res.json();
         
-        // Filter out non-markdown files (like .gitkeep)
         const mdFiles = files.filter(f => f.name.endsWith('.md'));
 
         let slidesData = [];
 
-        // Loop through each file and get its content
         for (let file of mdFiles) {
           const rawRes = await fetch(file.download_url);
           const text = await rawRes.text();
           
-          // Parse the YAML front matter
           const cleanText = text.replace(/^---\s*|\s*---\s*$/g, '');
           const data = {};
           cleanText.split('\n').forEach(line => {
@@ -371,24 +448,19 @@
           slidesData.push(data);
         }
 
-        // Sort slides by the "order" field
         slidesData.sort((a, b) => (Number(a.order) || 99) - (Number(b.order) || 99));
 
-        // Build the HTML for each slide
         container.innerHTML = slidesData.map((slide, index) => {
           const isPurple = slide.is_purple === 'true';
           const bgStyle = !isPurple && slide.image ? `background-image: url('${slide.image}');` : '';
           
-          // Determine the class based on the slide order/index
           let slideClass = '';
           let orbs = '';
 
           if (index === 0) {
-            // First slide gets standard purple
             slideClass = 'slide-1-bg';
             orbs = '<div class="glow-orb orb-1"></div><div class="glow-orb orb-2"></div>';
           } else if (slide.title.includes('Executives')) {
-            // The Executives slide gets the NEW Premium Design
             slideClass = 'executives-premium-bg';
             orbs = '<div class="exec-orb-1"></div><div class="exec-orb-2"></div>';
           } else if (isPurple) {
@@ -396,7 +468,6 @@
             orbs = '<div class="glow-orb orb-1"></div><div class="glow-orb orb-2"></div>';
           }
 
-          // Check if there is button text. If yes, show the button. If no, show nothing.
           const buttonHTML = slide.button_text 
             ? `<a href="${slide.button_link || '#'}" class="slide-btn">${slide.button_text}</a>` 
             : '';
@@ -414,7 +485,7 @@
           `;
         }).join('');
 
-        // Initialize Swiper AFTER the slides are built, with a small delay to prevent overlap
+        // Add a small delay before initializing Swiper to prevent the overlap
         setTimeout(() => {
           new Swiper(".hero-slider", {
             spaceBetween: 0,
@@ -423,7 +494,7 @@
             pagination: { el: ".swiper-pagination", clickable: true },
             effect: "fade", 
             loop: true, 
-            speed: 800 // Smooth fade transition
+            speed: 800
           });
         }, 100);
 
