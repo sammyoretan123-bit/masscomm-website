@@ -653,36 +653,28 @@
       }
     }
 
-    // --- 2. LOAD UPCOMING EVENTS (Bypasses GitHub API Rate Limit) ---
+    // --- 2. LOAD UPCOMING EVENTS (Dynamic & Bypasses API Limits) ---
     async function loadEvents() {
       const eventsList = document.getElementById('events-list');
       try {
-        // Fetch directly from the raw GitHub pages (No API limit!)
-        const res = await fetch('https://api.github.com/repos/sammyoretan123-bit/masscomm-website/contents/content/news');
+        // Fetch the entire repository tree at once (much higher rate limit)
+        const res = await fetch('https://api.github.com/repos/sammyoretan123-bit/masscomm-website/git/trees/main?recursive=1');
+        const repoData = await res.json();
         
-        // If GitHub rate limits us, try the raw fallback
-        if (res.status === 403 || res.status === 429) {
-            throw new Error("Rate limited by GitHub API");
-        }
+        // Find all files inside the content/news folder
+        const newsFiles = repoData.tree.filter(file => 
+            file.path.startsWith('content/news/') && file.path.endsWith('.md')
+        );
 
-        const files = await res.json();
-        
-        if (!Array.isArray(files)) {
-           eventsList.innerHTML = `<p style="color: #aaa;">No upcoming events at the moment.</p>`;
-           return;
-        }
-
-        const mdFiles = files.filter(f => f.name.endsWith('.md'));
-
-        if (mdFiles.length === 0) {
+        if (newsFiles.length === 0) {
            eventsList.innerHTML = `<p style="color: #aaa;">No upcoming events at the moment.</p>`;
            return;
         }
 
         let eventsData = [];
-        for (let file of mdFiles) {
-          // Fetch the raw text file instead of the API blob
-          const rawUrl = `https://raw.githubusercontent.com/sammyoretan123-bit/masscomm-website/main/content/news/${file.name}`;
+        for (let file of newsFiles) {
+          // Fetch the raw text file directly
+          const rawUrl = `https://raw.githubusercontent.com/sammyoretan123-bit/masscomm-website/main/${file.path}`;
           const rawRes = await fetch(rawUrl);
           const text = await rawRes.text();
           
@@ -691,6 +683,7 @@
           eventsData.push(data);
         }
 
+        // Sort by date (newest first) and take the top 3
         eventsData.sort((a, b) => new Date(b.date) - new Date(a.date));
         const recentEvents = eventsData.slice(0, 3);
 
@@ -715,12 +708,7 @@
 
       } catch (err) {
         console.error("Events error:", err);
-        // If it fails, show a friendly message instead of an error
-        eventsList.innerHTML = `
-          <div style="background: rgba(106, 13, 173, 0.1); padding: 20px; border-radius: 10px; border: 1px dashed #6a0dad; text-align: center;">
-            <p style="color: #aaa; margin: 0;">Events are updating. Please check back shortly.</p>
-          </div>
-        `;
+        eventsList.innerHTML = `<p style="color: #aaa;">Unable to load events.</p>`;
       }
     }
 
