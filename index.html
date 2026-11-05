@@ -11,12 +11,12 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
   <style>
-    /* Custom Styles for the Hero Slider */
+    /* --- HERO SLIDER STYLES --- */
     .hero-slider {
       width: 100%;
-      height: 70vh; /* Adjust height as needed */
+      height: 70vh; 
       min-height: 500px;
-      background: #141414;
+      background: #0a0a0a; /* Deep black base */
     }
     
     .swiper-slide {
@@ -27,19 +27,57 @@
       justify-content: center;
       align-items: center;
       text-align: center;
+      overflow: hidden; /* Keeps the glowing orbs contained */
+    }
+
+    /* --- CATCHY PURPLE & BLACK GRADIENT DESIGN FOR SLIDE 1 --- */
+    .slide-1-bg {
+      background-color: #0d0214; /* Very dark purple/black */
+      background-image: 
+        radial-gradient(circle at 15% 50%, rgba(106, 13, 173, 0.4), transparent 40%),
+        radial-gradient(circle at 85% 30%, rgba(142, 45, 226, 0.3), transparent 40%);
+    }
+
+    /* Floating glowing orbs for a dynamic feel */
+    .glow-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      z-index: 1;
+      animation: float 8s ease-in-out infinite;
+    }
+    .orb-1 {
+      width: 400px; height: 400px;
+      background: #6a0dad;
+      top: -100px; left: -100px;
+      opacity: 0.5;
+    }
+    .orb-2 {
+      width: 300px; height: 300px;
+      background: #9b51e0;
+      bottom: -50px; right: -50px;
+      animation-delay: -4s;
+      opacity: 0.4;
+    }
+
+    @keyframes float {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(30px, 20px) scale(1.05); }
+      100% { transform: translate(0, 0) scale(1); }
     }
 
     /* The dark overlay so text is readable */
     .slide-overlay {
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(20, 20, 20, 0.65); 
-      z-index: 1;
+      background: rgba(0, 0, 0, 0.3); 
+      z-index: 2;
     }
 
+    /* Text Content */
     .slide-content {
       position: relative;
-      z-index: 2;
+      z-index: 3;
       max-width: 800px;
       padding: 20px;
       color: #fff;
@@ -51,36 +89,47 @@
     .slide-content h1 {
       font-size: 3.5rem;
       margin-bottom: 15px;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+      font-weight: 800;
+      letter-spacing: -1px;
+      background: linear-gradient(to right, #ffffff, #d4b4ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0px 4px 10px rgba(106, 13, 173, 0.5);
     }
 
     .slide-content p {
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       margin-bottom: 30px;
       line-height: 1.6;
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+      color: #e0d4eb;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
     }
 
     .slide-btn {
       display: inline-block;
-      background: #fff;
-      color: #6a0dad;
-      padding: 12px 30px;
+      background: #6a0dad;
+      color: #fff;
+      padding: 14px 35px;
       font-size: 1.1rem;
       font-weight: bold;
       text-decoration: none;
-      border-radius: 4px;
-      transition: 0.3s;
+      border-radius: 50px; /* Pill shape */
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(106, 13, 173, 0.4);
+      border: 1px solid rgba(255,255,255,0.2);
     }
 
     .slide-btn:hover {
-      background: #6a0dad;
-      color: #fff;
+      background: #8e2de2;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(142, 45, 226, 0.6);
     }
 
     /* Swiper Pagination Dots */
     .swiper-pagination-bullet-active {
-      background: #fff !important;
+      background: #6a0dad !important;
+      width: 24px !important;
+      border-radius: 5px !important;
     }
   </style>
 </head>
@@ -138,8 +187,12 @@
   <div class="swiper hero-slider">
     <div class="swiper-wrapper">
       
-      <!-- SLIDE 1 (Solid Purple Background, No Logo) -->
-      <div class="swiper-slide" style="background-color: #6a0dad;">
+      <!-- SLIDE 1 (Premium Purple/Black Design) -->
+      <div class="swiper-slide slide-1-bg">
+        <!-- Glowing Orbs -->
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        
         <div class="slide-overlay"></div>
         <div class="slide-content">
           <h1>Mass Communication Department</h1>
