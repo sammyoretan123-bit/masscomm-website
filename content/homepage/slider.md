@@ -3,7 +3,7 @@ title: Watch NAMACOS TV
 text: Lights, Camera, NAMACOS! Stream the latest movie premieres, documentaries, and creative projects produced by our talented students.
 button_text: Watch Now
 button_link: '-'
-image: /images/dep 1.jpeg
+image: /images/cares.webp
 is_purple: false
 order: 1
 slides:
