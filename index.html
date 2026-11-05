@@ -653,15 +653,26 @@
       }
     }
 
-    // --- 2. LOAD UPCOMING EVENTS (100% Dynamic) ---
+    // --- 2. LOAD UPCOMING EVENTS (Custom Safe Parser) ---
     async function loadEvents() {
       const eventsList = document.getElementById('events-list');
       try {
+        // Fetch the list of files in the news folder
         const res = await fetch('https://api.github.com/repos/sammyoretan123-bit/masscomm-website/contents/content/news');
         
-        if (!res.ok) throw new Error("GitHub API Error");
+        // Handle empty folder or errors
+        if (!res.ok) {
+            eventsList.innerHTML = `<p style="color: #aaa;">No upcoming events at the moment.</p>`;
+            return;
+        }
 
         const files = await res.json();
+        
+        if (!Array.isArray(files)) {
+           eventsList.innerHTML = `<p style="color: #aaa;">No upcoming events at the moment.</p>`;
+           return;
+        }
+
         const mdFiles = files.filter(f => f.name.endsWith('.md'));
 
         if (mdFiles.length === 0) {
@@ -673,8 +684,31 @@
         for (let file of mdFiles) {
           const rawRes = await fetch(file.download_url);
           const text = await rawRes.text();
+          
+          // Custom line-by-line parser that handles multi-line text
           const cleanText = text.replace(/^---\s*|\s*---\s*$/g, '');
-          const data = jsyaml.load(cleanText) || {};
+          const data = {};
+          let currentKey = null;
+          let currentValue = '';
+
+          cleanText.split('\n').forEach(line => {
+            if (line.trim() === '') return; // Skip empty lines
+
+            const match = line.match(/^([a-zA-Z0-9_]+):\s*(.*)$/);
+            if (match) {
+              // If there was a previous key, save it
+              if (currentKey) data[currentKey] = currentValue.trim().replace(/^["']|["']$/g, '');
+              
+              currentKey = match[1].trim();
+              currentValue = match[2];
+            } else if (currentKey) {
+              // If it's a continuation of a multi-line string, add it
+              currentValue += ' ' + line.trim();
+            }
+          });
+          // Save the last key
+          if (currentKey) data[currentKey] = currentValue.trim().replace(/^["']|["']$/g, '');
+
           eventsData.push(data);
         }
 
@@ -702,11 +736,7 @@
 
       } catch (err) {
         console.error("Events error:", err);
-        eventsList.innerHTML = `
-          <div style="background: rgba(106, 13, 173, 0.1); padding: 20px; border-radius: 10px; border: 1px dashed #6a0dad; text-align: center;">
-            <p style="color: #aaa; margin: 0;">Events are currently syncing. Please refresh in 1 minute.</p>
-          </div>
-        `;
+        eventsList.innerHTML = `<p style="color: #aaa;">Unable to load events.</p>`;
       }
     }
 
