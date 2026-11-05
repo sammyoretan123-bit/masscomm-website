@@ -30,6 +30,7 @@
       overflow: hidden; 
     }
 
+    /* The purple background for the first slide */
     .slide-1-bg {
       background-color: #0d0214; 
       background-image: 
@@ -228,72 +229,16 @@
     </nav>
   </header>
 
-  <!-- ============ HERO SLIDER ============ -->
+  <!-- ============ HERO SLIDER (Dynamic) ============ -->
   <div class="swiper hero-slider">
-    <div class="swiper-wrapper">
-      
-      <!-- SLIDE 1: Welcome (Purple/Black Design) -->
+    <div class="swiper-wrapper" id="slider-container">
+      <!-- Slides will be loaded from the CMS by JavaScript -->
       <div class="swiper-slide slide-1-bg">
-        <div class="glow-orb orb-1"></div>
-        <div class="glow-orb orb-2"></div>
-        <div class="slide-overlay"></div>
         <div class="slide-content">
-          <h1>Mass Communication Department</h1>
-          <p>Shaping the voices of tomorrow — news, media, and society. The Department of Mass Communication, Adekunle Ajasin University, Akungba-Akoko (AAUA), trains the next generation of journalists, broadcasters, PR practitioners, and media scholars.</p>
-          <a href="about.html" class="slide-btn">Explore More</a>
+          <h1>Loading Slides...</h1>
+          <p>Please wait while we fetch the latest content.</p>
         </div>
       </div>
-
-      <!-- SLIDE 2: NAMACOS TV -->
-      <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
-        <div class="slide-overlay"></div>
-        <div class="slide-content">
-          <h1>Watch NAMACOS TV</h1>
-          <p>Stream the latest movie premieres, documentaries, and student projects directly from our cinema platform.</p>
-          <a href="cinema.html" class="slide-btn">Go to Cinema</a>
-        </div>
-      </div>
-
-      <!-- SLIDE 3: Course Materials -->
-      <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
-        <div class="slide-overlay"></div>
-        <div class="slide-content">
-          <h1>Access Course Materials</h1>
-          <p>Download lecture notes, past questions, and study guides for all levels of the Mass Communication department.</p>
-          <a href="materials.html" class="slide-btn">Browse Materials</a>
-        </div>
-      </div>
-
-      <!-- SLIDE 4: Student Executives -->
-      <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
-        <div class="slide-overlay"></div>
-        <div class="slide-content">
-          <h1>Meet Your Student Executives</h1>
-          <p>The NAMACOS EXCO is here to serve you. Get to know the President, Vice President, and the rest of the team working hard to make your time in the department memorable.</p>
-          <a href="executives.html" class="slide-btn">Meet the Team</a>
-        </div>
-      </div>
-
-      <!-- SLIDE 5: Gallery -->
-      <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1511578314322-379afb476865?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
-        <div class="slide-overlay"></div>
-        <div class="slide-content">
-          <h1>Explore Our Vibrant Campus Life</h1>
-          <p>From Press Week to Sports, from Award Nights to Industry Visits. Discover the activities that make Mass Comm AAUA a family.</p>
-          <a href="gallery.html" class="slide-btn">View Gallery</a>
-        </div>
-      </div>
-
-      <!-- SLIDE 6: Admissions / Courses -->
-      <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
-        <div class="slide-overlay"></div>
-        <div class="slide-content">
-          <h1>Join the Next Generation of Media Leaders</h1>
-          <p>Are you ready to shape the future of media? Learn about our world-class courses, experienced lecturers, and career opportunities.</p>
-          <a href="courses.html" class="slide-btn">Explore Courses</a>
-        </div>
-      </div>
-
     </div>
     <div class="swiper-pagination"></div>
   </div>
@@ -344,24 +289,83 @@
   <!-- Swiper JS -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-  <script>
-    // 1. Initialize Hero Slider
-    var swiper = new Swiper(".hero-slider", {
-      spaceBetween: 0,
-      centeredSlides: true,
-      autoplay: {
-        delay: 5000, 
-        disableOnInteraction: false,
-      },
-      pagination: {
-        el: ".swiper-pagination",
-        clickable: true,
-      },
-      effect: "fade", 
-      loop: true, 
-    });
+  <!-- YAML Parser for reading CMS files -->
+  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 
-    // 2. Animated Counter Logic
+  <script>
+    // --- 1. LOAD SLIDER FROM CMS ---
+    async function loadSlider() {
+      const container = document.getElementById('slider-container');
+      
+      try {
+        // Fetch the list of slide files from GitHub API
+        const res = await fetch('https://api.github.com/repos/sammyoretan123-bit/masscomm-website/contents/content/homepage');
+        const files = await res.json();
+        
+        // Filter out non-markdown files (like .gitkeep)
+        const mdFiles = files.filter(f => f.name.endsWith('.md'));
+
+        let slidesData = [];
+
+        // Loop through each file and get its content
+        for (let file of mdFiles) {
+          const rawRes = await fetch(file.download_url);
+          const text = await rawRes.text();
+          
+          // Parse the YAML front matter
+          const cleanText = text.replace(/^---\s*|\s*---\s*$/g, '');
+          const data = {};
+          cleanText.split('\n').forEach(line => {
+            const match = line.match(/^([a-zA-Z0-9_]+):\s*(.*)$/);
+            if (match) {
+              let val = match[2].trim().replace(/^["']|["']$/g, '');
+              data[match[1].trim()] = val;
+            }
+          });
+          
+          slidesData.push(data);
+        }
+
+        // Sort slides by the "order" field
+        slidesData.sort((a, b) => (Number(a.order) || 99) - (Number(b.order) || 99));
+
+        // Build the HTML for each slide
+        container.innerHTML = slidesData.map(slide => {
+          const isPurple = slide.is_purple === 'true';
+          const bgStyle = !isPurple && slide.image ? `background-image: url('${slide.image}');` : '';
+          const purpleClass = isPurple ? 'slide-1-bg' : '';
+          const orbs = isPurple ? '<div class="glow-orb orb-1"></div><div class="glow-orb orb-2"></div>' : '';
+
+          return `
+            <div class="swiper-slide ${purpleClass}" style="${bgStyle}">
+              ${orbs}
+              <div class="slide-overlay"></div>
+              <div class="slide-content">
+                <h1>${slide.title || ''}</h1>
+                <p>${slide.text || ''}</p>
+                <a href="${slide.button_link || '#'}" class="slide-btn">${slide.button_text || 'Learn More'}</a>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Initialize Swiper AFTER the slides are built
+        new Swiper(".hero-slider", {
+          spaceBetween: 0,
+          centeredSlides: true,
+          autoplay: { delay: 5000, disableOnInteraction: false },
+          pagination: { el: ".swiper-pagination", clickable: true },
+          effect: "fade", 
+          loop: true, 
+        });
+
+      } catch (err) {
+        console.error("Slider error:", err);
+        container.innerHTML = `<div class="swiper-slide slide-1-bg"><div class="slide-content"><h1>Welcome</h1><p>Slider is currently updating...</p></div></div>`;
+      }
+    }
+
+    // --- 2. ANIMATED COUNTERS ---
     const counters = document.querySelectorAll('.counter');
     const speed = 200; 
 
@@ -390,6 +394,9 @@
     counters.forEach(counter => {
       observer.observe(counter);
     });
+
+    // --- 3. START EVERYTHING ON PAGE LOAD ---
+    document.addEventListener("DOMContentLoaded", loadSlider);
   </script>
 </body>
 </html>
