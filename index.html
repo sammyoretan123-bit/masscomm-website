@@ -236,7 +236,7 @@
 
     .split-container {
       display: grid;
-      grid-template-columns: 1fr 1.5fr; /* Quick links are narrower, events are wider */
+      grid-template-columns: 1fr 1.5fr; 
       gap: 40px;
       max-width: 1200px;
       width: 100%;
@@ -260,7 +260,7 @@
 
     .quick-links-grid {
       display: grid;
-      grid-template-columns: 1fr; /* Stack vertically */
+      grid-template-columns: 1fr; 
       gap: 15px;
     }
 
@@ -417,7 +417,6 @@
         gap: 15px;
       }
 
-      /* Stack the Split Section on mobile */
       .split-container {
         grid-template-columns: 1fr;
         gap: 30px;
@@ -573,12 +572,13 @@
     </div>
   </footer>
 
+  <!-- ============ SCRIPTS ============ -->
   <script src="js/main.js"></script>
 
   <!-- Swiper JS -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-  <!-- YAML Parser -->
+  <!-- YAML Parser (MUST LOAD BEFORE CUSTOM SCRIPT) -->
   <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 
   <script>
@@ -594,15 +594,10 @@
         for (let file of mdFiles) {
           const rawRes = await fetch(file.download_url);
           const text = await rawRes.text();
+          
+          // Use jsyaml for robust parsing
           const cleanText = text.replace(/^---\s*|\s*---\s*$/g, '');
-          const data = {};
-          cleanText.split('\n').forEach(line => {
-            const match = line.match(/^([a-zA-Z0-9_]+):\s*(.*)$/);
-            if (match) {
-              let val = match[2].trim().replace(/^["']|["']$/g, '');
-              data[match[1].trim()] = val;
-            }
-          });
+          const data = jsyaml.load(cleanText) || {};
           slidesData.push(data);
         }
 
@@ -610,7 +605,7 @@
         const globalEffect = slidesData[0] && slidesData[0].slider_effect ? slidesData[0].slider_effect : 'slide';
 
         container.innerHTML = slidesData.map((slide, index) => {
-          const isPurple = slide.is_purple === 'true';
+          const isPurple = slide.is_purple === true || slide.is_purple === 'true';
           const bgStyle = !isPurple && slide.image ? `background-image: url('${slide.image}');` : '';
           let slideClass = '';
           let orbs = '';
@@ -618,7 +613,7 @@
           if (index === 0) {
             slideClass = 'slide-1-bg';
             orbs = '<div class="glow-orb orb-1"></div><div class="glow-orb orb-2"></div>';
-          } else if (slide.title.includes('Executives')) {
+          } else if (slide.title && slide.title.includes('Executives')) {
             slideClass = 'executives-premium-bg';
             orbs = '<div class="exec-orb-1"></div><div class="exec-orb-2"></div>';
           } else if (isPurple) {
@@ -660,7 +655,7 @@
       }
     }
 
-    // --- 2. LOAD UPCOMING EVENTS ---
+    // --- 2. LOAD UPCOMING EVENTS (Using jsyaml) ---
     async function loadEvents() {
       const eventsList = document.getElementById('events-list');
       try {
@@ -673,16 +668,9 @@
           const rawRes = await fetch(file.download_url);
           const text = await rawRes.text();
           
-          // Use the same safe parsing method as the slider
+          // Use jsyaml for robust parsing
           const cleanText = text.replace(/^---\s*|\s*---\s*$/g, '');
-          const data = {};
-          cleanText.split('\n').forEach(line => {
-            const match = line.match(/^([a-zA-Z0-9_]+):\s*(.*)$/);
-            if (match) {
-              let val = match[2].trim().replace(/^["']|["']$/g, '');
-              data[match[1].trim()] = val;
-            }
-          });
+          const data = jsyaml.load(cleanText) || {};
           eventsData.push(data);
         }
 
