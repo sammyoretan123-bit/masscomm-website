@@ -18,4 +18,8 @@ message: |-
   My commitment is to ensure that Mass Communication at AAUA remains a place of excellence, unity, and impact. Thank you, and welcome once again.
 
   — Head of Department
+phone: +234 806 021 8191
+email: ---
+office_hours: Mon-Fri 8:00AM-500PM
+handbook: ''
 ---
