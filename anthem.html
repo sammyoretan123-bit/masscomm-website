@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NAMACOS Anthem | Mass Communication Department</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" type="image/jpeg" href="images/mass communication logo.jpg" />
+  <style>
+    .anthem-container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+    .audio-player {
+      width: 100%;
+      margin: 20px 0 30px;
+      outline: none;
+    }
+    .lyrics-box {
+      background: #f9f9f9;
+      padding: 30px;
+      border-radius: 8px;
+      border-left: 5px solid #6a0dad;
+      text-align: left;
+      white-space: pre-wrap;
+      line-height: 1.8;
+      color: #333;
+      font-size: 1.1rem;
+      font-family: 'Georgia', serif;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============ NAVBAR ============ -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <img src="images/mass communication logo.jpg" alt="Department Logo" />
+        <span>Mass Communication AAUA</span>
+      </div>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="#">About <span class="arrow">&#9662;</span></a>
+          <ul class="dropdown">
+            <li><a href="about.html">About Department</a></li>
+            <li><a href="courses.html">Courses</a></li>
+            <li><a href="materials.html">Course Materials</a></li>
+            <li><a href="sequence-prad.html">PRAD</a></li>
+            <li><a href="sequence-broadcast.html">Broadcast</a></li>
+            <li><a href="sequence-print.html">Print</a></li>
+          </ul>
+        </li>
+        <li><a href="#">People <span class="arrow">&#9662;</span></a>
+          <ul class="dropdown">
+            <li><a href="hod.html">HOD</a></li>
+            <li><a href="lecturers.html">Lecturers</a></li>
+            <li><a href="executives.html">Student Executives</a></li>
+            <li><a href="alumni.html">Alumni</a></li>
+          </ul>
+        </li>
+        <li><a href="#">Students <span class="arrow">&#9662;</span></a>
+          <ul class="dropdown"><li><a href="sets.html">Sets</a></li></ul>
+        </li>
+        <li><a href="#">Activities <span class="arrow">&#9662;</span></a>
+          <ul class="dropdown">
+            <li><a href="activities.html">Activities</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="anthem.html">NAMACOS Anthem</a></li>
+          </ul>
+        </li>
+        <li><a href="#">Media <span class="arrow">&#9662;</span></a>
+          <ul class="dropdown">
+            <li><a href="news.html">News</a></li>
+            <li><a href="blog.html">Blog</a></li>
+          </ul>
+        </li>
+        <li><a href="cinema.html">NAMACOS TV</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="menu-toggle" id="menu-toggle">&#9776;</div>
+    </nav>
+  </header>
+
+  <!-- ============ PAGE TITLE ============ -->
+  <section class="section-title">
+    <h2 id="anthem-title">NAMACOS Anthem</h2>
+    <p>The official song of the Mass Communication Department</p>
+  </section>
+
+  <!-- ============ ANTHEM CONTENT ============ -->
+  <section class="team" style="padding: 0 20px;">
+    <div class="anthem-container" id="anthem-content">
+      <p style="color: #666;">Loading anthem...</p>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer>
+    <p>&copy; 2026 Mass Communication Department &mdash; Student Association.</p>
+    <div class="footer-credit">
+      <img src="images/the-vanguard-logo.jpg" alt="The Vanguard Movement Logo" />
+      <div class="footer-credit-text">
+        <div class="powered-by">Built &amp; Managed by</div>
+        <div class="movement-name">The Vanguard Movement</div>
+        <div class="admin-name">Oretan Led-Admin &bull; 2026/2027</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+
+  <script>
+    async function loadAnthem() {
+      const container = document.getElementById('anthem-content');
+      const titleEl = document.getElementById('anthem-title');
+      
+      try {
+        const res = await fetch('content/anthem/anthem.md');
+        if (!res.ok) throw new Error("Anthem file not found");
+        
+        const text = await res.text();
+        const cleanText = text.replace(/^---\s*|\s*---\s*$/g, '');
+        const data = jsyaml.load(cleanText) || {};
+
+        if (data.title) titleEl.textContent = data.title;
+
+        let audioHTML = '';
+        if (data.audio) {
+          const audioSrc = data.audio.startsWith('/') ? data.audio : '/' + data.audio;
+          audioHTML = `
+            <audio controls class="audio-player">
+              <source src="${audioSrc}" type="audio/mpeg">
+              Your browser does not support the audio element.
+            </audio>
+          `;
+        } else {
+          audioHTML = `<p style="color: #e50914; margin-bottom: 20px;">Audio file not uploaded yet.</p>`;
+        }
+
+        container.innerHTML = `
+          ${audioHTML}
+          <div class="lyrics-box">
+            ${data.lyrics || 'Lyrics coming soon...'}
+          </div>
+        `;
+
+      } catch (err) {
+        console.error("Anthem error:", err);
+        container.innerHTML = `<p style="color:#666;">Anthem is currently updating. Please ensure the audio has been uploaded in the CMS.</p>`;
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadAnthem);
+  </script>
+</body>
+</html>
