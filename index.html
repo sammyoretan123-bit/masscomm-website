@@ -672,8 +672,17 @@
         for (let file of mdFiles) {
           const rawRes = await fetch(file.download_url);
           const text = await rawRes.text();
+          
+          // Use the same safe parsing method as the slider
           const cleanText = text.replace(/^---\s*|\s*---\s*$/g, '');
-          const data = jsyaml.load(cleanText) || {};
+          const data = {};
+          cleanText.split('\n').forEach(line => {
+            const match = line.match(/^([a-zA-Z0-9_]+):\s*(.*)$/);
+            if (match) {
+              let val = match[2].trim().replace(/^["']|["']$/g, '');
+              data[match[1].trim()] = val;
+            }
+          });
           eventsData.push(data);
         }
 
