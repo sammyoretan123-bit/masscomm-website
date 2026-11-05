@@ -490,18 +490,18 @@
           `;
         }).join('');
 
-        // Initialize Swiper with grab cursor enabled
+        // Initialize Swiper with BOTH Fade and Drag
         setTimeout(() => {
           new Swiper(".hero-slider", {
             spaceBetween: 0,
             centeredSlides: true,
             autoplay: { delay: 5000, disableOnInteraction: false },
             pagination: { el: ".swiper-pagination", clickable: true },
-            effect: "fade", 
+            effect: "fade", // Keeps the beautiful fade transition
             loop: true, 
             speed: 800,
-            grabCursor: true, // THIS ENABLES THE DRAG FEATURE
-            allowTouchMove: true // Allows dragging on phones
+            grabCursor: true, // Enables the drag cursor
+            allowTouchMove: true // Allows dragging/swiping on desktop and mobile
           });
         }, 100);
 
