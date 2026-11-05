@@ -30,7 +30,7 @@
       overflow: hidden; 
     }
 
-    /* The purple background for the first slide */
+    /* The standard purple background for the first slide */
     .slide-1-bg {
       background-color: #0d0214; 
       background-image: 
@@ -177,6 +177,50 @@
       letter-spacing: 1px;
       font-weight: bold;
     }
+
+    /* --- NEW: Premium Executives Background --- */
+    .executives-premium-bg {
+      background-color: #0d0214;
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(142, 45, 226, 0.4), transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(106, 13, 173, 0.5), transparent 40%),
+        linear-gradient(135deg, #0d0214 0%, #1a052b 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .executives-premium-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      z-index: 1;
+    }
+
+    .exec-orb-1 {
+      position: absolute;
+      width: 300px; height: 300px;
+      background: #9b51e0;
+      border-radius: 50%;
+      filter: blur(80px);
+      top: -50px; left: -50px;
+      opacity: 0.6;
+      animation: float 6s ease-in-out infinite;
+      z-index: 1;
+    }
+    .exec-orb-2 {
+      position: absolute;
+      width: 250px; height: 250px;
+      background: #e50914; 
+      border-radius: 50%;
+      filter: blur(80px);
+      bottom: -50px; right: -50px;
+      opacity: 0.4;
+      animation: float 8s ease-in-out infinite reverse;
+      z-index: 1;
+    }
   </style>
 </head>
 <body>
@@ -205,7 +249,7 @@
             <li><a href="hod.html">HOD</a></li>
             <li><a href="lecturers.html">Lecturers</a></li>
             <li><a href="executives.html">Student Executives</a></li>
-<li><a href="alumni.html">Alumni</a></li>
+            <li><a href="alumni.html">Alumni</a></li>
           </ul>
         </li>
         <li><a href="#">Students <span class="arrow">&#9662;</span></a>
@@ -331,20 +375,40 @@
         slidesData.sort((a, b) => (Number(a.order) || 99) - (Number(b.order) || 99));
 
         // Build the HTML for each slide
-        container.innerHTML = slidesData.map(slide => {
+        container.innerHTML = slidesData.map((slide, index) => {
           const isPurple = slide.is_purple === 'true';
           const bgStyle = !isPurple && slide.image ? `background-image: url('${slide.image}');` : '';
-          const purpleClass = isPurple ? 'slide-1-bg' : '';
-          const orbs = isPurple ? '<div class="glow-orb orb-1"></div><div class="glow-orb orb-2"></div>' : '';
+          
+          // Determine the class based on the slide order/index
+          let slideClass = '';
+          let orbs = '';
+
+          if (index === 0) {
+            // First slide gets standard purple
+            slideClass = 'slide-1-bg';
+            orbs = '<div class="glow-orb orb-1"></div><div class="glow-orb orb-2"></div>';
+          } else if (slide.title.includes('Executives')) {
+            // The Executives slide gets the NEW Premium Design
+            slideClass = 'executives-premium-bg';
+            orbs = '<div class="exec-orb-1"></div><div class="exec-orb-2"></div>';
+          } else if (isPurple) {
+            slideClass = 'slide-1-bg';
+            orbs = '<div class="glow-orb orb-1"></div><div class="glow-orb orb-2"></div>';
+          }
+
+          // Check if there is button text. If yes, show the button. If no, show nothing.
+          const buttonHTML = slide.button_text 
+            ? `<a href="${slide.button_link || '#'}" class="slide-btn">${slide.button_text}</a>` 
+            : '';
 
           return `
-            <div class="swiper-slide ${purpleClass}" style="${bgStyle}">
+            <div class="swiper-slide ${slideClass}" style="${bgStyle}">
               ${orbs}
               <div class="slide-overlay"></div>
               <div class="slide-content">
                 <h1>${slide.title || ''}</h1>
                 <p>${slide.text || ''}</p>
-                <a href="${slide.button_link || '#'}" class="slide-btn">${slide.button_text || 'Learn More'}</a>
+                ${buttonHTML}
               </div>
             </div>
           `;
