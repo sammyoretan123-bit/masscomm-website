@@ -73,6 +73,10 @@ collections:
       - { label: "Role / Title", name: "role", widget: "string", default: "Head of Department" }
       - { label: "Photo", name: "photo", widget: "image" }
       - { label: "Welcome Message", name: "message", widget: "text" }
+      - { label: "Phone Number", name: "phone", widget: "string", required: false }
+      - { label: "Email Address", name: "email", widget: "string", required: false }
+      - { label: "Office Hours", name: "office_hours", widget: "string", required: false, hint: "e.g. Mon - Fri 9:00AM - 4:00PM" }
+      - { label: "HOD Handbook (PDF)", name: "handbook", widget: "file", required: false, hint: "Upload the PDF handbook here." }
 
   - name: "hod-history"
     label: "HOD History"
