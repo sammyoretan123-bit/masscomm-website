@@ -21,5 +21,5 @@ message: |-
 phone: +234 806 021 8191
 email: ---
 office_hours: Mon-Fri 8:00AM-500PM
-handbook: /images/mass communication logo.jpg
+handbook: /images/pst1.docx
 ---
