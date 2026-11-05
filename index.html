@@ -33,7 +33,7 @@
     .slide-overlay {
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(20, 20, 20, 0.65); /* Darker overlay for better readability */
+      background: rgba(20, 20, 20, 0.65); 
       z-index: 1;
     }
 
@@ -46,18 +46,6 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-    }
-
-    /* Small badge for the logo inside the text */
-    .slide-logo {
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      border: 3px solid #6a0dad;
-      object-fit: cover;
-      margin-bottom: 20px;
-      background: #fff;
-      padding: 5px;
     }
 
     .slide-content h1 {
@@ -150,14 +138,10 @@
   <div class="swiper hero-slider">
     <div class="swiper-wrapper">
       
-      <!-- SLIDE 1 (Department Photo with Logo Badge) -->
-      <!-- TIP: Replace the Unsplash URL below with a real photo of your department or students -->
-      <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
+      <!-- SLIDE 1 (Solid Purple Background, No Logo) -->
+      <div class="swiper-slide" style="background-color: #6a0dad;">
         <div class="slide-overlay"></div>
         <div class="slide-content">
-          <!-- Logo badge inside the text -->
-          <img src="images/mass communication logo.jpg" alt="Logo" class="slide-logo" />
-          
           <h1>Mass Communication Department</h1>
           <p>Shaping the voices of tomorrow — news, media, and society. The Department of Mass Communication, Adekunle Ajasin University, Akungba-Akoko (AAUA), trains the next generation of journalists, broadcasters, PR practitioners, and media scholars.</p>
           <a href="about.html" class="slide-btn">Explore More</a>
@@ -239,7 +223,7 @@
       spaceBetween: 0,
       centeredSlides: true,
       autoplay: {
-        delay: 5000, // Changes slide every 5 seconds
+        delay: 5000, 
         disableOnInteraction: false,
       },
       pagination: {
