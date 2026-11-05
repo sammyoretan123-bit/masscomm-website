@@ -14,38 +14,46 @@ async function getContactSlug() {
     if (!res.ok) throw new Error("GitHub API failed");
     const files = await res.json();
     const mdFile = files.find((f) => f.name.endsWith(".md") && f.name !== ".gitkeep");
-    return mdFile ? mdFile.name.replace(".md", "") : null;
+    return mdFile ? mdFile.name : null; 
   } catch (err) {
-    console.warn("Could not fetch contact:", err);
+    console.warn("Could not fetch contact file list:", err);
     return null;
   }
 }
 
-function parseFrontMatter(text) {
-  const result = {};
-  const match = text.match(/^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/);
-  if (!match) return { data: {}, body: text };
-  const frontMatter = match[1];
-  frontMatter.split("\n").forEach((line) => {
-    const colonIndex = line.indexOf(":");
-    if (colonIndex === -1) return;
-    const key = line.slice(0, colonIndex).trim();
-    let value = line.slice(colonIndex + 1).trim();
-    value = value.replace(/^["']|["']$/g, "");
-    result[key] = value;
+// A simpler parser that just looks for key: value pairs
+function parseSimpleFrontMatter(text) {
+  const data = {};
+  // Remove the --- lines
+  const cleanText = text.replace(/^---\s*|\s*---\s*$/g, '');
+  
+  cleanText.split('\n').forEach(line => {
+    const match = line.match(/^([a-zA-Z0-9_]+):\s*(.*)$/);
+    if (match) {
+      let key = match[1].trim();
+      let value = match[2].trim();
+      
+      // Remove surrounding quotes if they exist
+      if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+        value = value.slice(1, -1);
+      }
+      if (value !== '') {
+        data[key] = value;
+      }
+    }
   });
-  return { data: result };
+  return data;
 }
 
-async function fetchContact(slug) {
+async function fetchContact(filename) {
   try {
-    const res = await fetch(`content/contact/${slug}.md`);
-    if (!res.ok) throw new Error("Not found");
+    const rawUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/main/${CONTACT_FOLDER}/${filename}`;
+    const res = await fetch(rawUrl);
+    if (!res.ok) throw new Error("File not found");
     const text = await res.text();
-    const { data } = parseFrontMatter(text);
-    return data;
+    return parseSimpleFrontMatter(text);
   } catch (err) {
-    console.warn("Could not load contact:", err);
+    console.warn("Could not load contact details:", err);
     return null;
   }
 }
@@ -54,36 +62,42 @@ async function renderContact() {
   const container = document.getElementById("contact-info");
   if (!container) return;
 
-  const slug = await getContactSlug();
-  if (!slug) {
+  const filename = await getContactSlug();
+  if (!filename) {
     container.innerHTML = `<p style="color:#666; text-align:center; width:100%;">Contact information is being updated.</p>`;
     return;
   }
 
-  const c = await fetchContact(slug);
-  if (!c) return;
+  const c = await fetchContact(filename);
+  if (!c) {
+    container.innerHTML = `<p style="color:#666; text-align:center; width:100%;">Could not load contact information.</p>`;
+    return;
+  }
 
   const socialLines = [];
   if (c.instagram) socialLines.push(`Instagram: ${c.instagram}`);
   if (c.twitter) socialLines.push(`X (Twitter): ${c.twitter}`);
-  if (c.facebook) socialLines.push(`Facebook: ${c.facebook}`);
+  if (c.facebook) {
+    const fbLink = c.facebook.startsWith('http') ? c.facebook : 'https://' + c.facebook;
+    socialLines.push(`Facebook: <a href="${fbLink}" target="_blank" style="color:#6a0dad;">${c.facebook}</a>`);
+  }
   if (c.tiktok) socialLines.push(`TikTok: ${c.tiktok}`);
 
   container.innerHTML = `
     <div class="member">
       <h3>Department Address</h3>
       <p class="role">Location</p>
-      <p>${(c.address || "").replace(/\n/g, "<br />")}</p>
+      <p>${c.address || "Not provided"}</p>
     </div>
     <div class="member">
       <h3>Email</h3>
       <p class="role">Reach Out</p>
-      <p>${c.email || ""}</p>
+      <p><a href="mailto:${c.email || ''}" style="color:#6a0dad;">${c.email || "Not provided"}</a></p>
     </div>
     <div class="member">
       <h3>Phone</h3>
       <p class="role">Call Us</p>
-      <p>${c.phone || ""}</p>
+      <p>${c.phone || "Not provided"}</p>
     </div>
     <div class="member">
       <h3>Social Media</h3>
