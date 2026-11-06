@@ -31,7 +31,7 @@
     }
 
     .contact-box {
-      background: #141e30; /* Dark blue like AAUA site */
+      background: #141e30; 
       color: #fff;
       padding: 30px;
       border-radius: 12px;
@@ -80,6 +80,63 @@
       object-fit: cover;
       border: 4px solid #6a0dad;
       margin-bottom: 20px;
+    }
+
+    /* NEW: Past HOD Grid Styles */
+    .past-hod-section {
+      max-width: 1200px;
+      margin: 60px auto;
+      padding: 0 20px;
+    }
+    
+    .past-hod-section h2 {
+      text-align: center;
+      color: #6a0dad;
+      font-size: 2rem;
+      margin-bottom: 40px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .past-hod-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 30px;
+    }
+
+    .past-hod-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 25px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease;
+    }
+
+    .past-hod-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .past-hod-card img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #6a0dad;
+      margin-bottom: 15px;
+    }
+
+    .past-hod-card h3 {
+      color: #0d0d0d;
+      font-size: 1.1rem;
+      margin-bottom: 5px;
+    }
+
+    .past-hod-card p {
+      color: #6a0dad;
+      font-weight: bold;
+      font-size: 0.9rem;
+      margin: 0;
     }
 
     /* Mobile Responsive */
@@ -151,7 +208,7 @@
     <p>Welcome to the Mass Communication Department</p>
   </section>
 
-  <!-- ============ HOD LAYOUT ============ -->
+  <!-- ============ CURRENT HOD LAYOUT ============ -->
   <div class="hod-layout">
     
     <!-- Main Content (Left Side) -->
@@ -168,6 +225,14 @@
     </div>
 
   </div>
+
+  <!-- ============ NEW: PAST HODs SECTION ============ -->
+  <section class="past-hod-section">
+    <h2>Past Heads of Department</h2>
+    <div class="past-hod-grid" id="past-hod-grid">
+      <p style="text-align:center; color:#666;">Loading past HODs...</p>
+    </div>
+  </section>
 
   <!-- ============ FOOTER ============ -->
   <footer>
@@ -186,28 +251,25 @@
   <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 
   <script>
+    // --- 1. LOAD CURRENT HOD ---
     async function loadHOD() {
       const contentEl = document.getElementById('hod-content');
       const contactBox = document.getElementById('contact-info');
       const contactDetails = document.getElementById('contact-details');
 
       try {
-        // Fetch the HOD file from GitHub
         const res = await fetch('https://api.github.com/repos/sammyoretan123-bit/masscomm-website/contents/content/hod');
         const files = await res.json();
         
-        // Find the .md file (ignoring .gitkeep)
         const mdFile = files.find(f => f.name.endsWith('.md'));
         if (!mdFile) throw new Error("HOD file not found");
 
         const rawRes = await fetch(mdFile.download_url);
         const text = await rawRes.text();
         
-        // Parse YAML
         const cleanText = text.replace(/^---\s*|\s*---\s*$/g, '');
         const data = jsyaml.load(cleanText) || {};
 
-        // Build the Main Content
         contentEl.innerHTML = `
           <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 30px; flex-wrap: wrap;">
             <img src="${data.photo || 'images/mass communication logo.jpg'}" alt="${data.name}" class="hod-photo" />
@@ -221,7 +283,6 @@
           </div>
         `;
 
-        // Build the Contact Sidebar (Only if contact info exists)
         if (data.phone || data.email || data.office_hours || data.handbook) {
           contactBox.style.display = "block";
 
@@ -231,21 +292,62 @@
           if (data.office_hours) html += `<div class="contact-item"><strong>Office Hours</strong>${data.office_hours}</div>`;
           
           if (data.handbook) {
-            // Clean up the path
             const handbookUrl = data.handbook.startsWith('/') ? data.handbook : '/' + data.handbook;
             html += `<a href="${handbookUrl}" target="_blank" class="handbook-btn">📄 Download Handbook</a>`;
           }
-
           contactDetails.innerHTML = html;
         }
-
       } catch (err) {
         console.error("HOD Error:", err);
         contentEl.innerHTML = `<p style="text-align:center; color:#666;">HOD information is currently updating.</p>`;
       }
     }
 
-    document.addEventListener("DOMContentLoaded", loadHOD);
+    // --- 2. LOAD PAST HODs ---
+    async function loadPastHODs() {
+      const grid = document.getElementById('past-hod-grid');
+      try {
+        const res = await fetch('https://api.github.com/repos/sammyoretan123-bit/masscomm-website/contents/content/hod-history');
+        const files = await res.json();
+        
+        if (!Array.isArray(files)) throw new Error("Folder empty");
+        const mdFiles = files.filter(f => f.name.endsWith('.md'));
+
+        if (mdFiles.length === 0) {
+          grid.innerHTML = `<p style="text-align:center; color:#666; grid-column: 1/-1;">No past HODs uploaded yet.</p>`;
+          return;
+        }
+
+        let pastHods = [];
+        for (let file of mdFiles) {
+          const rawRes = await fetch(file.download_url);
+          const text = await rawRes.text();
+          const cleanText = text.replace(/^---\s*|\s*---\s*$/g, '');
+          const data = jsyaml.load(cleanText) || {};
+          pastHods.push(data);
+        }
+
+        // Sort by Order
+        pastHods.sort((a, b) => (Number(a.order) || 99) - (Number(b.order) || 99));
+
+        grid.innerHTML = pastHods.map(hod => `
+          <div class="past-hod-card">
+            <img src="${hod.photo || 'images/mass communication logo.jpg'}" alt="${hod.name}" />
+            <h3>${hod.name || 'Past HOD'}</h3>
+            <p>${hod.years || 'Years Served'}</p>
+          </div>
+        `).join('');
+
+      } catch (err) {
+        console.error("Past HOD Error:", err);
+        grid.innerHTML = `<p style="text-align:center; color:#666; grid-column: 1/-1;">Past HOD information is currently updating.</p>`;
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadHOD();
+      loadPastHODs();
+    });
   </script>
 </body>
 </html>
