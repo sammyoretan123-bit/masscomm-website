@@ -21,11 +21,8 @@
     
     .swiper-slide {
       position: relative;
-      /* Changed to contain so the full image fits without cropping */
-      background-size: contain; 
-      background-repeat: no-repeat;
+      background-size: cover;
       background-position: center;
-      background-color: #000; /* Black bars on the sides */
       display: flex;
       justify-content: center;
       align-items: center;
@@ -35,7 +32,6 @@
 
     .slide-1-bg {
       background-color: #0d0214; 
-      background-size: cover; 
       background-image: 
         radial-gradient(circle at 15% 50%, rgba(106, 13, 173, 0.4), transparent 40%),
         radial-gradient(circle at 85% 30%, rgba(142, 45, 226, 0.3), transparent 40%);
@@ -613,7 +609,6 @@
             if (!finalLink || finalLink === '-' || finalLink === '#') {
                if (slide.title && slide.title.includes('NAMACOS')) finalLink = 'cinema.html';
                else if (slide.title && slide.title.includes('Material')) finalLink = 'materials.html';
-               else if (slide.title && slide.title.includes('Executive')) finalLink = 'executives.html';
                else finalLink = 'index.html';
             }
 
