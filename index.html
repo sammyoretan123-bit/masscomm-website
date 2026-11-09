@@ -584,7 +584,7 @@
         const { data, error } = await supabaseClient
           .from('homepage_slider')
           .select('*')
-          .order('display_order', { ascending: true });
+          .order('order', { ascending: true });
 
         if (error) throw error;
 
