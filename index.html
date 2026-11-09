@@ -17,7 +17,6 @@
       height: 70vh; 
       min-height: 500px;
       background: #0a0a0a; 
-      /* Removed grab cursor */
     }
     
     .swiper-slide {
@@ -610,7 +609,7 @@
             orbs = '<div class="glow-orb orb-1"></div><div class="glow-orb orb-2"></div>';
           }
 
-          // FIX: Automatically fallback to the correct link if the CMS has a bad link (like "-")
+          // Safe Link Fallback
           let finalLink = slide.button_link;
           if (!finalLink || finalLink === '-' || finalLink === '#') {
              if (slide.title && slide.title.includes('NAMACOS')) finalLink = 'cinema.html';
@@ -634,11 +633,11 @@
           `;
         }).join('');
 
-        // Initialize Swiper AFTER the slides are built
-        setTimeout(() => {
-          // Show the slider
-          container.style.display = "block";
+        // 1. Show the container first so Swiper can calculate the correct width
+        container.style.display = "block";
 
+        // 2. Wait 200ms for the browser to render, then start Swiper
+        setTimeout(() => {
           new Swiper(".hero-slider", {
             spaceBetween: 0,
             centeredSlides: true,
@@ -650,7 +649,8 @@
             allowTouchMove: true,
             fadeEffect: { crossFade: true }
           });
-        }, 100);
+        }, 200); 
+
       } catch (err) {
         console.error("Slider error:", err);
       }
