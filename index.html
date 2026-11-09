@@ -584,12 +584,11 @@
         const { data, error } = await supabaseClient
           .from('homepage_slider')
           .select('*')
-          .order('order', { ascending: true });
+          .order('display_order', { ascending: true });
 
         if (error) throw error;
 
         if (!data || data.length === 0) {
-          // Fallback if no slides exist
           container.innerHTML = `<div class="swiper-slide slide-1-bg"><div class="slide-content"><h1>Welcome</h1><p>Please add slides in the CMS.</p></div></div>`;
         } else {
           container.innerHTML = data.map((slide, index) => {
@@ -598,22 +597,18 @@
             let slideClass = '';
             let orbs = '';
 
-            if (index === 0) {
+            if (isPurple) {
               slideClass = 'slide-1-bg';
               orbs = '<div class="glow-orb orb-1"></div><div class="glow-orb orb-2"></div>';
             } else if (slide.title && slide.title.includes('Executives')) {
               slideClass = 'executives-premium-bg';
               orbs = '<div class="exec-orb-1"></div><div class="exec-orb-2"></div>';
-            } else if (isPurple) {
-              slideClass = 'slide-1-bg';
-              orbs = '<div class="glow-orb orb-1"></div><div class="glow-orb orb-2"></div>';
             }
 
             let finalLink = slide.button_link;
             if (!finalLink || finalLink === '-' || finalLink === '#') {
                if (slide.title && slide.title.includes('NAMACOS')) finalLink = 'cinema.html';
                else if (slide.title && slide.title.includes('Material')) finalLink = 'materials.html';
-               else if (slide.title && slide.title.includes('Executive')) finalLink = 'executives.html';
                else finalLink = 'index.html';
             }
 
@@ -641,7 +636,7 @@
             autoplay: { delay: 5000, disableOnInteraction: false },
             pagination: { el: ".swiper-pagination", clickable: true },
             effect: "slide", 
-            loop: true, 
+            loop: data.length > 1 ? true : false,
             speed: 800,
             allowTouchMove: true,
             fadeEffect: { crossFade: true }
