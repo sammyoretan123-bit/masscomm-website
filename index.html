@@ -17,11 +17,7 @@
       height: 70vh; 
       min-height: 500px;
       background: #0a0a0a; 
-      cursor: grab; 
-    }
-    
-    .hero-slider:active {
-      cursor: grabbing; 
+      /* Removed grab cursor */
     }
     
     .swiper-slide {
@@ -487,13 +483,8 @@
 
   <!-- ============ HERO SLIDER (Dynamic) ============ -->
   <div class="swiper hero-slider">
-    <div class="swiper-wrapper" id="slider-container">
-      <div class="swiper-slide slide-1-bg">
-        <div class="slide-content">
-          <h1>Loading Slides...</h1>
-          <p>Please wait while we fetch the latest content.</p>
-        </div>
-      </div>
+    <div class="swiper-wrapper" id="slider-container" style="display: none;">
+      <!-- Slides will be loaded here -->
     </div>
     <div class="swiper-pagination"></div>
   </div>
@@ -619,7 +610,16 @@
             orbs = '<div class="glow-orb orb-1"></div><div class="glow-orb orb-2"></div>';
           }
 
-          const buttonHTML = slide.button_text ? `<a href="${slide.button_link || '#'}" class="slide-btn">${slide.button_text}</a>` : '';
+          // FIX: Automatically fallback to the correct link if the CMS has a bad link (like "-")
+          let finalLink = slide.button_link;
+          if (!finalLink || finalLink === '-' || finalLink === '#') {
+             if (slide.title && slide.title.includes('NAMACOS')) finalLink = 'cinema.html';
+             else if (slide.title && slide.title.includes('Material')) finalLink = 'materials.html';
+             else if (slide.title && slide.title.includes('Executive')) finalLink = 'executives.html';
+             else finalLink = 'index.html';
+          }
+
+          const buttonHTML = slide.button_text ? `<a href="${finalLink}" class="slide-btn">${slide.button_text}</a>` : '';
 
           return `
             <div class="swiper-slide ${slideClass}" style="${bgStyle}">
@@ -634,7 +634,11 @@
           `;
         }).join('');
 
+        // Initialize Swiper AFTER the slides are built
         setTimeout(() => {
+          // Show the slider
+          container.style.display = "block";
+
           new Swiper(".hero-slider", {
             spaceBetween: 0,
             centeredSlides: true,
@@ -643,7 +647,6 @@
             effect: globalEffect,
             loop: true, 
             speed: 800,
-            grabCursor: true, 
             allowTouchMove: true,
             fadeEffect: { crossFade: true }
           });
@@ -657,35 +660,18 @@
     async function loadEvents() {
       const eventsList = document.getElementById('events-list');
       try {
-        // Fetch the list of files in the news folder
         const res = await fetch('https://api.github.com/repos/sammyoretan123-bit/masscomm-website/contents/content/news');
-        
-        // Handle empty folder or errors
-        if (!res.ok) {
-            eventsList.innerHTML = `<p style="color: #aaa;">No upcoming events at the moment.</p>`;
-            return;
-        }
-
+        if (!res.ok) { eventsList.innerHTML = `<p style="color: #aaa;">No upcoming events at the moment.</p>`; return; }
         const files = await res.json();
-        
-        if (!Array.isArray(files)) {
-           eventsList.innerHTML = `<p style="color: #aaa;">No upcoming events at the moment.</p>`;
-           return;
-        }
-
+        if (!Array.isArray(files)) { eventsList.innerHTML = `<p style="color: #aaa;">No upcoming events at the moment.</p>`; return; }
         const mdFiles = files.filter(f => f.name.endsWith('.md'));
-
-        if (mdFiles.length === 0) {
-           eventsList.innerHTML = `<p style="color: #aaa;">No upcoming events at the moment.</p>`;
-           return;
-        }
+        if (mdFiles.length === 0) { eventsList.innerHTML = `<p style="color: #aaa;">No upcoming events at the moment.</p>`; return; }
 
         let eventsData = [];
         for (let file of mdFiles) {
           const rawRes = await fetch(file.download_url);
           const text = await rawRes.text();
           
-          // Custom line-by-line parser that handles multi-line text
           const cleanText = text.replace(/^---\s*|\s*---\s*$/g, '');
           const data = {};
           let currentKey = null;
@@ -693,11 +679,9 @@
 
           cleanText.split('\n').forEach(line => {
             if (line.trim() === '') return; 
-
             const match = line.match(/^([a-zA-Z0-9_]+):\s*(.*)$/);
             if (match) {
               if (currentKey) data[currentKey] = currentValue.trim().replace(/^["']|["']$/g, '');
-              
               currentKey = match[1].trim();
               currentValue = match[2];
             } else if (currentKey) {
@@ -705,7 +689,6 @@
             }
           });
           if (currentKey) data[currentKey] = currentValue.trim().replace(/^["']|["']$/g, '');
-
           eventsData.push(data);
         }
 
