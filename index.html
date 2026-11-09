@@ -21,36 +21,21 @@
     
     .swiper-slide {
       position: relative;
-      background-size: cover;
+      /* Changed to contain so the full image fits without cropping */
+      background-size: contain; 
+      background-repeat: no-repeat;
       background-position: center;
+      background-color: #000; /* Black bars on the sides */
       display: flex;
       justify-content: center;
       align-items: center;
       text-align: center;
       overflow: hidden; 
-      background-color: #0a0a0a; /* Fallback dark background */
-    }
-
-    /* THE MAGIC TRICK: Blur a copy of the image in the background */
-    .swiper-slide[style*="background-image"]::before {
-      content: '';
-      position: absolute;
-      inset: -20px; /* Prevents white edges when blurring */
-      background-image: inherit;
-      background-size: cover;
-      background-position: center;
-      filter: blur(25px) brightness(0.4); /* Blurs and darkens the background */
-      z-index: 1;
-    }
-
-    /* Makes sure the actual image is fully visible and not cropped */
-    .swiper-slide[style*="background-image"] {
-      background-size: contain !important; 
-      background-repeat: no-repeat;
     }
 
     .slide-1-bg {
       background-color: #0d0214; 
+      background-size: cover; 
       background-image: 
         radial-gradient(circle at 15% 50%, rgba(106, 13, 173, 0.4), transparent 40%),
         radial-gradient(circle at 85% 30%, rgba(142, 45, 226, 0.3), transparent 40%);
