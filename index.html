@@ -572,13 +572,33 @@
   <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 
   <script>
-    // --- 1. LOAD SLIDER ---
+    // --- 1. LOAD SLIDER (With Bulletproof Fallback) ---
     async function loadSlider() {
       const container = document.getElementById('slider-container');
+      
+      // Fallback slide in case GitHub is blocked
+      const fallbackHTML = `
+        <div class="swiper-slide slide-1-bg">
+          <div class="glow-orb orb-1"></div><div class="glow-orb orb-2"></div>
+          <div class="slide-overlay"></div>
+          <div class="slide-content">
+            <h1>Mass Communication Department</h1>
+            <p>Shaping the voices of tomorrow — news, media, and society. Welcome to AAUA Mass Comm.</p>
+            <a href="about.html" class="slide-btn">Explore More</a>
+          </div>
+        </div>
+      `;
+
       try {
         const res = await fetch('https://api.github.com/repos/sammyoretan123-bit/masscomm-website/contents/content/homepage');
+        
+        // If GitHub blocks us, throw error to trigger fallback
+        if (!res.ok) throw new Error("GitHub API Blocked");
+
         const files = await res.json();
         const mdFiles = files.filter(f => f.name.endsWith('.md'));
+
+        if (mdFiles.length === 0) throw new Error("No slides found");
 
         let slidesData = [];
         for (let file of mdFiles) {
@@ -609,7 +629,6 @@
             orbs = '<div class="glow-orb orb-1"></div><div class="glow-orb orb-2"></div>';
           }
 
-          // Safe Link Fallback
           let finalLink = slide.button_link;
           if (!finalLink || finalLink === '-' || finalLink === '#') {
              if (slide.title && slide.title.includes('NAMACOS')) finalLink = 'cinema.html';
@@ -633,10 +652,10 @@
           `;
         }).join('');
 
-        // 1. Show the container first so Swiper can calculate the correct width
+        // Show slider
         container.style.display = "block";
 
-        // 2. Wait 200ms for the browser to render, then start Swiper
+        // Start Swiper
         setTimeout(() => {
           new Swiper(".hero-slider", {
             spaceBetween: 0,
@@ -649,10 +668,25 @@
             allowTouchMove: true,
             fadeEffect: { crossFade: true }
           });
-        }, 200); 
+        }, 200);
 
       } catch (err) {
-        console.error("Slider error:", err);
+        // IF GITHUB FAILS, SHOW THE FALLBACK SLIDE INSTEAD OF GOING BLANK
+        console.warn("GitHub API blocked. Showing fallback slide.", err);
+        container.innerHTML = fallbackHTML;
+        container.style.display = "block";
+        
+        setTimeout(() => {
+          new Swiper(".hero-slider", {
+            spaceBetween: 0,
+            centeredSlides: true,
+            autoplay: { delay: 5000, disableOnInteraction: false },
+            pagination: { el: ".swiper-pagination", clickable: true },
+            effect: "fade",
+            loop: true, 
+            speed: 800
+          });
+        }, 200);
       }
     }
 
