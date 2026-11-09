@@ -28,6 +28,25 @@
       align-items: center;
       text-align: center;
       overflow: hidden; 
+      background-color: #0a0a0a; /* Fallback dark background */
+    }
+
+    /* THE MAGIC TRICK: Blur a copy of the image in the background */
+    .swiper-slide[style*="background-image"]::before {
+      content: '';
+      position: absolute;
+      inset: -20px; /* Prevents white edges when blurring */
+      background-image: inherit;
+      background-size: cover;
+      background-position: center;
+      filter: blur(25px) brightness(0.4); /* Blurs and darkens the background */
+      z-index: 1;
+    }
+
+    /* Makes sure the actual image is fully visible and not cropped */
+    .swiper-slide[style*="background-image"] {
+      background-size: contain !important; 
+      background-repeat: no-repeat;
     }
 
     .slide-1-bg {
@@ -609,6 +628,7 @@
             if (!finalLink || finalLink === '-' || finalLink === '#') {
                if (slide.title && slide.title.includes('NAMACOS')) finalLink = 'cinema.html';
                else if (slide.title && slide.title.includes('Material')) finalLink = 'materials.html';
+               else if (slide.title && slide.title.includes('Executive')) finalLink = 'executives.html';
                else finalLink = 'index.html';
             }
 
