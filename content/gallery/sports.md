@@ -10,4 +10,5 @@ photos:
   - /images/legacy.jpeg
   - /images/WhatsApp Image 2026-10-14 at 5.39.05 PM.jpeg
   - /images/drill.jpeg
+  - /images/WhatsApp Image 2026-11-12 at 10.02.53.jpeg
 ---
