@@ -1,7 +1,7 @@
 ---
 name: Dr. Adebowale Ikusewo-Akinbami
 role: Ass. Lecturer
-photo: /images/mass communication logo.jpg
+photo: /images/Ak.jpeg
 sequence: Print
 order: 9
 ---
