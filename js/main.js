@@ -1,7 +1,7 @@
 /* ============================================
    MASS COMMUNICATION DEPARTMENT
    File: js/main.js
-   Purpose: Mobile menu toggle + dropdown + site-wide lightbox
+   Purpose: Mobile menu toggle + dropdown + site-wide lightbox + auth visibility
    ============================================ */
 
 /* ---------- MOBILE MENU TOGGLE ---------- */
@@ -33,6 +33,35 @@ dropdownParents.forEach((parent) => {
         parent.classList.toggle('open');
       }
     });
+  }
+});
+
+/* ============================================
+   NAVBAR AUTH VISIBILITY
+   Hide "Course Materials" link if logged in
+   ============================================ */
+document.addEventListener("DOMContentLoaded", async () => {
+  if (typeof supabaseClient !== 'undefined') {
+    try {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      
+      // Find all links that point to materials.html
+      const links = document.querySelectorAll('.nav-links a');
+      let materialsLink = null;
+      
+      links.forEach(link => {
+        if (link.textContent.trim() === "Course Materials" || link.href.includes("materials.html")) {
+          materialsLink = link.parentElement; // Get the <li> element
+        }
+      });
+
+      if (materialsLink && session) {
+        // IF LOGGED IN: Hide the Course Materials link
+        materialsLink.style.display = "none";
+      }
+    } catch (err) {
+      console.error("Error checking auth for navbar:", err);
+    }
   }
 });
 
