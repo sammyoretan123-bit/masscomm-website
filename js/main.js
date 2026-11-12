@@ -64,6 +64,7 @@ function initSiteLightbox() {
     justify-content: center;
     align-items: center;
     cursor: grab;
+    overflow: hidden;
   `;
 
   // ---------- Image ----------
@@ -77,6 +78,7 @@ function initSiteLightbox() {
     box-shadow: 0 10px 50px rgba(0,0,0,0.6);
     transition: transform 0.1s ease-out;
     user-select: none;
+    pointer-events: auto;
   `;
 
   // ---------- Close Button ----------
@@ -165,9 +167,9 @@ function initSiteLightbox() {
     if (e.key === "ArrowRight") showImage(currentIndex + 1);
   });
 
-  // Zooming (Mouse Wheel)
+  // Zooming (Mouse Wheel) - ONLY AFFECTS THE IMAGE
   imageContainer.addEventListener("wheel", (e) => {
-    e.preventDefault(); 
+    e.preventDefault(); // THIS STOPS THE PAGE FROM SCROLLING
     const zoomSensitivity = 0.1;
     
     if (e.deltaY < 0) {
@@ -185,7 +187,7 @@ function initSiteLightbox() {
     }
 
     updateImageTransform();
-  });
+  }, { passive: false }); // Important for preventDefault to work
 
   // Panning (Click and Drag to move zoomed image)
   imageContainer.addEventListener("mousedown", (e) => {
