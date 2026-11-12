@@ -713,7 +713,26 @@
     }, { threshold: 0.5 }); 
     counters.forEach(counter => observer.observe(counter));
 
-    // --- 4. START EVERYTHING ON PAGE LOAD ---
+    // --- 4. INTERCEPT COURSE MATERIALS LINKS ---
+    document.addEventListener("DOMContentLoaded", async () => {
+      if (typeof supabaseClient !== 'undefined') {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        
+        const links = document.querySelectorAll('a[href="materials.html"]');
+        links.forEach(link => {
+          link.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (session) {
+              window.location.href = "dashboard.html"; 
+            } else {
+              window.location.href = "login.html"; 
+            }
+          });
+        });
+      }
+    });
+
+    // --- 5. START EVERYTHING ON PAGE LOAD ---
     document.addEventListener("DOMContentLoaded", () => {
       loadSlider();
       loadEvents();
