@@ -22,7 +22,7 @@
 </head>
 <body>
 
-  <!-- NAVBAR (Same as your other pages) -->
+  <!-- NAVBAR -->
   <header>
     <nav class="navbar">
       <div class="logo">
@@ -62,7 +62,6 @@
       const { data: { session }, error } = await supabaseClient.auth.getSession();
       
       if (!session) {
-        // If not logged in, kick them to a login page (we will build this next)
         window.location.href = "login.html"; 
         return;
       }
@@ -70,19 +69,19 @@
       // 2. Show the user's email as their name for now
       document.getElementById('student-name').textContent = session.user.email.split('@')[0];
 
-      // 3. Fetch Courses (We will create this table in Step 2)
+      // 3. Fetch Courses
       const { data: courses, error: courseError } = await supabaseClient
         .from('courses')
         .select('*');
 
       const grid = document.getElementById('courses-grid');
       
-      if (courseError || !courses) {
+      if (courseError || !courses || courses.length === 0) {
         grid.innerHTML = `<p style="color: #666;">No courses available yet.</p>`;
         return;
       }
 
-      // 4. Render the courses
+      // 4. Render the courses and link to the course view page
       grid.innerHTML = courses.map(course => `
         <div class="course-card">
           <h3>${course.title}</h3>
@@ -90,7 +89,8 @@
           <div class="progress-bar">
             <div class="progress-fill" style="width: 0%;"></div>
           </div>
-          <a href="#" class="btn-continue">Continue Learning</a>
+          <!-- FIXED: Link to course-view.html with the course ID -->
+          <a href="course-view.html?id=${course.id}" class="btn-continue">Continue Learning</a>
         </div>
       `).join('');
     }
