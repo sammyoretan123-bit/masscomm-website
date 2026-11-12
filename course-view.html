@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Course View | NAMACOS</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" type="image/jpeg" href="images/mass communication logo.jpg" />
+  <style>
+    .course-header { background: linear-gradient(135deg, #0d0214 0%, #2a0845 100%); padding: 60px 20px; text-align: center; color: #fff; border-bottom: 2px solid #6a0dad; }
+    .course-header h1 { font-size: 3rem; margin-bottom: 10px; }
+    .course-header p { color: #e0d4eb; font-size: 1.2rem; max-width: 800px; margin: 0 auto; }
+    
+    .materials-container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+    .lesson-item { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 20px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid #6a0dad; }
+    .lesson-info h3 { margin: 0 0 5px; color: #0d0d0d; }
+    .lesson-info p { margin: 0; color: #666; font-size: 0.9rem; }
+    .download-btn { background: #6a0dad; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; transition: 0.3s; }
+    .download-btn:hover { background: #8e2de2; }
+    
+    .back-link { display: inline-block; margin-bottom: 20px; color: #6a0dad; text-decoration: none; font-weight: bold; }
+    .back-link:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <img src="images/mass communication logo.jpg" alt="Department Logo" />
+        <span>Mass Communication AAUA</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="dashboard.html">My Dashboard</a></li>
+        <li><button id="logout-btn" style="background: #e50914; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Log Out</button></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- COURSE HEADER -->
+  <div class="course-header">
+    <h1 id="course-title">Loading...</h1>
+    <p id="course-desc"></p>
+  </div>
+
+  <!-- MATERIALS LIST -->
+  <div class="materials-container">
+    <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+    <h2 style="color: #0d0d0d; margin-bottom: 20px;">Course Materials</h2>
+    
+    <div id="lessons-list">
+      <p style="color: #666;">Loading materials...</p>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    async function loadCourseView() {
+      // 1. Check if user is logged in
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      // 2. Get the Course ID from the URL (e.g., course-view.html?id=1)
+      const urlParams = new URLSearchParams(window.location.search);
+      const courseId = urlParams.get('id');
+
+      if (!courseId) {
+        document.getElementById('course-title').textContent = "Course Not Found";
+        document.getElementById('course-desc').textContent = "No course ID provided.";
+        return;
+      }
+
+      // 3. Fetch the specific course details from Supabase
+      const { data: course, error } = await supabaseClient
+        .from('courses')
+        .select('*')
+        .eq('id', courseId)
+        .single();
+
+      if (error || !course) {
+        document.getElementById('course-title').textContent = "Course Not Found";
+        return;
+      }
+
+      // 4. Display the Course Info
+      document.getElementById('course-title').textContent = course.title;
+      document.getElementById('course-desc').textContent = course.description || '';
+
+      // 5. Fetch Materials for this Course Code (e.g., MAC 101)
+      // Note: We need to make sure your 'materials' table has a 'course_code' column!
+      const { data: materials, error: matError } = await supabaseClient
+        .from('materials')
+        .select('*')
+        .eq('course_code', course.code);
+
+      const lessonsList = document.getElementById('lessons-list');
+
+      if (matError || !materials || materials.length === 0) {
+        lessonsList.innerHTML = `<p style="color: #666; padding: 20px; background: #fff; border-radius: 8px;">No materials have been uploaded for this course yet.</p>`;
+        return;
+      }
+
+      // 6. Render the Materials
+      lessonsList.innerHTML = materials.map(material => `
+        <div class="lesson-item">
+          <div class="lesson-info">
+            <h3>${material.title}</h3>
+            <p>${material.category || 'Lecture Note'} • ${material.semester || 'Semester'}</p>
+          </div>
+          <a href="${material.file_url}" target="_blank" class="download-btn">📄 Download PDF</a>
+        </div>
+      `).join('');
+    }
+
+    // LOGOUT
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      await supabaseClient.auth.signOut();
+      window.location.href = "index.html";
+    });
+
+    document.addEventListener("DOMContentLoaded", loadCourseView);
+  </script>
+</body>
+</html>
