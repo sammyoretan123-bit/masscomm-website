@@ -52,6 +52,7 @@
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session) { window.location.href = "login.html"; return; }
 
+      // Get the course code from the URL (e.g., quiz.html?code=MAC 101)
       const urlParams = new URLSearchParams(window.location.search);
       const courseCode = urlParams.get('code'); 
 
@@ -62,6 +63,7 @@
 
       document.getElementById('quiz-title').textContent = `Quiz: ${courseCode}`;
 
+      // Fetch questions for this specific course
       const { data: questions, error } = await supabaseClient
         .from('quizzes')
         .select('*')
@@ -74,6 +76,7 @@
 
       const questionsList = document.getElementById('questions-list');
       
+      // Render the questions
       questionsList.innerHTML = questions.map((q, index) => {
         correctAnswers[q.id] = q.correct_answer; 
 
@@ -90,11 +93,13 @@
 
       document.getElementById('submit-btn').style.display = 'block';
 
+      // Handle Form Submission
       document.getElementById('quiz-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         let score = 0;
         const formData = new FormData(e.target);
 
+        // Calculate Score
         for (let [key, value] of formData.entries()) {
           const questionId = key.split('_')[1];
           if (correctAnswers[questionId] === value) {
@@ -105,6 +110,7 @@
         const total = questions.length;
         const percentage = Math.round((score / total) * 100);
 
+        // Save score to Supabase
         const { error: saveError } = await supabaseClient
           .from('quiz_scores')
           .insert([{ 
@@ -116,11 +122,12 @@
 
         if (saveError) console.error("Error saving score:", saveError);
 
+        // Show Result
         const resultBox = document.getElementById('result-box');
         resultBox.style.display = 'block';
         resultBox.innerHTML = `
-          <p style="margin: 0 0 15px 0;">You scored ${score} out of ${total} (${percentage}%)</p>
-          <a href="dashboard.html" style="background: #fff; color: #1e7e34; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;">Back to Dashboard</a>
+          <p style="margin: 0 0 20px 0;">You scored ${score} out of ${total} (${percentage}%)</p>
+          <a href="dashboard.html" style="background: #fff; color: #1e7e34; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 1rem;">Back to Dashboard</a>
         `;
         resultBox.style.background = percentage >= 50 ? '#1e7e34' : '#e50914'; 
         document.getElementById('submit-btn').style.display = 'none';
