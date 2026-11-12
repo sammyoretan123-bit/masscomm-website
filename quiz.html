@@ -122,17 +122,15 @@
 
         if (saveError) console.error("Error saving score:", saveError);
 
-        // Show Result
+               // Show Result
         const resultBox = document.getElementById('result-box');
-        resultBox.style.display = 'block';
+        resultBox.style.display = 'flex'; // Changed to flex so it aligns side by side
         resultBox.innerHTML = `
-          <p style="margin: 0 0 20px 0;">You scored ${score} out of ${total} (${percentage}%)</p>
-          <a href="dashboard.html" style="background: #fff; color: #1e7e34; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 1rem;">Back to Dashboard</a>
+          <span style="margin: 0; font-weight: bold;">You scored ${score} out of ${total} (${percentage}%)</span>
+          <a href="dashboard.html" style="background: #fff; color: #1e7e34; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 1rem;">Back to Dashboard</a>
         `;
         resultBox.style.background = percentage >= 50 ? '#1e7e34' : '#e50914'; 
         document.getElementById('submit-btn').style.display = 'none';
-      });
-    }
 
     document.getElementById('logout-btn').addEventListener('click', async () => {
       await supabaseClient.auth.signOut();
