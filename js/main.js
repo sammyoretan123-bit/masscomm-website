@@ -55,7 +55,7 @@ function initSiteLightbox() {
     overflow: hidden;
   `;
 
-  // ---------- Image Container (For Panning) ----------
+  // ---------- Image Container ----------
   const imageContainer = document.createElement("div");
   imageContainer.style.cssText = `
     width: 100%;
@@ -63,7 +63,6 @@ function initSiteLightbox() {
     display: flex;
     justify-content: center;
     align-items: center;
-    cursor: grab;
     overflow: hidden;
   `;
 
@@ -78,7 +77,7 @@ function initSiteLightbox() {
     box-shadow: 0 10px 50px rgba(0,0,0,0.6);
     transition: transform 0.1s ease-out;
     user-select: none;
-    pointer-events: auto;
+    cursor: grab;
   `;
 
   // ---------- Close Button ----------
@@ -95,7 +94,7 @@ function initSiteLightbox() {
   prevBtn.style.cssText = `
     position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
     color: white; font-size: 50px; cursor: pointer; padding: 20px;
-    opacity: 0.6; z-index: 10000; user-select: none;
+    opacity: 0.6; z-index: 10000; user-select: none; display: none;
   `;
 
   // ---------- Next Button ----------
@@ -104,7 +103,7 @@ function initSiteLightbox() {
   nextBtn.style.cssText = `
     position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
     color: white; font-size: 50px; cursor: pointer; padding: 20px;
-    opacity: 0.6; z-index: 10000; user-select: none;
+    opacity: 0.6; z-index: 10000; user-select: none; display: none;
   `;
 
   // Append elements
@@ -131,12 +130,13 @@ function initSiteLightbox() {
   }
 
   function updateImageTransform() {
+    // Apply the transform ONLY to the image, not the container
     img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
   }
 
   function closeLightbox() {
     overlay.style.display = "none";
-    document.body.style.overflow = "auto"; // UNLOCK PAGE SCROLL
+    document.body.style.overflow = "auto"; 
     resetZoom();
   }
 
@@ -153,7 +153,7 @@ function initSiteLightbox() {
   // Close
   closeBtn.addEventListener("click", closeLightbox);
   overlay.addEventListener("click", (e) => {
-    if (e.target === overlay || e.target === imageContainer) closeLightbox(); 
+    if (e.target === overlay) closeLightbox(); 
   });
 
   // Navigation
@@ -168,8 +168,8 @@ function initSiteLightbox() {
     if (e.key === "ArrowRight") showImage(currentIndex + 1);
   });
 
-  // Zooming (Mouse Wheel)
-  imageContainer.addEventListener("wheel", (e) => {
+  // Zooming (Mouse Wheel) - ONLY on the image
+  img.addEventListener("wheel", (e) => {
     e.preventDefault(); 
     const zoomSensitivity = 0.1;
     
@@ -190,13 +190,13 @@ function initSiteLightbox() {
     updateImageTransform();
   }, { passive: false });
 
-  // Panning
-  imageContainer.addEventListener("mousedown", (e) => {
+  // Panning (Click and Drag) - ONLY on the image
+  img.addEventListener("mousedown", (e) => {
     if (scale <= 1) return; 
     isDragging = true;
     startX = e.clientX - translateX;
     startY = e.clientY - translateY;
-    imageContainer.style.cursor = "grabbing";
+    img.style.cursor = "grabbing";
   });
 
   window.addEventListener("mousemove", (e) => {
@@ -209,26 +209,30 @@ function initSiteLightbox() {
 
   window.addEventListener("mouseup", () => {
     isDragging = false;
-    if (scale > 1) imageContainer.style.cursor = "grab";
-    else imageContainer.style.cursor = "default";
+    if (scale > 1) img.style.cursor = "grab";
+    else img.style.cursor = "default";
   });
 
   // ---------- Trigger Logic ----------
   document.addEventListener("click", (e) => {
     const target = e.target;
     if (target.tagName !== "IMG") return;
-    
-    // THIS LINE PREVENTS THE LIGHTBOX FROM OPENING ON LECTURERS, HOD, AND EXECUTIVES
-    if (target.closest(".member")) return; 
-
     if (target.closest("header")) return;
     if (target.closest("footer")) return;
     if (target.naturalWidth > 0 && target.naturalWidth < 80) return;
 
+    const isProfileCard = target.closest(".member");
+
     const container = target.closest(".gallery-grid") || target.closest(".team-grid") || target.closest(".activity-gallery") || target.parentElement;
     const containerImages = Array.from(container.querySelectorAll("img")).filter(i => i.naturalWidth > 80);
 
-    if (containerImages.length > 1) {
+    if (isProfileCard) {
+      galleryImages = [target];
+      currentIndex = 0;
+      showImage(currentIndex);
+      prevBtn.style.display = "none";
+      nextBtn.style.display = "none";
+    } else if (containerImages.length > 1) {
       galleryImages = containerImages;
       currentIndex = galleryImages.indexOf(target);
       showImage(currentIndex);
@@ -243,8 +247,8 @@ function initSiteLightbox() {
     }
 
     overlay.style.display = "flex";
-    document.body.style.overflow = "hidden"; // LOCK PAGE SCROLL
-    imageContainer.style.cursor = "default";
+    document.body.style.overflow = "hidden"; 
+    img.style.cursor = "default";
   });
 }
 
