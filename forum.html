@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Community Forum | NAMACOS</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .forum-container { max-width: 900px; margin: 40px auto; padding: 20px; }
+    .new-post-box { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; }
+    .new-post-box textarea { width: 100%; padding: 15px; border: 1px solid #ccc; border-radius: 8px; font-family: inherit; resize: vertical; margin-bottom: 10px; box-sizing: border-box; }
+    .new-post-box button { background: #6a0dad; color: #fff; border: none; padding: 12px 25px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    
+    .post-card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 15px; border-left: 5px solid #ccc; }
+    .post-card.announcement { border-left-color: #e50914; background: #fff9f9; } /* Red border for announcements */
+    .post-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; color: #888; }
+    .post-author { font-weight: bold; color: #6a0dad; }
+    .post-content { color: #333; line-height: 1.6; white-space: pre-wrap; }
+    .badge-announcement { background: #e50914; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-left: 10px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <img src="images/mass communication logo.jpg" alt="Logo" />
+        <span>Mass Communication AAUA</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="dashboard.html">My Dashboard</a></li>
+        <li><a href="forum.html" style="color: #6a0dad; font-weight: bold;">Community</a></li>
+        <li><button id="logout-btn" style="background: #e50914; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Log Out</button></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="forum-container">
+    <h1 style="color: #0d0d0d; margin-bottom: 20px;">Department Forum</h1>
+    
+    <!-- New Post Box -->
+    <div class="new-post-box">
+      <h3 style="margin-top: 0; color: #0d0d0d;">Share an update or ask a question</h3>
+      <textarea id="post-content" rows="3" placeholder="What's on your mind?"></textarea>
+      <button id="post-btn">Post to Forum</button>
+    </div>
+
+    <!-- Posts List -->
+    <div id="posts-list">
+      <p style="text-align: center; color: #666;">Loading posts...</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    let currentUser = null;
+
+    async function loadPosts() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) { window.location.href = "login.html"; return; }
+      currentUser = session.user;
+
+      // Fetch posts, ordered by newest first
+      const { data: posts, error } = await supabaseClient
+        .from('posts')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      const postsList = document.getElementById('posts-list');
+      
+      if (error || !posts) {
+        postsList.innerHTML = `<p style="text-align: center; color: #666;">Could not load posts.</p>`;
+        return;
+      }
+
+      if (posts.length === 0) {
+        postsList.innerHTML = `<p style="text-align: center; color: #666;">No posts yet. Be the first to say hello!</p>`;
+        return;
+      }
+
+      postsList.innerHTML = posts.map(post => {
+        const date = new Date(post.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        const isAnnouncement = post.is_announcement ? 'announcement' : '';
+        const badge = post.is_announcement ? '<span class="badge-announcement">ANNOUNCEMENT</span>' : '';
+
+        return `
+          <div class="post-card ${isAnnouncement}">
+            <div class="post-header">
+              <span class="post-author">${post.author_name} ${badge}</span>
+              <span>${date}</span>
+            </div>
+            <div class="post-content">${post.content}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Handle Posting
+    document.getElementById('post-btn').addEventListener('click', async () => {
+      const content = document.getElementById('post-content').value.trim();
+      if (!content) return alert("Please write something first.");
+
+      const btn = document.getElementById('post-btn');
+      btn.textContent = "Posting...";
+      btn.disabled = true;
+
+      const authorName = currentUser.email.split('@')[0]; // Use email prefix as name for now
+
+      const { error } = await supabaseClient
+        .from('posts')
+        .insert([{ 
+          author_name: authorName, 
+          content: content, 
+          is_announcement: false 
+        }]);
+
+      if (error) {
+        alert("Error posting: " + error.message);
+        btn.textContent = "Post to Forum";
+        btn.disabled = false;
+      } else {
+        document.getElementById('post-content').value = "";
+        btn.textContent = "Post to Forum";
+        btn.disabled = false;
+        loadPosts(); // Reload the list
+      }
+    });
+
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      await supabaseClient.auth.signOut();
+      window.location.href = "index.html";
+    });
+
+    document.addEventListener("DOMContentLoaded", loadPosts);
+  </script>
+</body>
+</html>
