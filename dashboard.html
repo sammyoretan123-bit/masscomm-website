@@ -54,35 +54,69 @@
   <script>
     async function loadDashboard() {
       const { data: { session } } = await supabaseClient.auth.getSession();
-      
-      if (!session) {
-        window.location.href = "login.html"; 
-        return;
-      }
+      if (!session) { window.location.href = "login.html"; return; }
 
       document.getElementById('student-name').textContent = session.user.email.split('@')[0];
 
-      const { data: courses, error: courseError } = await supabaseClient
-        .from('courses')
-        .select('*');
-
+      // Fetch Courses
+      const { data: courses } = await supabaseClient.from('courses').select('*');
       const grid = document.getElementById('courses-grid');
       
-      if (courseError || !courses || courses.length === 0) {
+      if (!courses || courses.length === 0) {
         grid.innerHTML = `<p style="color: #666;">No courses available yet.</p>`;
         return;
       }
 
-      grid.innerHTML = courses.map(course => `
-        <div class="course-card">
-          <h3>${course.title}</h3>
-          <p>${course.description || 'Start learning today.'}</p>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width: 0%;"></div>
+      // For each course, calculate progress
+      let coursesHTML = '';
+      for (let course of courses) {
+        // Count total materials for this course
+        const { count: totalMaterials } = await supabaseClient
+          .from('materials')
+          .select('*', { count: 'exact', head: true })
+          .eq('course_code', course.code);
+
+        // Count completed materials for this user
+        const { data: completed } = await supabaseClient
+          .from('progress')
+          .select('material_id')
+          .eq('user_id', session.user.id);
+
+        // We need to check how many of those completed IDs belong to this course
+        let completedCount = 0;
+        if (completed && totalMaterials > 0) {
+           // Fetch the material IDs for this specific course
+           const { data: courseMaterials } = await supabaseClient
+             .from('materials')
+             .select('id')
+             .eq('course_code', course.code);
+           
+           if (courseMaterials) {
+             const courseMaterialIds = courseMaterials.map(m => m.id);
+             completedCount = completed.filter(p => courseMaterialIds.includes(p.material_id)).length;
+           }
+        }
+
+        // Calculate percentage
+        let percentage = totalMaterials > 0 ? Math.round((completedCount / totalMaterials) * 100) : 0;
+
+        coursesHTML += `
+          <div class="course-card">
+            <h3>${course.title}</h3>
+            <p>${course.description || 'Start learning today.'}</p>
+            <div style="display:flex; justify-content:space-between; font-size: 0.8rem; color:#666; margin-top:10px;">
+              <span>${completedCount} of ${totalMaterials} lessons complete</span>
+              <span>${percentage}%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${percentage}%;"></div>
+            </div>
+            <a href="course-view.html?id=${course.id}" class="btn-continue">Continue Learning</a>
           </div>
-          <a href="course-view.html?id=${course.id}" class="btn-continue">Continue Learning</a>
-        </div>
-      `).join('');
+        `;
+      }
+
+      grid.innerHTML = coursesHTML;
     }
 
     document.getElementById('logout-btn').addEventListener('click', async () => {
