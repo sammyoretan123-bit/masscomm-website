@@ -52,7 +52,7 @@ function initSiteLightbox() {
     z-index: 9999;
     justify-content: center;
     align-items: center;
-    overflow: hidden; /* Prevents scrolling the page when zoomed in */
+    overflow: hidden;
   `;
 
   // ---------- Image Container (For Panning) ----------
@@ -77,7 +77,6 @@ function initSiteLightbox() {
     box-shadow: 0 10px 50px rgba(0,0,0,0.6);
     transition: transform 0.1s ease-out;
     user-select: none;
-    pointer-events: none; /* Prevents the native drag ghost */
   `;
 
   // ---------- Close Button ----------
@@ -151,7 +150,6 @@ function initSiteLightbox() {
   // Close
   closeBtn.addEventListener("click", closeLightbox);
   overlay.addEventListener("click", (e) => {
-    // Only close if clicking the dark background, not the image
     if (e.target === overlay || e.target === imageContainer) closeLightbox(); 
   });
 
@@ -169,20 +167,18 @@ function initSiteLightbox() {
 
   // Zooming (Mouse Wheel)
   imageContainer.addEventListener("wheel", (e) => {
-    e.preventDefault(); // Stop page scrolling
+    e.preventDefault(); 
     const zoomSensitivity = 0.1;
     
     if (e.deltaY < 0) {
-      scale += zoomSensitivity; // Zoom in
+      scale += zoomSensitivity; 
     } else {
-      scale -= zoomSensitivity; // Zoom out
+      scale -= zoomSensitivity; 
     }
 
-    // Limit zoom (min 1, max 4)
     if (scale < 1) scale = 1;
     if (scale > 4) scale = 4;
 
-    // If zoomed out to 1, reset position
     if (scale === 1) {
       translateX = 0;
       translateY = 0;
@@ -193,7 +189,7 @@ function initSiteLightbox() {
 
   // Panning (Click and Drag to move zoomed image)
   imageContainer.addEventListener("mousedown", (e) => {
-    if (scale <= 1) return; // Only pan if zoomed in
+    if (scale <= 1) return; 
     isDragging = true;
     startX = e.clientX - translateX;
     startY = e.clientY - translateY;
@@ -222,7 +218,6 @@ function initSiteLightbox() {
     if (target.closest("footer")) return;
     if (target.naturalWidth > 0 && target.naturalWidth < 80) return;
 
-    // Find ALL images in the same container
     const container = target.closest(".gallery-grid") || target.closest(".team-grid") || target.closest(".activity-gallery") || target.parentElement;
     const containerImages = Array.from(container.querySelectorAll("img")).filter(i => i.naturalWidth > 80);
 
