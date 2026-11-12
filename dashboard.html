@@ -22,7 +22,6 @@
 </head>
 <body>
 
-  <!-- NAVBAR -->
   <header>
     <nav class="navbar">
       <div class="logo">
@@ -39,37 +38,30 @@
   </header>
 
   <div class="dashboard-container">
-    <!-- Welcome Banner -->
     <div class="welcome-banner">
       <h1>Welcome back, <span id="student-name">Student</span>!</h1>
       <p>Here are your enrolled courses and progress.</p>
     </div>
 
-    <!-- Courses Grid -->
     <h2 style="color: #0d0d0d; margin-bottom: 20px;">My Courses</h2>
     <div class="courses-grid" id="courses-grid">
       <p>Loading courses...</p>
     </div>
   </div>
 
-  <!-- SCRIPTS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
   <script>
-    // --- CHECK AUTHENTICATION & LOAD DASHBOARD ---
     async function loadDashboard() {
-      // 1. Check if user is logged in
-      const { data: { session }, error } = await supabaseClient.auth.getSession();
+      const { data: { session } } = await supabaseClient.auth.getSession();
       
       if (!session) {
         window.location.href = "login.html"; 
         return;
       }
 
-      // 2. Show the user's email as their name for now
       document.getElementById('student-name').textContent = session.user.email.split('@')[0];
 
-      // 3. Fetch Courses
       const { data: courses, error: courseError } = await supabaseClient
         .from('courses')
         .select('*');
@@ -81,7 +73,6 @@
         return;
       }
 
-      // 4. Render the courses and link to the course view page
       grid.innerHTML = courses.map(course => `
         <div class="course-card">
           <h3>${course.title}</h3>
@@ -89,13 +80,11 @@
           <div class="progress-bar">
             <div class="progress-fill" style="width: 0%;"></div>
           </div>
-          <!-- FIXED: Link to course-view.html with the course ID -->
           <a href="course-view.html?id=${course.id}" class="btn-continue">Continue Learning</a>
         </div>
       `).join('');
     }
 
-    // --- LOGOUT ---
     document.getElementById('logout-btn').addEventListener('click', async () => {
       await supabaseClient.auth.signOut();
       window.location.href = "index.html";
