@@ -1,7 +1,7 @@
 /* ============================================
    MASS COMMUNICATION DEPARTMENT
    File: js/lecturers.js
-   Purpose: Auto-load lecturers from content/lecturers/ and sort by order
+   Purpose: Auto-load lecturers, sort by order, and show bio modal
    ============================================ */
 
 const GITHUB_REPO = "sammyoretan123-bit/masscomm-website";
@@ -51,12 +51,17 @@ async function fetchLecturer(slug) {
     const res = await fetch(`content/lecturers/${slug}.md`);
     if (!res.ok) throw new Error("Not found: " + slug);
     const text = await res.text();
-    const { data } = parseFrontMatter(text);
+    const { data, body } = parseFrontMatter(text);
+    
+    // We combine the 'bio' field from the front-matter OR the markdown body itself
+    let bioText = data.bio || body || "Biography coming soon.";
+    
     return {
       slug,
       name: data.name || slug,
       role: data.role || "Lecturer",
       photo: data.photo || "images/mass communication logo.jpg",
+      bio: bioText,
       order: parseInt(data.order) || 999
     };
   } catch (err) {
@@ -84,16 +89,44 @@ async function renderLecturers() {
     return;
   }
 
-  container.innerHTML = lecturers.map((l) => `
-    <div class="member">
-      <img src="${l.photo}" alt="${l.name}" />
-      <h3>${l.name}</h3>
-      <p class="role">${l.role}</p>
-    </div>
-  `).join("");
+  // Render cards and attach the openBioModal function to the onclick event
+  container.innerHTML = lecturers.map((l) => {
+    // Escape quotes for the onclick function so it doesn't break
+    const safeName = l.name.replace(/'/g, "\\'");
+    const safeRole = l.role.replace(/'/g, "\\'");
+    const safePhoto = l.photo.replace(/'/g, "\\'");
+    const safeBio = l.bio.replace(/'/g, "\\'").replace(/\n/g, "\\n");
+
+    return `
+      <div class="member" style="cursor: pointer; transition: transform 0.2s;" 
+           onclick="openBioModal('${safeName}', '${safeRole}', '${safePhoto}', '${safeBio}')"
+           onmouseover="this.style.transform='scale(1.02)'" 
+           onmouseout="this.style.transform='scale(1)'">
+        <img src="${l.photo}" alt="${l.name}" />
+        <h3>${l.name}</h3>
+        <p class="role">${l.role}</p>
+      </div>
+    `;
+  }).join("");
 }
 
 /* ---------- 5. RUN ---------- */
 document.addEventListener("DOMContentLoaded", () => {
   renderLecturers();
 });
+
+/* ---------- 6. MODAL LOGIC ---------- */
+function openBioModal(name, role, photo, bio) {
+  document.getElementById('modal-name').textContent = name;
+  document.getElementById('modal-role').textContent = role;
+  document.getElementById('modal-photo').src = photo || 'images/mass communication logo.jpg';
+  
+  // Convert \n back to line breaks for the bio
+  document.getElementById('modal-bio').innerHTML = bio.replace(/\\n/g, '<br>');
+  
+  document.getElementById('bio-modal').style.display = 'flex';
+}
+
+function closeBioModal() {
+  document.getElementById('bio-modal').style.display = 'none';
+}

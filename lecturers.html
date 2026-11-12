@@ -39,7 +39,7 @@
             <li><a href="hod.html">HOD</a></li>
             <li><a href="lecturers.html">Lecturers</a></li>
             <li><a href="executives.html">Student Executives</a></li>
-<li><a href="alumni.html">Alumni</a></li>
+            <li><a href="alumni.html">Alumni</a></li>
           </ul>
         </li>
 
@@ -55,7 +55,6 @@
           <ul class="dropdown">
             <li><a href="activities.html">Activities</a></li>
             <li><a href="gallery.html">Gallery</a></li>
-          
           </ul>
         </li>
 
@@ -68,7 +67,7 @@
         </li>
 
         <li><a href="cinema.html">NAMACOS TV</a></li>
-<li><a href="contact.html">Contact</a></li>`
+        <li><a href="contact.html">Contact</a></li>
 
       </ul>
 
@@ -88,6 +87,26 @@
       <p style="text-align:center; width:100%; color:#666;">Loading lecturers...</p>
     </div>
   </section>
+
+  <!-- ============ LECTURER BIO MODAL ============ -->
+  <div id="bio-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; padding: 20px;">
+    <div style="background: #fff; border-radius: 12px; max-width: 500px; width: 100%; padding: 30px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center;">
+      
+      <!-- Close Button -->
+      <span onclick="closeBioModal()" style="position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #666; font-weight: bold;">&times;</span>
+      
+      <!-- Photo -->
+      <img id="modal-photo" src="" alt="Lecturer" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid #6a0dad; margin-bottom: 15px;" />
+      
+      <!-- Name & Role -->
+      <h2 id="modal-name" style="color: #0d0d0d; margin: 0 0 5px;"></h2>
+      <p id="modal-role" style="color: #6a0dad; font-weight: bold; text-transform: uppercase; font-size: 0.9rem; margin-bottom: 20px;"></p>
+      
+      <!-- Biography -->
+      <p id="modal-bio" style="color: #444; line-height: 1.6; font-size: 1rem; text-align: left; background: #f9f9f9; padding: 15px; border-radius: 8px; max-height: 200px; overflow-y: auto;"></p>
+      
+    </div>
+  </div>
 
   <!-- ============ FOOTER ============ -->
   <footer>
