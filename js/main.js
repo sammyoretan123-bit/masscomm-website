@@ -217,6 +217,10 @@ function initSiteLightbox() {
   document.addEventListener("click", (e) => {
     const target = e.target;
     if (target.tagName !== "IMG") return;
+    
+    // THIS LINE PREVENTS THE LIGHTBOX FROM OPENING ON LECTURERS, HOD, AND EXECUTIVES
+    if (target.closest(".member")) return; 
+
     if (target.closest("header")) return;
     if (target.closest("footer")) return;
     if (target.naturalWidth > 0 && target.naturalWidth < 80) return;
