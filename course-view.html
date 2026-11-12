@@ -20,12 +20,15 @@
     .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 6px; margin-bottom: 15px; background: #000; }
     .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
     
-    .action-row { display: flex; gap: 15px; align-items: center; }
+    .action-row { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
     .download-btn { background: #333; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; transition: 0.3s; }
     .download-btn:hover { background: #555; }
     .complete-btn { background: #6a0dad; color: #fff; padding: 10px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; }
     .complete-btn:hover { background: #8e2de2; }
     .complete-btn.completed { background: #1e7e34; cursor: default; }
+    
+    .reset-btn { background: transparent; color: #e50914; border: 1px solid #e50914; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-left: auto; }
+    .reset-btn:hover { background: #e50914; color: #fff; }
     
     .back-link { display: inline-block; margin-bottom: 20px; color: #6a0dad; text-decoration: none; font-weight: bold; }
     .back-link:hover { text-decoration: underline; }
@@ -54,7 +57,12 @@
 
   <div class="materials-container">
     <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
-    <h2 style="color: #0d0d0d; margin-bottom: 20px;">Course Materials</h2>
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h2 style="color: #0d0d0d; margin: 0;">Course Materials</h2>
+      <!-- NEW: Reset Progress Button -->
+      <button id="reset-btn" class="reset-btn" style="display: none;">Reset Progress</button>
+    </div>
     
     <div id="lessons-list">
       <p style="color: #666;">Loading materials...</p>
@@ -64,29 +72,35 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
   <script>
+    let currentCourseId = null;
+    let currentCourseCode = null;
+    let currentMaterials = [];
+
     async function loadCourseView() {
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session) { window.location.href = "login.html"; return; }
 
       const urlParams = new URLSearchParams(window.location.search);
-      const courseId = urlParams.get('id');
-      if (!courseId) return;
+      currentCourseId = urlParams.get('id');
+      if (!currentCourseId) return;
 
       // Fetch Course
-      const { data: course } = await supabaseClient.from('courses').select('*').eq('id', courseId).single();
+      const { data: course } = await supabaseClient.from('courses').select('*').eq('id', currentCourseId).single();
       if (!course) return;
 
+      currentCourseCode = course.code;
       document.getElementById('course-title').textContent = course.title;
       document.getElementById('course-desc').textContent = course.description || '';
 
       // Fetch Materials
-      const { data: materials } = await supabaseClient.from('materials').select('*').eq('course_code', course.code);
+      const { data: materials } = await supabaseClient.from('materials').select('*').eq('course_code', currentCourseCode);
       const lessonsList = document.getElementById('lessons-list');
 
       if (!materials || materials.length === 0) {
         lessonsList.innerHTML = `<p style="color: #666; padding: 20px; background: #fff; border-radius: 8px;">No materials uploaded yet.</p>`;
         return;
       }
+      currentMaterials = materials;
 
       // Fetch User's Progress
       const { data: progressData } = await supabaseClient
@@ -95,6 +109,11 @@
         .eq('user_id', session.user.id);
       
       const completedIds = progressData ? progressData.map(p => p.material_id) : [];
+
+      // Show Reset button if there is progress
+      if (completedIds.length > 0) {
+        document.getElementById('reset-btn').style.display = 'block';
+      }
 
       // Render Materials
       lessonsList.innerHTML = materials.map(material => {
@@ -133,7 +152,6 @@
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session) return;
 
-      // Insert into progress table
       const { error } = await supabaseClient
         .from('progress')
         .insert([{ user_id: session.user.id, material_id: materialId }]);
@@ -142,10 +160,36 @@
         btnElement.textContent = '✓ Completed';
         btnElement.classList.add('completed');
         btnElement.disabled = true;
+        document.getElementById('reset-btn').style.display = 'block'; // Show reset btn
       } else {
         alert("Error saving progress: " + error.message);
       }
     }
+
+    // NEW: Reset Progress Logic
+    document.getElementById('reset-btn').addEventListener('click', async () => {
+      if (!confirm("Are you sure you want to reset your progress for this course?")) return;
+
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) return;
+
+      // Get all material IDs for this course
+      const materialIds = currentMaterials.map(m => m.id);
+
+      // Delete progress records for these materials
+      const { error } = await supabaseClient
+        .from('progress')
+        .delete()
+        .eq('user_id', session.user.id)
+        .in('material_id', materialIds);
+
+      if (!error) {
+        alert("Progress reset successfully!");
+        window.location.reload(); // Reload page to reflect changes
+      } else {
+        alert("Error resetting progress: " + error.message);
+      }
+    });
 
     document.getElementById('logout-btn').addEventListener('click', async () => {
       await supabaseClient.auth.signOut();
