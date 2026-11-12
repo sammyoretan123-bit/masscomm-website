@@ -136,6 +136,7 @@ function initSiteLightbox() {
 
   function closeLightbox() {
     overlay.style.display = "none";
+    document.body.style.overflow = "auto"; // UNLOCK PAGE SCROLL
     resetZoom();
   }
 
@@ -167,9 +168,9 @@ function initSiteLightbox() {
     if (e.key === "ArrowRight") showImage(currentIndex + 1);
   });
 
-  // Zooming (Mouse Wheel) - ONLY AFFECTS THE IMAGE
+  // Zooming (Mouse Wheel)
   imageContainer.addEventListener("wheel", (e) => {
-    e.preventDefault(); // THIS STOPS THE PAGE FROM SCROLLING
+    e.preventDefault(); 
     const zoomSensitivity = 0.1;
     
     if (e.deltaY < 0) {
@@ -187,9 +188,9 @@ function initSiteLightbox() {
     }
 
     updateImageTransform();
-  }, { passive: false }); // Important for preventDefault to work
+  }, { passive: false });
 
-  // Panning (Click and Drag to move zoomed image)
+  // Panning
   imageContainer.addEventListener("mousedown", (e) => {
     if (scale <= 1) return; 
     isDragging = true;
@@ -238,6 +239,7 @@ function initSiteLightbox() {
     }
 
     overlay.style.display = "flex";
+    document.body.style.overflow = "hidden"; // LOCK PAGE SCROLL
     imageContainer.style.cursor = "default";
   });
 }
