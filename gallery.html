@@ -18,9 +18,8 @@
       </div>
 
       <ul class="nav-links" id="navLinks">
-
         <li><a href="index.html">Home</a></li>
-
+        
         <li>
           <a href="#">About <span class="arrow">&#9662;</span></a>
           <ul class="dropdown">
@@ -39,7 +38,7 @@
             <li><a href="hod.html">HOD</a></li>
             <li><a href="lecturers.html">Lecturers</a></li>
             <li><a href="executives.html">Student Executives</a></li>
-<li><a href="alumni.html">Alumni</a></li>
+            <li><a href="alumni.html">Alumni</a></li>
           </ul>
         </li>
 
@@ -54,8 +53,7 @@
           <a href="#">Activities <span class="arrow">&#9662;</span></a>
           <ul class="dropdown">
             <li><a href="activities.html">Activities</a></li>
-          
-            
+            <li><a href="gallery.html">Gallery</a></li>
           </ul>
         </li>
 
@@ -66,10 +64,9 @@
             <li><a href="blog.html">Blog</a></li>
           </ul>
         </li>
-
-        `<li><a href="cinema.html">NAMACOS TV</a></li>
-<li><a href="contact.html">Contact</a></li>`
-
+        
+        <li><a href="cinema.html">NAMACOS TV</a></li>
+        <li><a href="contact.html">Contact</a></li>
       </ul>
 
       <div class="menu-toggle" id="menu-toggle">&#9776;</div>
@@ -83,7 +80,7 @@
   </section>
 
   <!-- ============ GALLERY SECTIONS ============ -->
-  <div id="gallery-sections">
+  <div id="gallery-sections" style="max-width: 1200px; margin: 0 auto; padding: 20px;">
     <section class="gallery-section">
       <p style="text-align:center; color:#666; padding: 30px;">Loading gallery...</p>
     </section>
@@ -102,7 +99,10 @@
     </div>
   </footer>
 
+  <!-- Load scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
   <script src="js/main.js"></script>
-  <script src="js/gallery.js"></script>
+  <script src="js/gallery.js?v=2"></script> <!-- Added v=2 to bust cache -->
 </body>
 </html>

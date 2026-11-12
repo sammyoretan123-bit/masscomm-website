@@ -1,30 +1,32 @@
 /* ============================================
    MASS COMMUNICATION DEPARTMENT
    File: js/gallery.js
-   Purpose: Load gallery sections + settings
+   Purpose: Load gallery sections + settings from Sveltia CMS (GitHub)
    ============================================ */
 
 const GITHUB_REPO = "sammyoretan123-bit/masscomm-website";
 const GALLERY_FOLDER = "content/gallery";
 const GALLERY_SETTINGS_FOLDER = "content/gallery-settings";
 
-/* ---------- 1. LIST FILES ---------- */
+/* ---------- 1. LIST FILES FROM GITHUB API ---------- */
 async function listMdFiles(folder) {
   try {
     const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${folder}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error("GitHub API failed");
     const files = await res.json();
+    
+    // Return just the filenames (e.g., "sports.md")
     return files
       .filter((f) => f.name.endsWith(".md") && f.name !== ".gitkeep")
-      .map((f) => f.name.replace(".md", ""));
+      .map((f) => f.name);
   } catch (err) {
     console.warn("Could not fetch folder:", folder, err);
     return [];
   }
 }
 
-/* ---------- 2. PARSE FRONT-MATTER (handles lists) ---------- */
+/* ---------- 2. PARSE YAML FRONT-MATTER ---------- */
 function parseFrontMatter(text) {
   const result = {};
   const match = text.match(/^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/);
@@ -44,19 +46,7 @@ function parseFrontMatter(text) {
     const key = keyMatch[1];
     const rawValue = keyMatch[2].trim();
 
-    // Block scalar
-    if (/^[|>][-+]?$/.test(rawValue)) {
-      const blockLines = [];
-      i++;
-      while (i < lines.length && (lines[i].startsWith("  ") || !lines[i].trim())) {
-        blockLines.push(lines[i].replace(/^\s{2}/, ""));
-        i++;
-      }
-      result[key] = blockLines.join("\n").trim();
-      continue;
-    }
-
-    // Empty → could be a list
+    // Empty → could be a list (like photos)
     if (rawValue === "") {
       const listItems = [];
       let j = i + 1;
@@ -89,11 +79,14 @@ async function fetchGallerySettings() {
   };
 
   try {
-    const slugs = await listMdFiles(GALLERY_SETTINGS_FOLDER);
-    if (slugs.length === 0) return defaults;
+    const files = await listMdFiles(GALLERY_SETTINGS_FOLDER);
+    if (files.length === 0) return defaults;
 
-    const res = await fetch(`content/gallery-settings/${slugs[0]}.md`);
+    // Fetch raw text from GitHub
+    const rawUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/main/${GALLERY_SETTINGS_FOLDER}/${files[0]}`;
+    const res = await fetch(rawUrl);
     if (!res.ok) return defaults;
+    
     const text = await res.text();
     const { data } = parseFrontMatter(text);
 
@@ -108,20 +101,24 @@ async function fetchGallerySettings() {
 }
 
 /* ---------- 4. FETCH ONE GALLERY SECTION ---------- */
-async function fetchGallerySection(slug) {
+async function fetchGallerySection(fileName) {
   try {
-    const res = await fetch(`content/gallery/${slug}.md`);
-    if (!res.ok) throw new Error("Not found: " + slug);
+    // Fetch raw text from GitHub
+    const rawUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/main/${GALLERY_FOLDER}/${fileName}`;
+    const res = await fetch(rawUrl);
+    if (!res.ok) throw new Error("Not found: " + fileName);
+    
     const text = await res.text();
     const { data } = parseFrontMatter(text);
+    
     return {
-      slug,
-      title: data.title || slug,
+      fileName,
+      title: data.title || 'Gallery',
       order: parseInt(data.order) || 999,
       photos: Array.isArray(data.photos) ? data.photos : []
     };
   } catch (err) {
-    console.warn("Could not load gallery section:", slug, err);
+    console.warn("Could not load gallery section:", fileName, err);
     return null;
   }
 }
@@ -139,29 +136,30 @@ async function renderGallery() {
   if (subtitleEl) subtitleEl.textContent = settings.subtitle;
 
   // Load sections
-  const slugs = await listMdFiles(GALLERY_FOLDER);
-  const sections = (await Promise.all(slugs.map(fetchGallerySection))).filter(Boolean);
+  const files = await listMdFiles(GALLERY_FOLDER);
+  const sections = (await Promise.all(files.map(fetchGallerySection))).filter(Boolean);
 
   sections.sort((a, b) => a.order - b.order);
 
   if (sections.length === 0) {
     container.innerHTML = `
-      <p style="text-align:center; width:100%; color:#666;">
+      <p style="text-align:center; width:100%; color:#666; padding: 30px;">
         Gallery is being updated. Please check back soon.
       </p>`;
     return;
   }
 
+  // Render the grid
   container.innerHTML = sections.map((s) => {
     const photosHTML = s.photos.length
-      ? `<div class="gallery-grid">
-          ${s.photos.map((img) => `<img src="${img}" alt="${s.title}" />`).join("")}
+      ? `<div class="gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; margin-bottom: 30px;">
+          ${s.photos.map((img) => `<img src="${img}" alt="${s.title}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;" />`).join("")}
         </div>`
-      : `<p style="text-align:center; color:#666; padding:20px;">Photos are being updated.</p>`;
+      : `<p style="text-align:center; color:#666; padding:20px; margin-bottom: 30px;">Photos are being updated.</p>`;
 
     return `
-      <section class="gallery-section">
-        <h2>${s.title}</h2>
+      <section class="gallery-section" style="margin-bottom: 40px;">
+        <h2 style="color: #6a0dad; margin-bottom: 20px; text-transform: uppercase;">${s.title}</h2>
         ${photosHTML}
       </section>
     `;
