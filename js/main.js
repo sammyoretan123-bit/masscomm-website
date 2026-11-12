@@ -128,3 +128,32 @@ function initSiteLightbox() {
 document.addEventListener("DOMContentLoaded", () => {
   initSiteLightbox();
 });
+/* ============================================
+   HIDE COURSE MATERIALS FROM NAVBAR IF LOGGED IN
+   ============================================ */
+document.addEventListener("DOMContentLoaded", async () => {
+  if (typeof supabaseClient !== 'undefined') {
+    try {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      
+      // Find all links in the navbar that point to materials.html
+      const navLinks = document.querySelectorAll('.nav-links a');
+      
+      navLinks.forEach(link => {
+        if (link.textContent.trim() === "Course Materials" || link.href.includes("materials.html")) {
+          const listItem = link.parentElement; // Get the <li>
+          
+          if (session) {
+            // IF LOGGED IN: Hide the Course Materials link
+            listItem.style.display = "none";
+          } else {
+            // IF LOGGED OUT: Show the Course Materials link
+            listItem.style.display = "block";
+          }
+        }
+      });
+    } catch (err) {
+      console.error("Error checking auth for navbar:", err);
+    }
+  }
+});
