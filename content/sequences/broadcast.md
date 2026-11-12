@@ -35,4 +35,5 @@ gallery:
   - /images/pr13.jpeg
   - /images/pr3.jpeg
   - /images/pr17.jpeg
+  - /images/WhatsApp Image 2026-11-12 at 08.58.15.jpeg
 ---
