@@ -16,13 +16,9 @@
         <img src="images/mass communication logo.jpg" alt="Department Logo" />
         <span>Mass Communication AAUA</span>
       </div>
-
       <ul class="nav-links" id="navLinks">
-
         <li><a href="index.html">Home</a></li>
-
-        <li>
-          <a href="#">About <span class="arrow">&#9662;</span></a>
+        <li><a href="#">About <span class="arrow">&#9662;</span></a>
           <ul class="dropdown">
             <li><a href="about.html">About Department</a></li>
             <li><a href="courses.html">Courses</a></li>
@@ -32,9 +28,7 @@
             <li><a href="sequence-print.html">Print</a></li>
           </ul>
         </li>
-
-        <li>
-          <a href="#">People <span class="arrow">&#9662;</span></a>
+        <li><a href="#">People <span class="arrow">&#9662;</span></a>
           <ul class="dropdown">
             <li><a href="hod.html">HOD</a></li>
             <li><a href="lecturers.html">Lecturers</a></li>
@@ -42,49 +36,35 @@
             <li><a href="alumni.html">Alumni</a></li>
           </ul>
         </li>
-
-        <li>
-          <a href="#">Students <span class="arrow">&#9662;</span></a>
-          <ul class="dropdown">
-            <li><a href="sets.html">Sets</a></li>
-          </ul>
+        <li><a href="#">Students <span class="arrow">&#9662;</span></a>
+          <ul class="dropdown"><li><a href="sets.html">Sets</a></li></ul>
         </li>
-
-        <li>
-          <a href="#">Activities <span class="arrow">&#9662;</span></a>
+        <li><a href="#">Activities <span class="arrow">&#9662;</span></a>
           <ul class="dropdown">
             <li><a href="activities.html">Activities</a></li>
             <li><a href="gallery.html">Gallery</a></li>
           </ul>
         </li>
-
-        <li>
-          <a href="#">Media <span class="arrow">&#9662;</span></a>
+        <li><a href="#">Media <span class="arrow">&#9662;</span></a>
           <ul class="dropdown">
             <li><a href="news.html">News</a></li>
             <li><a href="blog.html">Blog</a></li>
           </ul>
         </li>
-
         <li><a href="cinema.html">NAMACOS TV</a></li>
         <li><a href="contact.html">Contact</a></li>
-
       </ul>
-
       <div class="menu-toggle" id="menu-toggle">&#9776;</div>
     </nav>
   </header>
 
-  <!-- ============ PAGE TITLE ============ -->
   <section class="section-title">
     <h2>Course Materials</h2>
     <p>Lecture notes and past questions for Mass Comm students</p>
   </section>
 
-  <!-- ============ MATERIALS SECTION ============ -->
+  <!-- MATERIALS SECTION (Hidden by default until auth check) -->
   <section class="team" id="materials-section" style="display:none;">
-
-    <!-- Filters -->
     <div style="max-width: 1100px; margin: 0 auto 30px; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.08);">
       <h3 style="color: #6a0dad; margin-bottom: 15px;">Filter Materials</h3>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
@@ -116,20 +96,16 @@
         </div>
         <div>
           <label style="display:block; margin-bottom: 6px; font-weight: bold; font-size: 0.9rem;">Search</label>
-          <input type="text" id="filter-search" placeholder="Course code or title..."
-            style="width:100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px;" />
+          <input type="text" id="filter-search" placeholder="Course code or title..." style="width:100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px;" />
         </div>
       </div>
     </div>
 
-    <!-- Materials list -->
     <div style="max-width: 1100px; margin: 0 auto;" id="materials-list">
       <p style="text-align:center; color:#666;">Loading materials...</p>
     </div>
-
   </section>
 
-  <!-- ============ FOOTER ============ -->
   <footer>
     <p>&copy; 2026 Mass Communication Department &mdash; Student Association.</p>
     <div class="footer-credit">
@@ -145,45 +121,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
   <script src="js/main.js"></script>
-
-  <!-- ============ AUTH CHECK ============ -->
-  <script>
-    document.addEventListener("DOMContentLoaded", async () => {
-      // 1. Check if the user is logged in
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      
-      if (!session) {
-        // If not logged in, redirect to login page
-        window.location.href = "login.html";
-        return;
-      }
-
-      // 2. If logged in, show the materials section
-      document.getElementById("materials-section").style.display = "block";
-
-      // 3. Trigger the materials loader (which is inside materials.js)
-      if (typeof loadMaterials === 'function') {
-        loadMaterials();
-      } else {
-        // If materials.js exposes a different function, trigger it here
-        // or simply reload the page (though this shouldn't happen)
-      }
-    });
-  </script>
-
-  <!-- Load materials.js LAST -->
   <script src="js/materials.js"></script>
-
-  <!-- Force materials.js to load only after auth check -->
-  <script>
-    // Some versions of materials.js run immediately. 
-    // This ensures it waits for the auth check if it has a DOMContentLoaded listener.
-    if (document.readyState === 'complete') {
-      // Already loaded, do nothing, the auth check will handle it.
-    } else {
-      // Let the auth check handle it.
-    }
-  </script>
-
 </body>
 </html>
