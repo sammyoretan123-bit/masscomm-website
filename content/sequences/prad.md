@@ -34,4 +34,5 @@ gallery:
   - /images/pr2.jpeg
   - /images/pr9.jpeg
   - /images/pr5.jpeg
+  - /images/p.jpeg
 ---
