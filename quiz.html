@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz | NAMACOS</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .quiz-container { max-width: 800px; margin: 40px auto; padding: 20px; }
+    .question-card { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border-left: 5px solid #6a0dad; }
+    .question-card h3 { color: #0d0d0d; margin-top: 0; margin-bottom: 15px; }
+    .option-label { display: block; background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; border: 1px solid #eee; transition: 0.2s; }
+    .option-label:hover { background: #f0e6fa; border-color: #6a0dad; }
+    .option-label input { margin-right: 10px; }
+    .submit-btn { background: #6a0dad; color: #fff; padding: 15px 30px; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; }
+    .submit-btn:hover { background: #8e2de2; }
+    .result-box { background: #1e7e34; color: #fff; padding: 30px; border-radius: 12px; text-align: center; font-size: 1.5rem; display: none; margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <img src="images/mass communication logo.jpg" alt="Logo" />
+        <span>Mass Communication AAUA</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="dashboard.html">My Dashboard</a></li>
+        <li><button id="logout-btn" style="background: #e50914; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Log Out</button></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="quiz-container">
+    <h1 id="quiz-title" style="color: #0d0d0d;">Loading Quiz...</h1>
+    
+    <form id="quiz-form">
+      <div id="questions-list"></div>
+      <button type="submit" class="submit-btn" id="submit-btn" style="display: none;">Submit Quiz</button>
+    </form>
+
+    <div class="result-box" id="result-box"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    let correctAnswers = {}; 
+
+    async function loadQuiz() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) { window.location.href = "login.html"; return; }
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const courseCode = urlParams.get('code'); 
+
+      if (!courseCode) {
+        document.getElementById('quiz-title').textContent = "No quiz found.";
+        return;
+      }
+
+      document.getElementById('quiz-title').textContent = `Quiz: ${courseCode}`;
+
+      const { data: questions, error } = await supabaseClient
+        .from('quizzes')
+        .select('*')
+        .eq('course_code', courseCode);
+
+      if (error || !questions || questions.length === 0) {
+        document.getElementById('quiz-title').textContent = "No questions available for this course yet.";
+        return;
+      }
+
+      const questionsList = document.getElementById('questions-list');
+      
+      questionsList.innerHTML = questions.map((q, index) => {
+        correctAnswers[q.id] = q.correct_answer; 
+
+        return `
+          <div class="question-card">
+            <h3>${index + 1}. ${q.question}</h3>
+            <label class="option-label"><input type="radio" name="q_${q.id}" value="A" required> A) ${q.option_a}</label>
+            <label class="option-label"><input type="radio" name="q_${q.id}" value="B"> B) ${q.option_b}</label>
+            <label class="option-label"><input type="radio" name="q_${q.id}" value="C"> C) ${q.option_c}</label>
+            <label class="option-label"><input type="radio" name="q_${q.id}" value="D"> D) ${q.option_d}</label>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('submit-btn').style.display = 'block';
+
+      document.getElementById('quiz-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        let score = 0;
+        const formData = new FormData(e.target);
+
+        for (let [key, value] of formData.entries()) {
+          const questionId = key.split('_')[1];
+          if (correctAnswers[questionId] === value) {
+            score++;
+          }
+        }
+
+        const total = questions.length;
+        const percentage = Math.round((score / total) * 100);
+
+        const { error: saveError } = await supabaseClient
+          .from('quiz_scores')
+          .insert([{ 
+            user_id: session.user.id, 
+            course_code: courseCode, 
+            score: score, 
+            total_questions: total 
+          }]);
+
+        if (saveError) console.error("Error saving score:", saveError);
+
+        const resultBox = document.getElementById('result-box');
+        resultBox.style.display = 'block';
+        resultBox.innerHTML = `
+          <p style="margin: 0 0 15px 0;">You scored ${score} out of ${total} (${percentage}%)</p>
+          <a href="dashboard.html" style="background: #fff; color: #1e7e34; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;">Back to Dashboard</a>
+        `;
+        resultBox.style.background = percentage >= 50 ? '#1e7e34' : '#e50914'; 
+        document.getElementById('submit-btn').style.display = 'none';
+      });
+    }
+
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      await supabaseClient.auth.signOut();
+      window.location.href = "index.html";
+    });
+
+    document.addEventListener("DOMContentLoaded", loadQuiz);
+  </script>
+</body>
+</html>
