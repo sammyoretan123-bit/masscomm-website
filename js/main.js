@@ -1,7 +1,7 @@
 /* ============================================
    MASS COMMUNICATION DEPARTMENT
    File: js/main.js
-   Purpose: Mobile menu + dropdown + Slider Lightbox + Zoom & Pan
+   Purpose: Mobile menu + dropdown + Slider Lightbox + Zoom & Pan (Excluding Profile Cards)
    ============================================ */
 
 /* ---------- MOBILE MENU TOGGLE ---------- */
@@ -130,7 +130,6 @@ function initSiteLightbox() {
   }
 
   function updateImageTransform() {
-    // Apply the transform ONLY to the image, not the container
     img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
   }
 
@@ -221,18 +220,14 @@ function initSiteLightbox() {
     if (target.closest("footer")) return;
     if (target.naturalWidth > 0 && target.naturalWidth < 80) return;
 
-    const isProfileCard = target.closest(".member");
+    // THIS IS THE MAGIC LINE
+    // If the image is inside a .member card (Lecturer, HOD, Exec), do NOTHING.
+    if (target.closest(".member")) return; 
 
     const container = target.closest(".gallery-grid") || target.closest(".team-grid") || target.closest(".activity-gallery") || target.parentElement;
     const containerImages = Array.from(container.querySelectorAll("img")).filter(i => i.naturalWidth > 80);
 
-    if (isProfileCard) {
-      galleryImages = [target];
-      currentIndex = 0;
-      showImage(currentIndex);
-      prevBtn.style.display = "none";
-      nextBtn.style.display = "none";
-    } else if (containerImages.length > 1) {
+    if (containerImages.length > 1) {
       galleryImages = containerImages;
       currentIndex = galleryImages.indexOf(target);
       showImage(currentIndex);
