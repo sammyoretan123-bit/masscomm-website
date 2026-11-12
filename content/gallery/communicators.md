@@ -26,4 +26,9 @@ photos:
   - /images/pr9.jpeg
   - /images/pr6.jpeg
   - /images/pr5.jpeg
+  - /images/WhatsApp Image 2026-11-12 at 10.20.09.jpeg
+  - /images/WhatsApp Image 2026-11-12 at 10.05.16.jpeg
+  - /images/Anonymous.jpg
+  - /images/grad.jpeg
+  - /images/p.jpeg
 ---
