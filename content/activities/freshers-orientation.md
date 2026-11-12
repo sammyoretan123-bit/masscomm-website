@@ -9,4 +9,5 @@ gallery:
   - /images/feed 1.jpg
   - /images/freshers ot.jpeg
   - /images/fr.jpeg
+  - /images/pangeantry 1.jpg
 ---
