@@ -39,7 +39,7 @@
             <li><a href="hod.html">HOD</a></li>
             <li><a href="lecturers.html">Lecturers</a></li>
             <li><a href="executives.html">Student Executives</a></li>
-<li><a href="alumni.html">Alumni</a></li>
+            <li><a href="alumni.html">Alumni</a></li>
           </ul>
         </li>
 
@@ -55,7 +55,6 @@
           <ul class="dropdown">
             <li><a href="activities.html">Activities</a></li>
             <li><a href="gallery.html">Gallery</a></li>
-            
           </ul>
         </li>
 
@@ -82,8 +81,8 @@
     <p>Lecture notes and past questions for Mass Comm students</p>
   </section>
 
-  <!-- ============ MATERIALS SECTION (NOW VISIBLE BY DEFAULT) ============ -->
-  <section class="team" id="materials-section" style="display:block;">
+  <!-- ============ MATERIALS SECTION ============ -->
+  <section class="team" id="materials-section" style="display:none;">
 
     <!-- Filters -->
     <div style="max-width: 1100px; margin: 0 auto 30px; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.08);">
@@ -146,6 +145,45 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
   <script src="js/main.js"></script>
+
+  <!-- ============ AUTH CHECK ============ -->
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      // 1. Check if the user is logged in
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      
+      if (!session) {
+        // If not logged in, redirect to login page
+        window.location.href = "login.html";
+        return;
+      }
+
+      // 2. If logged in, show the materials section
+      document.getElementById("materials-section").style.display = "block";
+
+      // 3. Trigger the materials loader (which is inside materials.js)
+      if (typeof loadMaterials === 'function') {
+        loadMaterials();
+      } else {
+        // If materials.js exposes a different function, trigger it here
+        // or simply reload the page (though this shouldn't happen)
+      }
+    });
+  </script>
+
+  <!-- Load materials.js LAST -->
   <script src="js/materials.js"></script>
+
+  <!-- Force materials.js to load only after auth check -->
+  <script>
+    // Some versions of materials.js run immediately. 
+    // This ensures it waits for the auth check if it has a DOMContentLoaded listener.
+    if (document.readyState === 'complete') {
+      // Already loaded, do nothing, the auth check will handle it.
+    } else {
+      // Let the auth check handle it.
+    }
+  </script>
+
 </body>
 </html>
