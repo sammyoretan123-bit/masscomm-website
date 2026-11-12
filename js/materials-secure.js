@@ -1,6 +1,6 @@
 /* ============================================
    MASS COMMUNICATION DEPARTMENT
-   File: js/materials.js
+   File: js/materials-secure.js
    Purpose: Display materials (Secure / Logged in only)
    ============================================ */
 
@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   
   if (!session) {
     // If not logged in, redirect to login page immediately
-    window.location.href = "login.html";
+    window.location.replace("login.html");
     return;
   }
 

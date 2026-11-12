@@ -6,6 +6,19 @@
   <title>Course Materials | Mass Communication Department</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="icon" type="image/jpeg" href="images/mass communication logo.jpg" />
+
+  <!-- IMMEDIATE AUTH CHECK (Blocks page from loading if not logged in) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    (async () => {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) {
+        // Redirect immediately before the body renders
+        window.location.replace("login.html");
+      }
+    })();
+  </script>
 </head>
 <body>
 
@@ -118,9 +131,8 @@
     </div>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-client.js"></script>
   <script src="js/main.js"></script>
-  <script src="js/materials.js?v=4"></script>
+  <!-- Rename the script file to materials-secure.js for a fresh load -->
+  <script src="js/materials-secure.js"></script>
 </body>
 </html>
