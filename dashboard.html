@@ -18,12 +18,42 @@
     .progress-bar { background: #eee; border-radius: 10px; height: 10px; margin: 15px 0; overflow: hidden; }
     .progress-fill { background: #6a0dad; height: 100%; width: 0%; transition: width 0.3s; }
     .btn-continue { display: inline-block; background: #6a0dad; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 10px; text-align: center; }
+    .quiz-score-badge { display: inline-block; background: #1e7e34; color: #fff; padding: 3px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; margin-bottom: 10px; }
 
-    /* Mobile Responsiveness */
+    /* Mobile Responsiveness & Navbar Fix */
     @media (max-width: 768px) {
       .welcome-banner h1 { font-size: 1.6rem; }
       .welcome-banner { padding: 25px; }
       .courses-grid { grid-template-columns: 1fr; }
+
+      /* Force the hamburger menu to show up */
+      .menu-toggle {
+        display: block !important;
+        color: #fff;
+        font-size: 28px;
+        cursor: pointer;
+        z-index: 1001;
+      }
+      .nav-links {
+        display: none; /* Hide links by default on mobile */
+        flex-direction: column;
+        position: absolute;
+        top: 70px;
+        right: 20px;
+        background: #000;
+        width: 200px;
+        padding: 20px;
+        border-radius: 8px;
+        z-index: 1000;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+      }
+      .nav-links.active {
+        display: flex !important; /* Show when hamburger is clicked */
+      }
+      .nav-links li {
+        margin: 10px 0;
+        text-align: right;
+      }
     }
   </style>
 </head>
@@ -35,13 +65,15 @@
         <img src="images/mass communication logo.jpg" alt="Department Logo" />
         <span>Mass Communication AAUA</span>
       </div>
-            <ul class="nav-links" id="navLinks">
+      
+      <!-- Added id="navLinks" so the JS can toggle it -->
+      <ul class="nav-links" id="navLinks">
         <li><a href="index.html">Home</a></li>
         <li><a href="dashboard.html" style="color: #6a0dad; font-weight: bold;">My Dashboard</a></li>
         <li><button id="logout-btn" style="background: #e50914; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Log Out</button></li>
       </ul>
       
-      <!-- THIS IS THE MISSING HAMBURGER ICON -->
+      <!-- Added the hamburger icon -->
       <div class="menu-toggle" id="menu-toggle">&#9776;</div>
     </nav>
   </header>
@@ -60,6 +92,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
+  <script src="js/main.js"></script>
+  
   <script>
     async function loadDashboard() {
       const { data: { session } } = await supabaseClient.auth.getSession();
@@ -114,7 +148,7 @@
         if (quizData && quizData.length > 0) {
           const q = quizData[0];
           const qPercentage = Math.round((q.score / q.total_questions) * 100);
-          quizBadge = `<span class="quiz-score-badge" style="background:#1e7e34; color:#fff; padding:3px 8px; border-radius:10px; font-size:0.75rem; font-weight:bold;">Quiz: ${qPercentage}%</span>`;
+          quizBadge = `<span class="quiz-score-badge">Quiz: ${qPercentage}%</span>`;
         }
 
         coursesHTML += `
@@ -141,6 +175,7 @@
       grid.innerHTML = coursesHTML;
     }
 
+    // Logout Button
     document.getElementById('logout-btn').addEventListener('click', async () => {
       await supabaseClient.auth.signOut();
       window.location.href = "index.html";
