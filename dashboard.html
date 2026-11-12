@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Dashboard | NAMACOS</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" type="image/jpeg" href="images/mass communication logo.jpg" />
+  <style>
+    .dashboard-container { max-width: 1200px; margin: 40px auto; padding: 20px; }
+    .welcome-banner { background: linear-gradient(135deg, #6a0dad 0%, #1a052b 100%); padding: 40px; border-radius: 12px; color: #fff; margin-bottom: 40px; }
+    .welcome-banner h1 { margin: 0 0 10px; font-size: 2.5rem; }
+    .welcome-banner p { margin: 0; color: #e0d4eb; font-size: 1.1rem; }
+    .courses-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .course-card { background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #6a0dad; }
+    .course-card h3 { color: #0d0d0d; margin-top: 0; }
+    .course-card p { color: #666; font-size: 0.95rem; }
+    .progress-bar { background: #eee; border-radius: 10px; height: 10px; margin: 15px 0; overflow: hidden; }
+    .progress-fill { background: #6a0dad; height: 100%; width: 0%; transition: width 0.3s; }
+    .btn-continue { display: inline-block; background: #6a0dad; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR (Same as your other pages) -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <img src="images/mass communication logo.jpg" alt="Department Logo" />
+        <span>Mass Communication AAUA</span>
+      </div>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="materials.html">Course Materials</a></li>
+        <li><a href="dashboard.html" style="color: #6a0dad; font-weight: bold;">My Dashboard</a></li>
+        <li><button id="logout-btn" style="background: #e50914; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Log Out</button></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="dashboard-container">
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+      <h1>Welcome back, <span id="student-name">Student</span>!</h1>
+      <p>Here are your enrolled courses and progress.</p>
+    </div>
+
+    <!-- Courses Grid -->
+    <h2 style="color: #0d0d0d; margin-bottom: 20px;">My Courses</h2>
+    <div class="courses-grid" id="courses-grid">
+      <p>Loading courses...</p>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    // --- CHECK AUTHENTICATION & LOAD DASHBOARD ---
+    async function loadDashboard() {
+      // 1. Check if user is logged in
+      const { data: { session }, error } = await supabaseClient.auth.getSession();
+      
+      if (!session) {
+        // If not logged in, kick them to a login page (we will build this next)
+        window.location.href = "login.html"; 
+        return;
+      }
+
+      // 2. Show the user's email as their name for now
+      document.getElementById('student-name').textContent = session.user.email.split('@')[0];
+
+      // 3. Fetch Courses (We will create this table in Step 2)
+      const { data: courses, error: courseError } = await supabaseClient
+        .from('courses')
+        .select('*');
+
+      const grid = document.getElementById('courses-grid');
+      
+      if (courseError || !courses) {
+        grid.innerHTML = `<p style="color: #666;">No courses available yet.</p>`;
+        return;
+      }
+
+      // 4. Render the courses
+      grid.innerHTML = courses.map(course => `
+        <div class="course-card">
+          <h3>${course.title}</h3>
+          <p>${course.description || 'Start learning today.'}</p>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 0%;"></div>
+          </div>
+          <a href="#" class="btn-continue">Continue Learning</a>
+        </div>
+      `).join('');
+    }
+
+    // --- LOGOUT ---
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      await supabaseClient.auth.signOut();
+      window.location.href = "index.html";
+    });
+
+    document.addEventListener("DOMContentLoaded", loadDashboard);
+  </script>
+</body>
+</html>
