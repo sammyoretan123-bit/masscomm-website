@@ -8,16 +8,23 @@
   <link rel="icon" type="image/jpeg" href="images/mass communication logo.jpg" />
   <style>
     .dashboard-container { max-width: 1200px; margin: 40px auto; padding: 20px; }
-    .welcome-banner { background: linear-gradient(135deg, #6a0dad 0%, #1a052b 100%); padding: 40px; border-radius: 12px; color: #fff; margin-bottom: 40px; }
+    .welcome-banner { background: linear-gradient(135deg, #6a0dad 0%, #1a052b 100%); padding: 40px; border-radius: 12px; color: #fff; margin-bottom: 40px; overflow-wrap: break-word; }
     .welcome-banner h1 { margin: 0 0 10px; font-size: 2.5rem; }
     .welcome-banner p { margin: 0; color: #e0d4eb; font-size: 1.1rem; }
     .courses-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-    .course-card { background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #6a0dad; }
+    .course-card { background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #6a0dad; display: flex; flex-direction: column; justify-content: space-between; }
     .course-card h3 { color: #0d0d0d; margin-top: 0; }
     .course-card p { color: #666; font-size: 0.95rem; }
     .progress-bar { background: #eee; border-radius: 10px; height: 10px; margin: 15px 0; overflow: hidden; }
     .progress-fill { background: #6a0dad; height: 100%; width: 0%; transition: width 0.3s; }
-    .btn-continue { display: inline-block; background: #6a0dad; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 10px; }
+    .btn-continue { display: inline-block; background: #6a0dad; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 10px; text-align: center; }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .welcome-banner h1 { font-size: 1.6rem; }
+      .welcome-banner { padding: 25px; }
+      .courses-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -32,7 +39,6 @@
         <li><a href="index.html">Home</a></li>
         <li><a href="dashboard.html" style="color: #6a0dad; font-weight: bold;">My Dashboard</a></li>
         <li><button id="logout-btn" style="background: #e50914; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Log Out</button></li>
-        <li><a href="forum.html">Community</a></li>
       </ul>
     </nav>
   </header>
@@ -58,7 +64,6 @@
 
       document.getElementById('student-name').textContent = session.user.email.split('@')[0];
 
-      // Fetch Courses
       const { data: courses } = await supabaseClient.from('courses').select('*');
       const grid = document.getElementById('courses-grid');
       
@@ -67,25 +72,20 @@
         return;
       }
 
-      // For each course, calculate progress
       let coursesHTML = '';
       for (let course of courses) {
-        // Count total materials for this course
         const { count: totalMaterials } = await supabaseClient
           .from('materials')
           .select('*', { count: 'exact', head: true })
           .eq('course_code', course.code);
 
-        // Count completed materials for this user
         const { data: completed } = await supabaseClient
           .from('progress')
           .select('material_id')
           .eq('user_id', session.user.id);
 
-        // We need to check how many of those completed IDs belong to this course
         let completedCount = 0;
         if (completed && totalMaterials > 0) {
-           // Fetch the material IDs for this specific course
            const { data: courseMaterials } = await supabaseClient
              .from('materials')
              .select('id')
@@ -97,21 +97,40 @@
            }
         }
 
-        // Calculate percentage
         let percentage = totalMaterials > 0 ? Math.round((completedCount / totalMaterials) * 100) : 0;
+
+        const { data: quizData } = await supabaseClient
+          .from('quiz_scores')
+          .select('score, total_questions')
+          .eq('user_id', session.user.id)
+          .eq('course_code', course.code)
+          .order('score', { ascending: false })
+          .limit(1);
+
+        let quizBadge = '';
+        if (quizData && quizData.length > 0) {
+          const q = quizData[0];
+          const qPercentage = Math.round((q.score / q.total_questions) * 100);
+          quizBadge = `<span class="quiz-score-badge" style="background:#1e7e34; color:#fff; padding:3px 8px; border-radius:10px; font-size:0.75rem; font-weight:bold;">Quiz: ${qPercentage}%</span>`;
+        }
 
         coursesHTML += `
           <div class="course-card">
-            <h3>${course.title}</h3>
-            <p>${course.description || 'Start learning today.'}</p>
-            <div style="display:flex; justify-content:space-between; font-size: 0.8rem; color:#666; margin-top:10px;">
-              <span>${completedCount} of ${totalMaterials} lessons complete</span>
-              <span>${percentage}%</span>
+            <div>
+              <h3>${course.title}</h3>
+              <p>${course.description || 'Start learning today.'}</p>
+              ${quizBadge}
             </div>
-            <div class="progress-bar">
-              <div class="progress-fill" style="width: ${percentage}%;"></div>
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size: 0.8rem; color:#666; margin-top:10px;">
+                <span>${completedCount} of ${totalMaterials} lessons complete</span>
+                <span>${percentage}%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: ${percentage}%;"></div>
+              </div>
+              <a href="course-view.html?id=${course.id}" class="btn-continue">Continue Learning</a>
             </div>
-            <a href="course-view.html?id=${course.id}" class="btn-continue">Continue Learning</a>
           </div>
         `;
       }
@@ -127,4 +146,4 @@
     document.addEventListener("DOMContentLoaded", loadDashboard);
   </script>
 </body>
-</html>
+</html>s

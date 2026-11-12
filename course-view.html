@@ -32,6 +32,15 @@
     
     .back-link { display: inline-block; margin-bottom: 20px; color: #6a0dad; text-decoration: none; font-weight: bold; }
     .back-link:hover { text-decoration: underline; }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .course-header h1 { font-size: 2rem; }
+      .course-header p { font-size: 1rem; }
+      .materials-container { padding: 0 15px; margin: 20px auto; }
+      .action-row { flex-direction: column; align-items: stretch; }
+      .download-btn, .complete-btn, .reset-btn { width: 100%; text-align: center; margin-left: 0; }
+    }
   </style>
 </head>
 <body>
@@ -58,9 +67,9 @@
   <div class="materials-container">
     <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
     
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
       <h2 style="color: #0d0d0d; margin: 0;">Course Materials</h2>
-      <div style="display: flex; gap: 15px;">
+      <div style="display: flex; gap: 15px; flex-wrap: wrap;">
         <a href="#" id="quiz-btn" class="download-btn" style="background: #1e7e34; text-decoration: none;">📝 Take Quiz</a>
         <button id="reset-btn" class="reset-btn" style="display: none;">Reset Progress</button>
       </div>
@@ -86,7 +95,6 @@
       currentCourseId = urlParams.get('id');
       if (!currentCourseId) return;
 
-      // Fetch Course
       const { data: course } = await supabaseClient.from('courses').select('*').eq('id', currentCourseId).single();
       if (!course) return;
 
@@ -94,10 +102,8 @@
       document.getElementById('course-title').textContent = course.title;
       document.getElementById('course-desc').textContent = course.description || '';
 
-      // Set the Quiz Button link dynamically
       document.getElementById('quiz-btn').href = `quiz.html?code=${currentCourseCode}`;
 
-      // Fetch Materials
       const { data: materials } = await supabaseClient.from('materials').select('*').eq('course_code', currentCourseCode);
       const lessonsList = document.getElementById('lessons-list');
 
@@ -107,7 +113,6 @@
       }
       currentMaterials = materials;
 
-      // Fetch User's Progress
       const { data: progressData } = await supabaseClient
         .from('progress')
         .select('material_id')
@@ -119,18 +124,15 @@
         document.getElementById('reset-btn').style.display = 'block';
       }
 
-      // Render Materials
       lessonsList.innerHTML = materials.map(material => {
         const isCompleted = completedIds.includes(material.id);
         
-        // Video Player HTML
         const videoHTML = material.video_url ? `
           <div class="video-wrapper">
             <iframe src="${material.video_url}" allowfullscreen></iframe>
           </div>
         ` : '';
 
-        // NEW: Audio Player HTML
         const audioHTML = material.audio_url ? `
           <div style="margin: 15px 0; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #eee;">
             <p style="margin: 0 0 8px; font-size: 0.85rem; color: #6a0dad; font-weight: bold;">🎧 Audio Lesson</p>
