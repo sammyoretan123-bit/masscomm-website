@@ -35,4 +35,5 @@ gallery:
   - /images/pr9.jpeg
   - /images/pr5.jpeg
   - /images/p.jpeg
+  - /images/WhatsApp Image 2026-11-12 at 10.20.09.jpeg
 ---
