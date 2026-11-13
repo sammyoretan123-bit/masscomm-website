@@ -4,28 +4,28 @@
    Purpose: Mobile menu + dropdown + Slider Lightbox + Zoom & Pan
    ============================================ */
 
-/* ---------- MOBILE MENU TOGGLE ---------- */
-const toggle = document.getElementById('menu-toggle');
-const navLinks = document.getElementById('navLinks');
+/* ---------- BULLETPROOF MOBILE MENU TOGGLE ---------- */
+document.addEventListener("DOMContentLoaded", () => {
+  const menuBtn = document.getElementById('menu-toggle');
+  const navMenu = document.getElementById('navLinks');
 
-if (toggle && navLinks) {
-  toggle.addEventListener('click', () => {
-    navLinks.classList.toggle('active');
-  });
-}
-
-/* ---------- CLOSE MOBILE MENU ON LINK CLICK (SITE-WIDE) ---------- */
-// This ensures that no matter which page you are on, clicking a link closes the hamburger menu
-document.addEventListener("click", (e) => {
-  // Check if the clicked element is a link (<a>) inside the nav-links
-  const clickedLink = e.target.closest('.nav-links a');
-  
-  if (clickedLink) {
-    const menu = document.getElementById('navLinks');
-    if (menu && menu.classList.contains('active')) {
-      menu.classList.remove('active');
-    }
+  if (menuBtn && navMenu) {
+    menuBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      navMenu.classList.toggle('active');
+    });
   }
+  
+  // Close menu when clicking a link (for site-wide behavior)
+  const navLinksArray = document.querySelectorAll('.nav-links a');
+  navLinksArray.forEach(link => {
+    link.addEventListener('click', () => {
+      if (navMenu && navMenu.classList.contains('active')) {
+        navMenu.classList.remove('active');
+      }
+    });
+  });
 });
 
 /* ---------- DROPDOWN TOGGLE (mobile only) ---------- */
@@ -243,7 +243,6 @@ function initSiteLightbox() {
     if (target.closest("footer")) return;
     if (target.naturalWidth > 0 && target.naturalWidth < 80) return;
 
-    // Check if the clicked image is inside a profile card
     const isProfileCard = target.closest(".member");
 
     const container = target.closest(".gallery-grid") || target.closest(".team-grid") || target.closest(".activity-gallery") || target.parentElement;
