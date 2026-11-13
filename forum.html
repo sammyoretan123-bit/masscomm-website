@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Community Forum | NAMACOS</title>
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" type="image/jpeg" href="images/mass communication logo.jpg" />
   <style>
     .forum-container { max-width: 900px; margin: 40px auto; padding: 20px; }
     .new-post-box { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; }
@@ -17,6 +18,9 @@
     .post-author { font-weight: bold; color: #6a0dad; }
     .post-content { color: #333; line-height: 1.6; white-space: pre-wrap; }
     .badge-announcement { background: #e50914; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-left: 10px; }
+    
+    /* Navbar Styles */
+    .nav-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid #6a0dad; vertical-align: middle; }
   </style>
 </head>
 <body>
@@ -27,9 +31,22 @@
         <img src="images/mass communication logo.jpg" alt="Logo" />
         <span>Mass Communication AAUA</span>
       </div>
+      
+      <!-- UPDATED NAVBAR -->
       <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
         <li><a href="dashboard.html">My Dashboard</a></li>
         <li><a href="forum.html" style="color: #6a0dad; font-weight: bold;">Community</a></li>
+        <li><a href="profile.html">My Profile</a></li>
+        <li style="display: flex; align-items: center;">
+          <a href="profile.html" style="padding: 0;">
+            <img id="nav-avatar-img" 
+                 src="images/mass communication logo.jpg" 
+                 alt="Profile" 
+                 class="nav-avatar" 
+                 onerror="this.src='https://ui-avatars.com/api/?name=Student&background=6a0dad&color=fff';" />
+          </a>
+        </li>
         <li><button id="logout-btn" style="background: #e50914; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Log Out</button></li>
       </ul>
     </nav>
@@ -56,10 +73,27 @@
   <script>
     let currentUser = null;
 
+    // --- LOAD NAVBAR AVATAR ---
+    async function loadNavbarAvatar(userId) {
+      const { data: profile } = await supabaseClient
+        .from('profiles')
+        .select('avatar_url')
+        .eq('id', userId)
+        .single();
+        
+      if (profile && profile.avatar_url) {
+        document.getElementById('nav-avatar-img').src = profile.avatar_url;
+      }
+    }
+
+    // --- LOAD POSTS ---
     async function loadPosts() {
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session) { window.location.href = "login.html"; return; }
       currentUser = session.user;
+
+      // Load the user's profile picture for the navbar
+      loadNavbarAvatar(currentUser.id);
 
       // Fetch posts, ordered by newest first
       const { data: posts, error } = await supabaseClient
@@ -96,7 +130,7 @@
       }).join('');
     }
 
-    // Handle Posting
+    // --- HANDLE POSTING ---
     document.getElementById('post-btn').addEventListener('click', async () => {
       const content = document.getElementById('post-content').value.trim();
       if (!content) return alert("Please write something first.");
@@ -105,7 +139,7 @@
       btn.textContent = "Posting...";
       btn.disabled = true;
 
-      const authorName = currentUser.email.split('@')[0]; // Use email prefix as name for now
+      const authorName = currentUser.email.split('@')[0];
 
       const { error } = await supabaseClient
         .from('posts')
