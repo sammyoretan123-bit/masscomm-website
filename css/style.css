@@ -699,38 +699,42 @@ section img,
 }
 
 /* ============================================
-   SIMPLE STANDARD MOBILE DROPDOWN
+   COMPACT STANDARD MOBILE MENU
    ============================================ */
 @media screen and (max-width: 768px) {
-  /* 1. The box that drops down */
-  .nav-links.active {
-    display: flex !important;
-    flex-direction: column !important;
+  /* Show the hamburger icon */
+  .menu-toggle {
+    display: block !important;
+    color: #fff !important;
+    font-size: 22px !important;
+    cursor: pointer !important;
+    background: none !important;
+    border: none !important;
+    z-index: 10000 !important;
+  }
+
+  /* The dropdown box - Made smaller */
+  .nav-links {
+    display: none !important;
     position: absolute !important;
-    top: 65px !important;
-    right: 15px !important;
+    top: 60px !important;
+    right: 10px !important;
     background: #000 !important;
-    width: 250px !important; /* Just a normal small box */
-    padding: 10px 0 !important;
+    width: 200px !important; /* Reduced from 250px */
+    flex-direction: column !important;
+    padding: 5px 0 !important; /* Less padding */
     border-radius: 8px !important;
     box-shadow: 0 5px 15px rgba(0,0,0,0.5) !important;
     z-index: 9999 !important;
     margin: 0 !important;
   }
 
-  /* 2. Hide the nested dropdowns by default */
-  .nav-links .dropdown {
-    display: none !important;
+  /* When active, show it */
+  .nav-links.active {
+    display: flex !important;
   }
 
-  /* 3. Show nested dropdowns when clicked (handled by main.js) */
-  .nav-links > li.open .dropdown {
-    display: block !important;
-    background: #111 !important;
-    padding: 5px 0 !important;
-  }
-
-  /* 4. Style the links to be normal size */
+  /* Style the main links - Tighter spacing */
   .nav-links > li {
     width: 100% !important;
     margin: 0 !important;
@@ -738,24 +742,44 @@ section img,
     border-bottom: 1px solid #222 !important;
   }
 
-  .nav-links a {
+  .nav-links > li > a {
     display: block !important;
-    padding: 12px 20px !important;
+    padding: 8px 15px !important; /* Reduced from 12px 20px */
     color: #fff !important;
-    font-size: 0.95rem !important;
+    font-size: 0.85rem !important; /* Smaller text */
     text-align: left !important;
     text-decoration: none !important;
-    background: transparent !important;
-    box-sizing: border-box !important;
   }
 
-  .nav-links a:hover {
+  .nav-links > li > a:hover {
     background: #222 !important;
   }
 
-  /* Indent sub-links */
+  /* Hide sub-dropdowns by default */
+  .nav-links .dropdown {
+    display: none !important;
+    background: #111 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
+  /* Show sub-dropdown when the parent has 'open' class */
+  .nav-links > li.open .dropdown {
+    display: block !important;
+  }
+
+  /* Style the sub-links - Tighter */
   .nav-links .dropdown a {
-    padding-left: 35px !important;
-    color: #ccc !important;
+    display: block !important;
+    padding: 6px 15px 6px 25px !important; /* Indented, less vertical padding */
+    color: #bbb !important;
+    font-size: 0.8rem !important; /* Smaller text */
+    text-decoration: none !important;
+  }
+
+  .nav-links .dropdown a:hover {
+    background: #222 !important;
+    color: #fff !important;
   }
 }
