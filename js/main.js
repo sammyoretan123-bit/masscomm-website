@@ -1,24 +1,35 @@
 /* ============================================
    MASS COMMUNICATION DEPARTMENT
    File: js/main.js
-   Purpose: Mobile menu + dropdown + Slider Lightbox + Zoom & Pan
+   Purpose: Mobile menu (Side Drawer) + Lightbox
    ============================================ */
 
-/* ---------- MOBILE MENU & DROPDOWN LOGIC ---------- */
 document.addEventListener("DOMContentLoaded", () => {
   const menuBtn = document.getElementById('menu-toggle');
   const navMenu = document.getElementById('navLinks');
 
-  // 1. Hamburger Toggle
+  // --- 1. CREATE BACKDROP ---
+  const backdrop = document.createElement('div');
+  backdrop.classList.add('menu-backdrop');
+  document.body.appendChild(backdrop);
+
+  // --- 2. HAMBURGER TOGGLE ---
   if (menuBtn && navMenu) {
     menuBtn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation(); 
       navMenu.classList.toggle('active');
+      backdrop.classList.toggle('active');
     });
   }
 
-  // 2. Dropdown Toggle (Mobile only)
+  // --- 3. CLOSE ON BACKDROP CLICK ---
+  backdrop.addEventListener('click', () => {
+    navMenu.classList.remove('active');
+    backdrop.classList.remove('active');
+  });
+
+  // --- 4. DROPDOWN TOGGLE (Mobile only) ---
   const dropdownParents = document.querySelectorAll('.nav-links > li');
   
   dropdownParents.forEach((parent) => {
@@ -28,30 +39,31 @@ document.addEventListener("DOMContentLoaded", () => {
     if (link && dropdown) {
       link.addEventListener('click', (e) => {
         if (window.innerWidth <= 768) {
-          e.preventDefault(); // Stop page reload
-          e.stopPropagation(); // Keep menu open
+          e.preventDefault(); 
+          e.stopPropagation(); 
           
           // Close other open dropdowns
           dropdownParents.forEach((other) => {
             if (other !== parent) other.classList.remove('open');
           });
           
-          // Toggle this specific dropdown
+          // Toggle this one
           parent.classList.toggle('open');
         }
       });
     }
   });
 
-  // 3. Close menu when clicking a final link (like "Home" or "Contact")
+  // --- 5. CLOSE MENU ON FINAL LINK CLICK ---
   const allLinks = document.querySelectorAll('.nav-links a');
   allLinks.forEach(link => {
     link.addEventListener('click', () => {
       const parentLi = link.parentElement;
-      // Only close the menu if the link is NOT a dropdown parent
+      // If the link is not a dropdown toggle, close the menu
       if (!parentLi.querySelector('.dropdown')) {
         if (navMenu && navMenu.classList.contains('active')) {
           navMenu.classList.remove('active');
+          backdrop.classList.remove('active');
         }
       }
     });
