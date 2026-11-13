@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Course Materials | Mass Communication Department</title>
+  <title>Course Materials | NAMACOS</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="icon" type="image/jpeg" href="images/mass communication logo.jpg" />
 
-  <!-- IMMEDIATE AUTH CHECK (Blocks page from loading if not logged in) -->
+  <!-- IMMEDIATE AUTH CHECK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
   <script>
     (async () => {
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session) {
-        // Redirect immediately before the body renders
+        // If they are not logged in, throw them to the login page instantly
         window.location.replace("login.html");
       }
     })();
@@ -22,7 +22,7 @@
 </head>
 <body>
 
-  <!-- ============ NAVBAR ============ -->
+  <!-- ============ STUDENT NAVBAR ============ -->
   <header>
     <nav class="navbar">
       <div class="logo">
@@ -31,94 +31,25 @@
       </div>
       <ul class="nav-links" id="navLinks">
         <li><a href="index.html">Home</a></li>
-        <li><a href="#">About <span class="arrow">&#9662;</span></a>
-          <ul class="dropdown">
-            <li><a href="about.html">About Department</a></li>
-            <li><a href="courses.html">Courses</a></li>
-            <li><a href="materials.html">Course Materials</a></li>
-            <li><a href="sequence-prad.html">PRAD</a></li>
-            <li><a href="sequence-broadcast.html">Broadcast</a></li>
-            <li><a href="sequence-print.html">Print</a></li>
-          </ul>
+        <li><a href="dashboard.html">My Dashboard</a></li>
+        <li><a href="leaderboard.html">Leaderboard</a></li>
+        <li><a href="forum.html">Community</a></li>
+        <li><a href="profile.html">My Profile</a></li>
+        <li style="display: flex; align-items: center;">
+          <a href="profile.html" style="padding: 0;">
+            <img id="nav-avatar-img" src="images/mass communication logo.jpg" alt="Profile" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid #6a0dad;" onerror="this.src='https://ui-avatars.com/api/?name=Student&background=6a0dad&color=fff';" />
+          </a>
         </li>
-        <li><a href="#">People <span class="arrow">&#9662;</span></a>
-          <ul class="dropdown">
-            <li><a href="hod.html">HOD</a></li>
-            <li><a href="lecturers.html">Lecturers</a></li>
-            <li><a href="executives.html">Student Executives</a></li>
-            <li><a href="alumni.html">Alumni</a></li>
-          </ul>
-        </li>
-        <li><a href="#">Students <span class="arrow">&#9662;</span></a>
-          <ul class="dropdown"><li><a href="sets.html">Sets</a></li></ul>
-        </li>
-        <li><a href="#">Activities <span class="arrow">&#9662;</span></a>
-          <ul class="dropdown">
-              <li><a href="activities.html">Activities</a></li>
-<li><a href="gallery.html">Gallery</a></li>
-            
-          </ul>
-        </li>
-        <li><a href="#">Media <span class="arrow">&#9662;</span></a>
-          <ul class="dropdown">
-            <li><a href="news.html">News</a></li>
-            <li><a href="blog.html">Blog</a></li>
-          </ul>
-        </li>
-        <li><a href="cinema.html">NAMACOS TV</a></li>
-        <li><a href="contact.html">Contact</a></li>
+        <li><button id="logout-btn" style="background: #e50914; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Log Out</button></li>
       </ul>
       <div class="menu-toggle" id="menu-toggle">&#9776;</div>
     </nav>
   </header>
 
-  <section class="section-title">
-    <h2>Course Materials</h2>
-    <p>Lecture notes and past questions for Mass Comm students</p>
-  </section>
-
-  <!-- MATERIALS SECTION (Hidden by default until auth check) -->
-  <section class="team" id="materials-section" style="display:none;">
-    <div style="max-width: 1100px; margin: 0 auto 30px; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.08);">
-      <h3 style="color: #6a0dad; margin-bottom: 15px;">Filter Materials</h3>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
-        <div>
-          <label style="display:block; margin-bottom: 6px; font-weight: bold; font-size: 0.9rem;">Level</label>
-          <select id="filter-level" style="width:100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
-            <option value="">All Levels</option>
-            <option value="100L">100L</option>
-            <option value="200L">200L</option>
-            <option value="300L">300L</option>
-            <option value="400L">400L</option>
-          </select>
-        </div>
-        <div>
-          <label style="display:block; margin-bottom: 6px; font-weight: bold; font-size: 0.9rem;">Semester</label>
-          <select id="filter-semester" style="width:100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
-            <option value="">All Semesters</option>
-            <option value="1st">1st Semester</option>
-            <option value="2nd">2nd Semester</option>
-          </select>
-        </div>
-        <div>
-          <label style="display:block; margin-bottom: 6px; font-weight: bold; font-size: 0.9rem;">Category</label>
-          <select id="filter-category" style="width:100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
-            <option value="">All Materials</option>
-            <option value="Note">Lecture Notes</option>
-            <option value="PAST QUESTION">Past Questions</option>
-          </select>
-        </div>
-        <div>
-          <label style="display:block; margin-bottom: 6px; font-weight: bold; font-size: 0.9rem;">Search</label>
-          <input type="text" id="filter-search" placeholder="Course code or title..." style="width:100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px;" />
-        </div>
-      </div>
-    </div>
-
-    <div style="max-width: 1100px; margin: 0 auto;" id="materials-list">
-      <p style="text-align:center; color:#666;">Loading materials...</p>
-    </div>
-  </section>
+  <!-- Blank Space (What they see before getting redirected) -->
+  <div style="min-height: 60vh; display: flex; justify-content: center; align-items: center;">
+      <p style="color: #666; font-size: 1.2rem;">Redirecting to login...</p>
+  </div>
 
   <footer>
     <p>&copy; 2026 Mass Communication Department &mdash; Student Association.</p>
@@ -132,8 +63,22 @@
     </div>
   </footer>
 
-  <script src="js/main.js"></script>
-  <!-- Rename the script file to materials-secure.js for a fresh load -->
-  <script src="js/materials-secure.js"></script>
+  <script>
+    // Load Avatar and handle logout
+    document.addEventListener("DOMContentLoaded", async () => {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session) {
+        const { data: profile } = await supabaseClient.from('profiles').select('avatar_url').eq('id', session.user.id).single();
+        if (profile && profile.avatar_url) {
+          document.getElementById('nav-avatar-img').src = profile.avatar_url;
+        }
+      }
+      
+      document.getElementById('logout-btn').addEventListener('click', async () => {
+        await supabaseClient.auth.signOut();
+        window.location.href = "index.html";
+      });
+    });
+  </script>
 </body>
 </html>
