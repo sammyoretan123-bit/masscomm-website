@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CBT Mode | NAMACOS</title>
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" type="image/jpeg" href="images/mass communication logo.jpg" />
   <style>
     .quiz-container { max-width: 800px; margin: 40px auto; padding: 20px; }
     
@@ -29,6 +30,9 @@
     .submit-btn:hover { background: #8e2de2; }
     
     .result-box { background: #1e7e34; color: #fff; padding: 30px; border-radius: 12px; text-align: center; font-size: 1.5rem; display: none; margin-top: 20px; flex-direction: column; gap: 20px; align-items: center; }
+    
+    /* Navbar Styles */
+    .nav-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid #6a0dad; vertical-align: middle; }
   </style>
 </head>
 <body>
@@ -40,7 +44,19 @@
         <span>Mass Communication AAUA</span>
       </div>
       <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
         <li><a href="dashboard.html">My Dashboard</a></li>
+        <li><a href="forum.html">Community</a></li>
+        <li><a href="profile.html">My Profile</a></li>
+        <li style="display: flex; align-items: center;">
+          <a href="profile.html" style="padding: 0;">
+            <img id="nav-avatar-img" 
+                 src="images/mass communication logo.jpg" 
+                 alt="Profile" 
+                 class="nav-avatar" 
+                 onerror="this.src='https://ui-avatars.com/api/?name=Student&background=6a0dad&color=fff';" />
+          </a>
+        </li>
         <li><button id="logout-btn" style="background: #e50914; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Log Out</button></li>
       </ul>
     </nav>
@@ -67,7 +83,7 @@
   <script>
     let correctAnswers = {}; 
     let timerInterval;
-    let timeLeft = 15 * 60; // 15 minutes in seconds
+    let timeLeft = 15 * 60; // 15 minutes
     let isSubmitted = false;
 
     // Prevent leaving the page accidentally
@@ -95,7 +111,6 @@
         const seconds = timeLeft % 60;
         timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
-        // Turn red if less than 2 minutes
         if (timeLeft <= 120) {
           timerDisplay.classList.add('warning');
         }
@@ -105,6 +120,12 @@
     async function loadQuiz() {
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session) { window.location.href = "login.html"; return; }
+
+      // Load the user's profile picture for the navbar
+      const { data: profile } = await supabaseClient.from('profiles').select('avatar_url').eq('id', session.user.id).single();
+      if (profile && profile.avatar_url) {
+        document.getElementById('nav-avatar-img').src = profile.avatar_url;
+      }
 
       const urlParams = new URLSearchParams(window.location.search);
       const courseCode = urlParams.get('code'); 
@@ -143,15 +164,15 @@
       }).join('');
 
       document.getElementById('submit-btn').style.display = 'block';
-      startTimer(); // Start the timer once questions are loaded
+      startTimer(); 
     }
 
     async function processSubmission(e) {
-      if (e) e.preventDefault(); // Stop form from refreshing page
+      if (e) e.preventDefault(); 
       if (isSubmitted) return;
       isSubmitted = true;
 
-      clearInterval(timerInterval); // Stop the timer
+      clearInterval(timerInterval); 
       document.getElementById('submit-btn').style.display = 'none';
       document.getElementById('timer-bar').style.display = 'none';
 
@@ -173,7 +194,6 @@
 
       const percentage = Math.round((score / totalQuestions) * 100);
 
-      // Save score to Supabase
       const { error: saveError } = await supabaseClient
         .from('quiz_scores')
         .insert([{ 
