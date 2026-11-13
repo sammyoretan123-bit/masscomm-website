@@ -68,6 +68,7 @@
       <ul class="nav-links" id="navLinks">
         <li><a href="index.html">Home</a></li>
         <li><a href="dashboard.html" style="color: #6a0dad; font-weight: bold;">My Dashboard</a></li>
+        <li><a href="profile.html">My Profile</a></li>
         <li><button id="logout-btn" style="background: #e50914; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Log Out</button></li>
       </ul>
       
@@ -94,8 +95,21 @@
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session) { window.location.href = "login.html"; return; }
 
-      document.getElementById('student-name').textContent = session.user.email.split('@')[0];
+      // 1. Fetch User Profile to get their real name
+      const { data: profile } = await supabaseClient
+        .from('profiles')
+        .select('full_name')
+        .eq('id', session.user.id)
+        .single();
 
+      // Display real name, or fallback to email prefix if they haven't set it yet
+      if (profile && profile.full_name) {
+        document.getElementById('student-name').textContent = profile.full_name;
+      } else {
+        document.getElementById('student-name').textContent = session.user.email.split('@')[0];
+      }
+
+      // 2. Fetch Courses
       const { data: courses } = await supabaseClient.from('courses').select('*');
       const grid = document.getElementById('courses-grid');
       
@@ -106,7 +120,7 @@
 
       let coursesHTML = '';
       for (let course of courses) {
-        // 1. Calculate Progress
+        // Calculate Progress
         const { count: totalMaterials } = await supabaseClient
           .from('materials')
           .select('*', { count: 'exact', head: true })
@@ -132,7 +146,7 @@
 
         let percentage = totalMaterials > 0 ? Math.round((completedCount / totalMaterials) * 100) : 0;
 
-        // 2. Fetch Quiz Score
+        // Fetch Quiz Score
         const { data: quizData } = await supabaseClient
           .from('quiz_scores')
           .select('score, total_questions')
@@ -148,7 +162,7 @@
           quizBadge = `<span class="quiz-score-badge">Quiz: ${qPercentage}%</span>`;
         }
 
-        // 3. Render Card
+        // Render Card
         coursesHTML += `
           <div class="course-card">
             <div>
@@ -166,7 +180,7 @@
               </div>
               
               <!-- CERTIFICATE BUTTON (Only shows if 100%) -->
-              ${percentage === 100 ? `<a href="certificate.html?name=${session.user.email.split('@')[0]}&course=${course.title}" target="_blank" class="btn-continue" style="background: #1e7e34; margin-top: 5px;">🏆 Download Certificate</a>` : ''}
+              ${percentage === 100 ? `<a href="certificate.html?name=${profile && profile.full_name ? profile.full_name : session.user.email.split('@')[0]}&course=${course.title}" target="_blank" class="btn-continue" style="background: #1e7e34; margin-top: 5px;">🏆 Download Certificate</a>` : ''}
               
               <a href="course-view.html?id=${course.id}" class="btn-continue" style="margin-left: 5px;">Continue Learning</a>
             </div>
