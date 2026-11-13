@@ -45,11 +45,12 @@
       <ul class="nav-links" id="navLinks">
         <li><a href="index.html">Home</a></li>
         <li><a href="dashboard.html" style="color: #6a0dad; font-weight: bold;">My Dashboard</a></li>
+        <li><a href="leaderboard.html">Leaderboard</a></li>
         <li><a href="forum.html">Community</a></li>
         <li><a href="profile.html">My Profile</a></li>
         <li style="display: flex; align-items: center;">
           <a href="profile.html" style="padding: 0;">
-            <img id="dashboard-avatar" src="images/mass communication logo.jpg" alt="Profile" class="nav-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Student&background=6a0dad&color=fff';" />
+            <img id="nav-avatar-img" src="images/mass communication logo.jpg" alt="Profile" class="nav-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Student&background=6a0dad&color=fff';" />
           </a>
         </li>
         <li><button id="logout-btn" style="background: #e50914; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Log Out</button></li>
@@ -90,13 +91,8 @@
         document.getElementById('student-name').textContent = session.user.email.split('@')[0];
       }
 
-      const avatarImg = document.getElementById('dashboard-avatar');
-      if (avatarImg) {
-        if (profile && profile.avatar_url) {
-          avatarImg.src = profile.avatar_url;
-        } else {
-          avatarImg.src = "images/mass communication logo.jpg";
-        }
+      if (profile && profile.avatar_url) {
+        document.getElementById('nav-avatar-img').src = profile.avatar_url;
       }
 
       const { data: courses, error: courseError } = await supabaseClient.from('courses').select('*');

@@ -19,13 +19,11 @@
     .post-content { color: #333; line-height: 1.6; white-space: pre-wrap; margin-bottom: 15px; }
     .badge-announcement { background: #e50914; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-left: 10px; }
     
-    /* Social Buttons */
     .social-actions { display: flex; gap: 15px; border-top: 1px solid #eee; padding-top: 10px; }
     .social-btn { background: none; border: none; color: #666; font-weight: bold; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
     .social-btn:hover { color: #6a0dad; }
     .social-btn.liked { color: #6a0dad; }
 
-    /* Replies Section */
     .replies-section { margin-top: 15px; padding-left: 20px; border-left: 2px solid #eee; display: none; }
     .reply-box { background: #f9f9f9; padding: 10px 15px; border-radius: 8px; margin-bottom: 10px; font-size: 0.9rem; }
     .reply-box strong { color: #6a0dad; }
@@ -48,6 +46,7 @@
       <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
         <li><a href="dashboard.html">My Dashboard</a></li>
+        <li><a href="leaderboard.html">Leaderboard</a></li>
         <li><a href="forum.html" style="color: #6a0dad; font-weight: bold;">Community</a></li>
         <li><a href="profile.html">My Profile</a></li>
         <li style="display: flex; align-items: center;">
@@ -92,7 +91,6 @@
       currentUser = session.user;
       loadNavbarAvatar(currentUser.id);
 
-      // Fetch posts
       const { data: posts, error } = await supabaseClient.from('posts').select('*').order('created_at', { ascending: false });
       const postsList = document.getElementById('posts-list');
       
@@ -101,7 +99,6 @@
         return;
       }
 
-      // Fetch all likes and replies to calculate counts
       const { data: likes } = await supabaseClient.from('post_likes').select('*');
       const { data: allReplies } = await supabaseClient.from('replies').select('*').order('created_at', { ascending: true });
 
@@ -115,15 +112,12 @@
         const isAnnouncement = post.is_announcement ? 'announcement' : '';
         const badge = post.is_announcement ? '<span class="badge-announcement">ANNOUNCEMENT</span>' : '';
 
-        // Count likes for this post
         const postLikes = likes ? likes.filter(l => l.post_id === post.id) : [];
         const likeCount = postLikes.length;
         const hasLiked = postLikes.some(l => l.user_id === currentUser.id);
 
-        // Count replies for this post
         const postReplies = allReplies ? allReplies.filter(r => r.post_id === post.id) : [];
 
-        // Build replies HTML
         let repliesHTML = postReplies.map(reply => `
           <div class="reply-box">
             <strong>${reply.author_name}</strong>: ${reply.content}
@@ -147,7 +141,6 @@
               </button>
             </div>
 
-            <!-- Hidden Replies Section -->
             <div id="replies-${post.id}" class="replies-section">
               <div id="reply-list-${post.id}">
                 ${repliesHTML}
@@ -162,21 +155,17 @@
       }).join('');
     }
 
-    // --- TOGGLE LIKES ---
     async function toggleLike(postId, btnElement) {
       const hasLiked = btnElement.classList.contains('liked');
 
       if (hasLiked) {
-        // Unlike
         await supabaseClient.from('post_likes').delete().match({ post_id: postId, user_id: currentUser.id });
       } else {
-        // Like
         await supabaseClient.from('post_likes').insert([{ post_id: postId, user_id: currentUser.id }]);
       }
-      loadPosts(); // Reload to show updated count
+      loadPosts();
     }
 
-    // --- TOGGLE REPLY BOX ---
     function toggleReplies(postId) {
       const section = document.getElementById(`replies-${postId}`);
       if (section.style.display === 'none' || section.style.display === '') {
@@ -186,7 +175,6 @@
       }
     }
 
-    // --- SUBMIT REPLY ---
     async function submitReply(postId) {
       const input = document.getElementById(`reply-input-${postId}`);
       const content = input.value.trim();
@@ -202,8 +190,7 @@
         alert("Error posting reply: " + error.message);
       } else {
         input.value = "";
-        loadPosts(); // Reload to show the new reply
-        // Keep the reply section open after reload
+        loadPosts();
         setTimeout(() => {
           const section = document.getElementById(`replies-${postId}`);
           if (section) section.style.display = 'block';
@@ -211,7 +198,6 @@
       }
     }
 
-    // --- CREATE NEW POST ---
     document.getElementById('post-btn').addEventListener('click', async () => {
       const content = document.getElementById('post-content').value.trim();
       if (!content) return alert("Please write something first.");

@@ -28,7 +28,6 @@
     .complete-btn:hover { background: #8e2de2; }
     .complete-btn.completed { background: #1e7e34; cursor: default; }
     
-    /* Navigation Buttons */
     .lesson-nav { display: flex; justify-content: space-between; margin-top: 20px; }
     .nav-btn { background: #6a0dad; color: #fff; padding: 12px 25px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.3s; }
     .nav-btn:hover { background: #8e2de2; }
@@ -39,6 +38,8 @@
     
     .back-link { display: inline-block; margin-bottom: 20px; color: #6a0dad; text-decoration: none; font-weight: bold; }
     .back-link:hover { text-decoration: underline; }
+
+    .nav-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid #6a0dad; vertical-align: middle; }
 
     @media (max-width: 768px) {
       .course-header h1 { font-size: 2rem; }
@@ -59,10 +60,17 @@
         <img src="images/mass communication logo.jpg" alt="Department Logo" />
         <span>Mass Communication AAUA</span>
       </div>
-            <ul class="nav-links">
+      <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
         <li><a href="dashboard.html">My Dashboard</a></li>
-        <li><a href="forum.html">Student Forum</a></li> <!-- ADD THIS LINE -->
+        <li><a href="leaderboard.html">Leaderboard</a></li>
+        <li><a href="forum.html">Community</a></li>
+        <li><a href="profile.html">My Profile</a></li>
+        <li style="display: flex; align-items: center;">
+          <a href="profile.html" style="padding: 0;">
+            <img id="nav-avatar-img" src="images/mass communication logo.jpg" alt="Profile" class="nav-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Student&background=6a0dad&color=fff';" />
+          </a>
+        </li>
         <li><button id="logout-btn" style="background: #e50914; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Log Out</button></li>
       </ul>
     </nav>
@@ -96,11 +104,17 @@
     let currentCourseCode = null;
     let currentMaterials = [];
     let completedIds = [];
-    let currentLessonIndex = 0; // Tracks which lesson we are currently viewing
+    let currentLessonIndex = 0;
 
     async function loadCourseView() {
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session) { window.location.href = "login.html"; return; }
+
+      // Load Navbar Avatar
+      const { data: profile } = await supabaseClient.from('profiles').select('avatar_url').eq('id', session.user.id).single();
+      if (profile && profile.avatar_url) {
+        document.getElementById('nav-avatar-img').src = profile.avatar_url;
+      }
 
       const urlParams = new URLSearchParams(window.location.search);
       currentCourseId = urlParams.get('id');
@@ -115,12 +129,11 @@
 
       document.getElementById('quiz-btn').href = `quiz.html?code=${currentCourseCode}`;
 
-      // Fetch materials and ORDER them by the order_index we added in Supabase
       const { data: materials } = await supabaseClient
         .from('materials')
         .select('*')
         .eq('course_code', currentCourseCode)
-        .order('order_index', { ascending: true }); // <--- THIS MAKES THE LESSONS SORT 1, 2, 3
+        .order('order_index', { ascending: true }); 
         
       if (!materials || materials.length === 0) {
         document.getElementById('lesson-container').innerHTML = `<p style="color: #666; padding: 20px; background: #fff; border-radius: 8px;">No materials uploaded yet.</p>`;
@@ -139,7 +152,6 @@
         document.getElementById('reset-btn').style.display = 'block';
       }
 
-      // Render the first lesson
       renderLesson();
     }
 
@@ -165,7 +177,6 @@
         </div>
       ` : '';
 
-      // Add text description if it exists
       const textHTML = material.description ? `<p style="color: #333; line-height: 1.6; margin-bottom: 20px;">${material.description}</p>` : '';
 
       document.getElementById('lesson-container').innerHTML = `
@@ -201,7 +212,7 @@
       if (currentLessonIndex < currentMaterials.length - 1) {
         currentLessonIndex++;
         renderLesson();
-        window.scrollTo(0, 0); // Scroll to top
+        window.scrollTo(0, 0);
       }
     }
 
@@ -209,7 +220,7 @@
       if (currentLessonIndex > 0) {
         currentLessonIndex--;
         renderLesson();
-        window.scrollTo(0, 0); // Scroll to top
+        window.scrollTo(0, 0);
       }
     }
 
@@ -222,7 +233,7 @@
         .insert([{ user_id: session.user.id, material_id: materialId }]);
 
       if (!error) {
-        completedIds.push(materialId); // Update local array
+        completedIds.push(materialId);
         btnElement.textContent = '✓ Completed';
         btnElement.classList.add('completed');
         btnElement.disabled = true;
