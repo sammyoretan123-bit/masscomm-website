@@ -20,6 +20,33 @@
     .btn-continue { display: inline-block; background: #6a0dad; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 10px; text-align: center; }
     .quiz-score-badge { display: inline-block; background: #1e7e34; color: #fff; padding: 3px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; margin-bottom: 10px; }
 
+    /* IMPROVED: Profile Avatar in Navbar */
+    .nav-profile-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: #fff;
+    }
+    .nav-profile-name {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #e0d4eb;
+    }
+    .nav-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #6a0dad;
+      cursor: pointer; /* Shows it's clickable */
+      transition: transform 0.2s;
+    }
+    .nav-avatar:hover {
+      transform: scale(1.1);
+      border-color: #fff;
+    }
+
     /* Mobile Responsiveness & Navbar Fix */
     @media (max-width: 768px) {
       .welcome-banner h1 { font-size: 1.6rem; }
@@ -40,7 +67,7 @@
         top: 70px;
         right: 20px;
         background: #000;
-        width: 200px;
+        width: 220px;
         padding: 20px;
         border-radius: 8px;
         z-index: 1000;
@@ -69,6 +96,15 @@
         <li><a href="index.html">Home</a></li>
         <li><a href="dashboard.html" style="color: #6a0dad; font-weight: bold;">My Dashboard</a></li>
         <li><a href="profile.html">My Profile</a></li>
+        
+        <!-- IMPROVED: Profile Picture & Name grouped nicely -->
+        <li>
+          <a href="#" class="nav-profile-link" onclick="openAvatarView(event)">
+            <span class="nav-profile-name" id="nav-student-name">Student</span>
+            <img id="dashboard-avatar" src="images/mass communication logo.jpg" alt="Profile" class="nav-avatar" />
+          </a>
+        </li>
+        
         <li><button id="logout-btn" style="background: #e50914; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Log Out</button></li>
       </ul>
       
@@ -91,28 +127,56 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
   <script>
+    // Function to open the avatar in the global lightbox
+    function openAvatarView(event) {
+      event.preventDefault(); // Stop the link from going to profile page
+      const avatarImg = document.getElementById('dashboard-avatar');
+      
+      // Check if main.js lightbox is loaded (it handles the full screen view)
+      if (typeof initSiteLightbox !== 'undefined') {
+        // Trigger a click on the image to open the lightbox
+        avatarImg.click();
+      } else {
+        // Fallback: If lightbox isn't ready, go to profile page
+        window.location.href = "profile.html";
+      }
+    }
+
     async function loadDashboard() {
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session) { window.location.href = "login.html"; return; }
 
-      // 1. Fetch User Profile to get their real name
+      // 1. Fetch User Profile
       const { data: profile } = await supabaseClient
         .from('profiles')
-        .select('full_name')
+        .select('full_name, avatar_url')
         .eq('id', session.user.id)
         .single();
 
-      // Display real name, or fallback to email prefix if they haven't set it yet
+      // Display real name
       if (profile && profile.full_name) {
         document.getElementById('student-name').textContent = profile.full_name;
+        document.getElementById('nav-student-name').textContent = profile.full_name;
       } else {
         document.getElementById('student-name').textContent = session.user.email.split('@')[0];
+        document.getElementById('nav-student-name').textContent = session.user.email.split('@')[0];
+      }
+
+      // Display avatar picture
+      const avatarImg = document.getElementById('dashboard-avatar');
+      if (avatarImg && profile && profile.avatar_url) {
+        avatarImg.src = profile.avatar_url;
       }
 
       // 2. Fetch Courses
-      const { data: courses } = await supabaseClient.from('courses').select('*');
+      const { data: courses, error: courseError } = await supabaseClient.from('courses').select('*');
       const grid = document.getElementById('courses-grid');
       
+      if (courseError) {
+        grid.innerHTML = `<p style="color: red;">Error loading courses: ${courseError.message}</p>`;
+        return;
+      }
+
       if (!courses || courses.length === 0) {
         grid.innerHTML = `<p style="color: #666;">No courses available yet.</p>`;
         return;
@@ -179,7 +243,6 @@
                 <div class="progress-fill" style="width: ${percentage}%;"></div>
               </div>
               
-              <!-- CERTIFICATE BUTTON (Only shows if 100%) -->
               ${percentage === 100 ? `<a href="certificate.html?name=${profile && profile.full_name ? profile.full_name : session.user.email.split('@')[0]}&course=${course.title}" target="_blank" class="btn-continue" style="background: #1e7e34; margin-top: 5px;">🏆 Download Certificate</a>` : ''}
               
               <a href="course-view.html?id=${course.id}" class="btn-continue" style="margin-left: 5px;">Continue Learning</a>
