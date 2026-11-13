@@ -94,12 +94,13 @@
       if (fileInput.files.length > 0) {
         const file = fileInput.files[0];
         const fileExt = file.name.split('.').pop();
+        // Unique filename prevents "upsert" permission errors
         const fileName = `${currentUser.id}-${Date.now()}.${fileExt}`;
 
-        // Upload the file (upsert: true allows overwriting)
+        // Upload the file (No upsert flag)
         const { data: uploadData, error: uploadError } = await supabaseClient.storage
           .from('avatars')
-          .upload(fileName, file, { upsert: true });
+          .upload(fileName, file);
 
         if (uploadError) {
           statusMsg.style.color = "red";
@@ -109,7 +110,7 @@
           return;
         }
 
-        // Get the public URL safely using uploadData.path
+        // Get the public URL
         const { data: publicUrlData } = supabaseClient.storage
           .from('avatars')
           .getPublicUrl(uploadData.path);
