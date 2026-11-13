@@ -7,10 +7,10 @@
   <link rel="stylesheet" href="css/style.css" />
   <link rel="icon" type="image/jpeg" href="images/mass communication logo.jpg" />
   <style>
-    .admin-container { max-width: 900px; margin: 40px auto; padding: 20px; }
+    .admin-container { max-width: 1000px; margin: 40px auto; padding: 20px; }
     
     .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-    .tab-btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; background: #eee; color: #333; }
+    .tab-btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; background: #eee; color: #333; transition: 0.2s; }
     .tab-btn.active { background: #6a0dad; color: #fff; }
     
     .admin-form { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #6a0dad; display: none; }
@@ -31,6 +31,13 @@
     .action-btns { display: flex; gap: 10px; }
     .btn-edit { background: #ffc107; color: #000; border: none; padding: 8px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; }
     .btn-delete { background: #e50914; color: #fff; border: none; padding: 8px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+
+    /* Students Table */
+    .student-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    .student-table th { text-align: left; padding: 12px; background: #f4f6f9; color: #333; border-bottom: 2px solid #ddd; }
+    .student-table td { padding: 12px; border-bottom: 1px solid #eee; color: #555; }
+    .student-table tr:hover { background: #fafafa; }
+    .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; background: #e0e0e0; color: #333; }
 
     .nav-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid #6a0dad; vertical-align: middle; }
   </style>
@@ -60,23 +67,15 @@
       <button class="tab-btn" onclick="switchTab('lesson', this)">Add Lesson</button>
       <button class="tab-btn" onclick="switchTab('quiz', this)">Add Quiz Question</button>
       <button class="tab-btn" onclick="switchTab('manage', this)">Manage Courses</button>
+      <button class="tab-btn" onclick="switchTab('students', this)">Enrolled Students</button>
     </div>
 
     <!-- 1. ADD COURSE -->
     <div id="form-course" class="admin-form active">
       <h3 style="color: #6a0dad; margin-top: 0;">Add a New Course</h3>
-      <div class="form-group">
-        <label>Course Code (e.g., MAC 101)</label>
-        <input type="text" id="course-code" placeholder="MAC 101" />
-      </div>
-      <div class="form-group">
-        <label>Course Title</label>
-        <input type="text" id="course-title" placeholder="Introduction to Communication" />
-      </div>
-      <div class="form-group">
-        <label>Description</label>
-        <textarea id="course-desc" rows="3" placeholder="Short description..."></textarea>
-      </div>
+      <div class="form-group"><label>Course Code (e.g., MAC 101)</label><input type="text" id="course-code" placeholder="MAC 101" /></div>
+      <div class="form-group"><label>Course Title</label><input type="text" id="course-title" placeholder="Introduction to Communication" /></div>
+      <div class="form-group"><label>Description</label><textarea id="course-desc" rows="3" placeholder="Short description..."></textarea></div>
       <button class="btn-save" onclick="addCourse()">Add Course</button>
       <p id="msg-course" class="status-msg"></p>
     </div>
@@ -84,30 +83,12 @@
     <!-- 2. ADD LESSON -->
     <div id="form-lesson" class="admin-form">
       <h3 style="color: #6a0dad; margin-top: 0;">Add a Lesson</h3>
-      <div class="form-group">
-        <label>Course Code</label>
-        <input type="text" id="lesson-code" placeholder="MAC 101" />
-      </div>
-      <div class="form-group">
-        <label>Lesson Title</label>
-        <input type="text" id="lesson-title" placeholder="Week 1: Basics" />
-      </div>
-      <div class="form-group">
-        <label>Order Index (1, 2, 3...)</label>
-        <input type="number" id="lesson-order" placeholder="1" />
-      </div>
-      <div class="form-group">
-        <label>PDF File URL (Optional)</label>
-        <input type="text" id="lesson-pdf" placeholder="https://..." />
-      </div>
-      <div class="form-group">
-        <label>Video Embed URL (Optional)</label>
-        <input type="text" id="lesson-video" placeholder="https://www.youtube.com/embed/..." />
-      </div>
-      <div class="form-group">
-        <label>Description / Notes</label>
-        <textarea id="lesson-desc" rows="3" placeholder="Write the lesson text here..."></textarea>
-      </div>
+      <div class="form-group"><label>Course Code</label><input type="text" id="lesson-code" placeholder="MAC 101" /></div>
+      <div class="form-group"><label>Lesson Title</label><input type="text" id="lesson-title" placeholder="Week 1: Basics" /></div>
+      <div class="form-group"><label>Order Index (1, 2, 3...)</label><input type="number" id="lesson-order" placeholder="1" /></div>
+      <div class="form-group"><label>PDF File URL (Optional)</label><input type="text" id="lesson-pdf" placeholder="https://..." /></div>
+      <div class="form-group"><label>Video Embed URL (Optional)</label><input type="text" id="lesson-video" placeholder="https://www.youtube.com/embed/..." /></div>
+      <div class="form-group"><label>Description / Notes</label><textarea id="lesson-desc" rows="3" placeholder="Write the lesson text here..."></textarea></div>
       <button class="btn-save" onclick="addLesson()">Add Lesson</button>
       <p id="msg-lesson" class="status-msg"></p>
     </div>
@@ -115,22 +96,13 @@
     <!-- 3. ADD QUIZ -->
     <div id="form-quiz" class="admin-form">
       <h3 style="color: #6a0dad; margin-top: 0;">Add a Quiz Question</h3>
-      <div class="form-group">
-        <label>Course Code</label>
-        <input type="text" id="quiz-code" placeholder="MAC 101" />
-      </div>
-      <div class="form-group">
-        <label>Question</label>
-        <input type="text" id="quiz-question" placeholder="What is...?" />
-      </div>
+      <div class="form-group"><label>Course Code</label><input type="text" id="quiz-code" placeholder="MAC 101" /></div>
+      <div class="form-group"><label>Question</label><input type="text" id="quiz-question" placeholder="What is...?" /></div>
       <div class="form-group"><label>Option A</label><input type="text" id="quiz-a" /></div>
       <div class="form-group"><label>Option B</label><input type="text" id="quiz-b" /></div>
       <div class="form-group"><label>Option C</label><input type="text" id="quiz-c" /></div>
       <div class="form-group"><label>Option D</label><input type="text" id="quiz-d" /></div>
-      <div class="form-group">
-        <label>Correct Answer</label>
-        <select id="quiz-correct"><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select>
-      </div>
+      <div class="form-group"><label>Correct Answer</label><select id="quiz-correct"><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></div>
       <button class="btn-save" onclick="addQuiz()">Add Question</button>
       <p id="msg-quiz" class="status-msg"></p>
     </div>
@@ -138,8 +110,15 @@
     <!-- 4. MANAGE COURSES -->
     <div id="form-manage" class="admin-form">
       <h3 style="color: #6a0dad; margin-top: 0;">Manage Courses</h3>
-      <div id="manage-list">
-        <p>Loading courses...</p>
+      <div id="manage-list"><p>Loading courses...</p></div>
+    </div>
+
+    <!-- 5. ENROLLED STUDENTS -->
+    <div id="form-students" class="admin-form">
+      <h3 style="color: #6a0dad; margin-top: 0;">Enrolled Students</h3>
+      <p style="color: #666; font-size: 0.9rem; margin-bottom: 15px;">Students who have completed at least one lesson.</p>
+      <div id="students-list">
+        <p>Loading students...</p>
       </div>
     </div>
 
@@ -169,8 +148,8 @@
       document.getElementById('form-' + tabName).classList.add('active');
       if(btnElement) btnElement.classList.add('active');
 
-      // If switching to Manage tab, load the courses
       if (tabName === 'manage') { loadManageList(); }
+      if (tabName === 'students') { loadStudents(); }
     }
 
     // --- FORM SUBMISSIONS ---
@@ -264,15 +243,11 @@
     }
 
     function editCourse(id, oldCode, oldTitle, oldDesc) {
-      // Switch to the Add Course tab
       switchTab('course', document.querySelector('.tab-btn'));
-      
-      // Pre-fill the form
       document.getElementById('course-code').value = oldCode;
       document.getElementById('course-title').value = oldTitle;
       document.getElementById('course-desc').value = oldDesc;
 
-      // Change the save button to update mode
       const saveBtn = document.querySelector('#form-course .btn-save');
       saveBtn.textContent = "Update Course";
       saveBtn.style.background = '#ffc107';
@@ -290,11 +265,72 @@
         if (error) { msg.style.color = 'red'; msg.textContent = 'Error: ' + error.message; }
         else { 
           msg.style.color = 'green'; msg.textContent = '✅ Course updated successfully!'; 
-          // Reset form
           saveBtn.textContent = "Add Course"; saveBtn.style.background = '#1e7e34'; saveBtn.style.color = '#fff'; saveBtn.onclick = addCourse;
           document.getElementById('course-code').value = ''; document.getElementById('course-title').value = ''; document.getElementById('course-desc').value = '';
         }
       };
+    }
+
+    // --- ENROLLED STUDENTS TRACKER ---
+    async function loadStudents() {
+      const listContainer = document.getElementById('students-list');
+      listContainer.innerHTML = '<p>Loading student data...</p>';
+
+      // 1. Fetch all progress records
+      const { data: progress, error: progErr } = await supabaseClient.from('progress').select('user_id, material_id');
+      
+      // 2. Fetch all profiles to get names
+      const { data: profiles, error: profErr } = await supabaseClient.from('profiles').select('id, full_name');
+      
+      // 3. Fetch all materials to match material_id to course_code
+      const { data: materials, error: matErr } = await supabaseClient.from('materials').select('id, course_code');
+      
+      if (progErr || profErr || matErr) { listContainer.innerHTML = '<p style="color:red;">Error loading data.</p>'; return; }
+      if (!progress || progress.length === 0) { listContainer.innerHTML = '<p>No students have completed any lessons yet.</p>'; return; }
+
+      // Group by student and course
+      const studentStats = {};
+
+      progress.forEach(record => {
+        // Find the profile name
+        const profile = profiles.find(p => String(p.id) === String(record.user_id));
+        const name = (profile && profile.full_name) ? profile.full_name : "Unknown Student";
+
+        // Find the course code for this material
+        const material = materials.find(m => m.id === record.material_id);
+        const courseCode = material ? material.course_code : "Unknown Course";
+
+        // Create unique key for student + course
+        const key = `${record.user_id}-${courseCode}`;
+
+        if (!studentStats[key]) {
+          studentStats[key] = { name: name, course: courseCode, count: 0 };
+        }
+        studentStats[key].count += 1;
+      });
+
+      const statsArray = Object.values(studentStats);
+
+      listContainer.innerHTML = `
+        <table class="student-table">
+          <thead>
+            <tr>
+              <th>Student Name</th>
+              <th>Course Code</th>
+              <th>Lessons Completed</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${statsArray.map(stat => `
+              <tr>
+                <td><strong>${stat.name}</strong></td>
+                <td><span class="badge">${stat.course}</span></td>
+                <td>${stat.count}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
     }
 
     document.getElementById('logout-btn').addEventListener('click', async () => {
