@@ -155,7 +155,7 @@
             let finalLink = slide.button_link;
             if (!finalLink || finalLink === '-' || finalLink === '#') { if (slide.title && slide.title.includes('NAMACOS')) finalLink = 'cinema.html'; else if (slide.title && slide.title.includes('Material')) finalLink = 'materials.html'; else finalLink = 'index.html'; }
             const buttonHTML = slide.button_text ? `<a href="${finalLink}" class="slide-btn">${slide.button_text}</a>` : '';
-            return `<div class="swiper-slide ${slideClass}" style="${bgStyle}">${orbs}<div class="slide-overlay"></div><div class="slide-content"><h1>${slide.title || ''}</h1><p>${slide.text || ''}</p>${buttonHTML}</div></div>`;
+            return `<div class="swiper-slide ${slideClass}" style="${bgStyle} display: flex; justify-content: center; align-items: center;">${orbs}<div class="slide-overlay"></div><div class="slide-content"><h1>${slide.title || ''}</h1><p>${slide.text || ''}</p>${buttonHTML}</div></div>`;
           }).join('');
         }
         setTimeout(() => {
