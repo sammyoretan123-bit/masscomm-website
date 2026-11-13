@@ -47,12 +47,16 @@ function initSiteLightbox() {
   overlay.style.cssText = `
     display: none;
     position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.92);
+    top: 0; left: 0; right: 0; bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.95);
     z-index: 9999;
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    padding: 20px; /* Added padding to keep image away from edges */
+    box-sizing: border-box;
   `;
 
   // ---------- Image Container ----------
@@ -70,8 +74,10 @@ function initSiteLightbox() {
   const img = document.createElement("img");
   img.id = "lightbox-image";
   img.style.cssText = `
-    max-width: 90%;
-    max-height: 85vh;
+    max-width: 85%; /* Reduced from 100% */
+    max-height: 85vh; /* Keeps it within screen bounds */
+    width: auto;
+    height: auto;
     object-fit: contain;
     border-radius: 8px;
     box-shadow: 0 10px 50px rgba(0,0,0,0.6);
@@ -84,16 +90,19 @@ function initSiteLightbox() {
   const closeBtn = document.createElement("div");
   closeBtn.innerHTML = "&times;";
   closeBtn.style.cssText = `
-    position: absolute; top: 15px; right: 30px; color: white; font-size: 45px;
-    cursor: pointer; font-weight: bold; z-index: 10000; opacity: 0.8;
+    position: fixed; top: 20px; right: 20px; color: white; font-size: 35px;
+    cursor: pointer; font-weight: bold; z-index: 10000; opacity: 0.9;
+    background: rgba(0,0,0,0.6); border-radius: 50%; width: 45px; height: 45px;
+    display: flex; justify-content: center; align-items: center; line-height: 1;
+    border: 1px solid rgba(255,255,255,0.2);
   `;
 
   // ---------- Prev Button ----------
   const prevBtn = document.createElement("div");
   prevBtn.innerHTML = "&#10094;";
   prevBtn.style.cssText = `
-    position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
-    color: white; font-size: 50px; cursor: pointer; padding: 20px;
+    position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
+    color: white; font-size: 40px; cursor: pointer; padding: 10px;
     opacity: 0.6; z-index: 10000; user-select: none; display: none;
   `;
 
@@ -101,8 +110,8 @@ function initSiteLightbox() {
   const nextBtn = document.createElement("div");
   nextBtn.innerHTML = "&#10095;";
   nextBtn.style.cssText = `
-    position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
-    color: white; font-size: 50px; cursor: pointer; padding: 20px;
+    position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+    color: white; font-size: 40px; cursor: pointer; padding: 10px;
     opacity: 0.6; z-index: 10000; user-select: none; display: none;
   `;
 
@@ -223,19 +232,16 @@ function initSiteLightbox() {
     // Check if the clicked image is inside a profile card
     const isProfileCard = target.closest(".member");
 
-    // Find ALL images in the same container
     const container = target.closest(".gallery-grid") || target.closest(".team-grid") || target.closest(".activity-gallery") || target.parentElement;
     const containerImages = Array.from(container.querySelectorAll("img")).filter(i => i.naturalWidth > 80);
 
     if (containerImages.length > 1 && !isProfileCard) {
-      // GALLERY BEHAVIOR: Show all images, enable arrows
       galleryImages = containerImages;
       currentIndex = galleryImages.indexOf(target);
       showImage(currentIndex);
       prevBtn.style.display = "block";
       nextBtn.style.display = "block";
     } else {
-      // PROFILE CARD BEHAVIOR: Show only this image, hide arrows
       galleryImages = [target];
       currentIndex = 0;
       showImage(currentIndex);
