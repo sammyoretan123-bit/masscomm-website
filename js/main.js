@@ -220,17 +220,22 @@ function initSiteLightbox() {
     if (target.closest("footer")) return;
     if (target.naturalWidth > 0 && target.naturalWidth < 80) return;
 
+    // Check if the clicked image is inside a profile card
+    const isProfileCard = target.closest(".member");
+
     // Find ALL images in the same container
     const container = target.closest(".gallery-grid") || target.closest(".team-grid") || target.closest(".activity-gallery") || target.parentElement;
     const containerImages = Array.from(container.querySelectorAll("img")).filter(i => i.naturalWidth > 80);
 
-    if (containerImages.length > 1) {
+    if (containerImages.length > 1 && !isProfileCard) {
+      // GALLERY BEHAVIOR: Show all images, enable arrows
       galleryImages = containerImages;
       currentIndex = galleryImages.indexOf(target);
       showImage(currentIndex);
       prevBtn.style.display = "block";
       nextBtn.style.display = "block";
     } else {
+      // PROFILE CARD BEHAVIOR: Show only this image, hide arrows
       galleryImages = [target];
       currentIndex = 0;
       showImage(currentIndex);
