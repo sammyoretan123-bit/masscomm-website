@@ -2,121 +2,212 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Certificate Generator | NAMACOS</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Certificate of Completion | NAMACOS</title>
+  <link rel="icon" type="image/jpeg" href="images/mass communication logo.jpg" />
   <style>
-    body { margin: 0; padding: 0; background: #eee; font-family: 'Georgia', serif; }
+    /* --- SCREEN STYLES --- */
+    body {
+      font-family: 'Georgia', serif;
+      background-color: #e0e0e0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
     
-    /* A4 Landscape size */
-    #certificate-wrapper {
-      width: 1122px; 
-      height: 793px; 
+    .certificate-container {
+      width: 100%;
+      max-width: 900px;
       background: #fff;
-      position: relative;
-      padding: 40px;
-      box-sizing: border-box;
-      display: none; 
-    }
-
-    .cert-border-outer {
+      padding: 50px;
       border: 15px solid #6a0dad;
-      height: 100%;
-      padding: 10px;
-      box-sizing: border-box;
-    }
-
-    .cert-border-inner {
-      border: 2px solid #d4b4ff;
-      height: 100%;
-      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       text-align: center;
       position: relative;
-      background-image: radial-gradient(circle at 50% 50%, rgba(106, 13, 173, 0.03) 0%, transparent 70%);
+      box-sizing: border-box;
     }
 
-    .cert-logo { width: 100px; margin-bottom: 20px; border-radius: 50%; }
-    
-    .cert-title {
-      font-size: 45px; color: #6a0dad; text-transform: uppercase;
-      letter-spacing: 4px; margin: 0 0 10px 0; font-weight: bold;
+    .inner-border {
+      border: 2px solid #e0d4eb;
+      padding: 40px 20px;
+      height: 100%;
+      box-sizing: border-box;
     }
 
-    .cert-subtitle { font-size: 20px; color: #555; margin-bottom: 30px; font-style: italic; }
-    .cert-text { font-size: 22px; color: #333; margin-bottom: 20px; }
+    .logo {
+      width: 90px;
+      border-radius: 50%;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      color: #6a0dad;
+      font-size: 2.8rem;
+      margin: 0 0 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      color: #666;
+      margin-bottom: 30px;
+      font-style: italic;
+    }
 
     .student-name {
-      font-size: 50px; color: #0d0d0d; border-bottom: 3px solid #6a0dad;
-      display: inline-block; padding: 0 40px 10px 40px; margin-bottom: 30px; font-weight: bold;
+      font-size: 3rem;
+      color: #0d0d0d;
+      margin: 20px 0;
+      border-bottom: 2px solid #6a0dad;
+      display: inline-block;
+      padding: 0 20px 5px;
+      font-family: 'Arial', sans-serif;
+      font-weight: bold;
     }
 
-    .course-name { font-size: 30px; color: #6a0dad; font-weight: bold; margin-bottom: 50px; }
+    .course-title {
+      font-size: 1.8rem;
+      color: #333;
+      margin: 20px 0;
+      font-weight: bold;
+    }
 
-    .cert-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 60px; padding: 0 50px; }
-    .signature-box { text-align: center; width: 250px; }
-    .signature-line { border-top: 2px solid #333; margin-bottom: 10px; }
-    .signature-name { font-weight: bold; font-size: 18px; color: #0d0d0d; }
-    .signature-title { font-size: 14px; color: #666; }
-    .cert-date { font-size: 16px; color: #555; }
+    .footer-area {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-top: 60px;
+      padding: 0 40px;
+    }
+
+    .signature-box {
+      text-align: center;
+    }
+
+    .signature-line {
+      border-top: 1px solid #333;
+      width: 220px;
+      margin-bottom: 5px;
+    }
+
+    .signature-name { font-weight: bold; font-size: 1.1rem; margin: 0; }
+    .signature-title { font-size: 0.9rem; color: #555; margin: 0; }
+
+    /* --- BUTTON STYLES --- */
+    .download-btn-container {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+    }
+
+    .btn-download {
+      background: #6a0dad;
+      color: white;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(106, 13, 173, 0.4);
+      transition: transform 0.2s, background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-download:hover {
+      background: #520a85;
+      transform: translateX(-50%) scale(1.05);
+    }
+
+    /* --- PRINT STYLES (This makes the PDF download perfectly) --- */
+    @media print {
+      @page { size: A4 landscape; margin: 0; }
+      body {
+        background-color: white;
+        padding: 0;
+        margin: 0;
+        display: block;
+      }
+      .certificate-container {
+        width: 100%;
+        max-width: 100%;
+        height: 100vh;
+        box-shadow: none;
+        border-width: 20px;
+        page-break-after: avoid;
+      }
+      .download-btn-container {
+        display: none; /* Hides the button when downloading/printing */
+      }
+    }
   </style>
 </head>
 <body>
 
-  <div id="certificate-wrapper">
-    <div class="cert-border-outer">
-      <div class="cert-border-inner">
-        <img src="images/mass communication logo.jpg" alt="Logo" class="cert-logo" />
-        <h1 class="cert-title">Certificate of Completion</h1>
-        <p class="cert-subtitle">This is to certify that</p>
-        <div class="student-name" id="cert-student-name">Student Name</div>
-        <p class="cert-text">has successfully completed the course</p>
-        <div class="course-name" id="cert-course-name">Course Title</div>
-        <div class="cert-footer">
-          <div class="cert-date">Date: <span id="cert-date">January 1, 2026</span></div>
-          <div class="signature-box">
-            <div class="signature-line"></div>
-            <div class="signature-name">Dr. Ishola Kamorudeen Lamidi</div>
-            <div class="signature-title">Head of Department</div>
-          </div>
+  <div class="certificate-container">
+    <div class="inner-border">
+      <img src="images/mass communication logo.jpg" alt="Logo" class="logo" onerror="this.style.display='none'"/>
+      
+      <h1>Certificate of Completion</h1>
+      <p class="subtitle">This is to certify that</p>
+      
+      <div class="student-name" id="cert-name">Student Name</div>
+      
+      <p class="subtitle">has successfully completed the course</p>
+      
+      <div class="course-title" id="cert-course">Course Title</div>
+      
+      <div class="footer-area">
+        <div class="signature-box">
+          <p style="margin-bottom: 40px; font-weight: bold;" id="cert-date">Date</p>
+          <div class="signature-line"></div>
+          <p class="signature-title">Date</p>
+        </div>
+        
+        <div class="signature-box">
+          <p style="margin-bottom: 40px; font-style: italic; color: #6a0dad;">Namacos AAUA</p>
+          <div class="signature-line"></div>
+          <p class="signature-name">Dr. Ishola Kamorudeen Lamidi</p>
+          <p class="signature-title">Head of Department</p>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Floating Download Button -->
+  <div class="download-btn-container">
+    <button class="btn-download" onclick="window.print()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+      Download / Save as PDF
+    </button>
+  </div>
+
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      // Get data from the URL (e.g., certificate.html?name=John&course=MAC%20101)
-      const urlParams = new URLSearchParams(window.location.search);
-      const studentName = urlParams.get('name') || 'Student Name';
-      const courseName = urlParams.get('course') || 'Course Title';
-      
-      // Get current date
-      const today = new Date();
-      const dateStr = today.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    // 1. Get the URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    let name = urlParams.get('name');
+    let course = urlParams.get('course');
 
-      // Inject the data
-      document.getElementById('cert-student-name').textContent = studentName;
-      document.getElementById('cert-course-name').textContent = courseName;
-      document.getElementById('cert-date').textContent = dateStr;
+    // 2. Fallbacks
+    if (!name) name = "Student Name";
+    if (!course) course = "Course Title";
 
-      // Show the certificate temporarily to generate PDF
-      document.getElementById('certificate-wrapper').style.display = 'block';
+    // 3. Inject the text
+    document.getElementById('cert-name').textContent = decodeURIComponent(name);
+    document.getElementById('cert-course').textContent = decodeURIComponent(course);
 
-      // Trigger the PDF download
-      const element = document.getElementById('certificate-wrapper');
-      const opt = {
-        margin:       0,
-        filename:     `${studentName} - ${courseName} Certificate.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'px', format: [1122, 793], orientation: 'landscape' }
-      };
-
-      // Generate and save PDF
-      html2pdf().set(opt).from(element).save().then(() => {
-        // After downloading, close the tab automatically
-        window.close();
-      });
-    });
+    // 4. Set today's date
+    const today = new Date();
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('cert-date').textContent = today.toLocaleDateString('en-US', options);
   </script>
 </body>
 </html>
