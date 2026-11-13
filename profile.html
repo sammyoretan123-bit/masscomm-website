@@ -96,9 +96,10 @@
         const fileExt = file.name.split('.').pop();
         const fileName = `${currentUser.id}-${Date.now()}.${fileExt}`;
 
-        const { error: uploadError } = await supabaseClient.storage
+        // Upload the file (upsert: true allows overwriting)
+        const { data: uploadData, error: uploadError } = await supabaseClient.storage
           .from('avatars')
-          .upload(fileName, file);
+          .upload(fileName, file, { upsert: true });
 
         if (uploadError) {
           statusMsg.style.color = "red";
@@ -108,10 +109,10 @@
           return;
         }
 
-        // Get the public URL of the uploaded image
+        // Get the public URL safely using uploadData.path
         const { data: publicUrlData } = supabaseClient.storage
           .from('avatars')
-          .getPublicUrl(fileName);
+          .getPublicUrl(uploadData.path);
         
         avatarUrl = publicUrlData.publicUrl;
       }
