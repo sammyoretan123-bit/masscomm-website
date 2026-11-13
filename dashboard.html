@@ -25,12 +25,29 @@
 
     .nav-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid #6a0dad; vertical-align: middle; }
 
-    /* --- DARK MODE FIXES --- */
-    body.dark-mode .course-card { background: #1e1e1e !important; }
-    body.dark-mode .course-card h3 { color: #ffffff !important; }
-    body.dark-mode .course-card p { color: #bbbbbb !important; }
-    body.dark-mode .progress-bar { background: #333333 !important; }
-    body.dark-mode .welcome-banner { background: linear-gradient(135deg, #3a0b5c 0%, #0d0214 100%) !important; }
+    /* --- DARK MODE FIXES (FORCED) --- */
+    body.dark-mode .course-card { 
+      background-color: #1e1e1e !important; 
+      border-color: #333 !important;
+    }
+    body.dark-mode .course-card h3 { 
+      color: #ffffff !important; 
+    }
+    body.dark-mode .course-card p { 
+      color: #bbbbbb !important; 
+    }
+    body.dark-mode .course-card span { 
+      color: #bbbbbb !important; 
+    }
+    body.dark-mode .progress-bar { 
+      background-color: #333333 !important; 
+    }
+    body.dark-mode .page-title { 
+      color: #ffffff !important; 
+    }
+    body.dark-mode .welcome-banner { 
+      background: linear-gradient(135deg, #3a0b5c 0%, #0d0214 100%) !important; 
+    }
 
     @media (max-width: 768px) {
       .welcome-banner h1 { font-size: 1.6rem; }
