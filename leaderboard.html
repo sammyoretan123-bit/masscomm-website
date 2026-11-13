@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leaderboard | NAMACOS</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" type="image/jpeg" href="images/mass communication logo.jpg" />
+  <style>
+    .leaderboard-container { max-width: 800px; margin: 40px auto; padding: 20px; }
+    
+    /* Podium Styles */
+    .podium { display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin-bottom: 40px; height: 250px; }
+    .podium-step { background: #fff; border-radius: 12px 12px 0 0; width: 120px; text-align: center; padding: 15px; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); position: relative; display: flex; flex-direction: column; justify-content: flex-end; }
+    .podium-step.first { height: 100%; border-top: 5px solid #ffd700; z-index: 3; }
+    .podium-step.second { height: 75%; border-top: 5px solid #c0c0c0; z-index: 2; background: #fdfdfd; }
+    .podium-step.third { height: 60%; border-top: 5px solid #cd7f32; z-index: 1; background: #fafafa; }
+    .podium-name { font-weight: bold; color: #0d0d0d; margin-bottom: 5px; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .podium-score { color: #6a0dad; font-weight: bold; font-size: 1.1rem; }
+    .podium-rank { font-size: 2rem; margin-bottom: 10px; }
+
+    /* List Styles */
+    .list-header { display: flex; justify-content: space-between; padding: 10px 20px; color: #666; font-weight: bold; font-size: 0.9rem; border-bottom: 2px solid #eee; margin-bottom: 10px; }
+    .leaderboard-row { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 15px 20px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: 0.2s; }
+    .leaderboard-row:hover { transform: translateX(5px); border-left: 4px solid #6a0dad; }
+    .rank-col { font-weight: bold; color: #6a0dad; width: 40px; }
+    .name-col { flex: 1; font-weight: bold; color: #333; }
+    .score-col { font-weight: bold; color: #1e7e34; font-size: 1.1rem; }
+    
+    /* Navbar Avatar */
+    .nav-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid #6a0dad; vertical-align: middle; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <img src="images/mass communication logo.jpg" alt="Logo" />
+        <span>Mass Communication AAUA</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="dashboard.html">My Dashboard</a></li>
+        <li><a href="leaderboard.html" style="color: #6a0dad; font-weight: bold;">Leaderboard</a></li>
+        <li><a href="forum.html">Community</a></li>
+        <li><a href="profile.html">My Profile</a></li>
+        <li style="display: flex; align-items: center;">
+          <a href="profile.html" style="padding: 0;">
+            <img id="nav-avatar-img" src="images/mass communication logo.jpg" alt="Profile" class="nav-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Student&background=6a0dad&color=fff';" />
+          </a>
+        </li>
+        <li><button id="logout-btn" style="background: #e50914; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Log Out</button></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="leaderboard-container">
+    <h1 style="color: #0d0d0d; text-align: center; margin-bottom: 30px;">🏆 Top Students</h1>
+
+    <!-- The Top 3 Podium -->
+    <div class="podium" id="podium">
+      <!-- Filled by JavaScript -->
+    </div>
+
+    <!-- The Rest of the List -->
+    <div class="list-header">
+      <span>Rank</span>
+      <span>Student Name</span>
+      <span>Total Score</span>
+    </div>
+    <div id="leaderboard-list">
+      <p style="text-align: center; color: #666;">Loading scores...</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    async function loadLeaderboard() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) { window.location.href = "login.html"; return; }
+
+      // Load Navbar Avatar
+      const { data: profile } = await supabaseClient.from('profiles').select('avatar_url').eq('id', session.user.id).single();
+      if (profile && profile.avatar_url) {
+        document.getElementById('nav-avatar-img').src = profile.avatar_url;
+      }
+
+      // Fetch all quiz scores
+      const { data: scores, error } = await supabaseClient.from('quiz_scores').select('*');
+      
+      if (error) {
+        console.error("Error fetching scores:", error);
+        document.getElementById('leaderboard-list').innerHTML = `<p style="color: red; text-align: center;">Could not load leaderboard.</p>`;
+        return;
+      }
+
+      if (!scores || scores.length === 0) {
+        document.getElementById('leaderboard-list').innerHTML = `<p style="color: #666; text-align: center;">No scores recorded yet. Take a quiz to get on the board!</p>`;
+        return;
+      }
+
+      // Fetch all profiles to match user_id to full_name
+      const { data: profiles } = await supabaseClient.from('profiles').select('id, full_name');
+      
+      // 1. Group and sum the scores per user
+      const userStats = {};
+      
+      scores.forEach(score => {
+        const userId = score.user_id;
+        if (!userStats[userId]) {
+          // Find the user's name from the profiles array
+          const userProfile = profiles ? profiles.find(p => p.id === userId) : null;
+          const name = userProfile && userProfile.full_name ? userProfile.full_name : "Anonymous Student";
+          
+          userStats[userId] = { id: userId, name: name, total: 0 };
+        }
+        userStats[userId].total += score.score;
+      });
+
+      // 2. Convert object to array and sort from highest to lowest score
+      const sortedStats = Object.values(userStats).sort((a, b) => b.total - a.total);
+
+      // 3. Render the Top 3 Podium
+      const podium = document.getElementById('podium');
+      const top3 = sortedStats.slice(0, 3);
+      let podiumHTML = '';
+
+      // Build the podium (Order: 2nd, 1st, 3rd so the 1st is in the middle)
+      if (top3[1]) { // 2nd place
+        podiumHTML += `
+          <div class="podium-step second">
+            <div class="podium-rank">🥈</div>
+            <div class="podium-name" title="${top3[1].name}">${top3[1].name}</div>
+            <div class="podium-score">${top3[1].total} pts</div>
+          </div>
+        `;
+      }
+      if (top3[0]) { // 1st place
+        podiumHTML += `
+          <div class="podium-step first">
+            <div class="podium-rank">🥇</div>
+            <div class="podium-name" title="${top3[0].name}">${top3[0].name}</div>
+            <div class="podium-score">${top3[0].total} pts</div>
+          </div>
+        `;
+      }
+      if (top3[2]) { // 3rd place
+        podiumHTML += `
+          <div class="podium-step third">
+            <div class="podium-rank">🥉</div>
+            <div class="podium-name" title="${top3[2].name}">${top3[2].name}</div>
+            <div class="podium-score">${top3[2].total} pts</div>
+          </div>
+        `;
+      }
+      podium.innerHTML = podiumHTML;
+
+      // 4. Render the rest of the list (Rank 4 downwards)
+      const list = document.getElementById('leaderboard-list');
+      const restOfList = sortedStats.slice(3);
+      
+      if (restOfList.length === 0) {
+        list.innerHTML = `<p style="text-align: center; color: #666; font-size: 0.9rem; margin-top: 20px;">That's everyone for now!</p>`;
+        return;
+      }
+
+      list.innerHTML = restOfList.map((user, index) => {
+        const rank = index + 4; // Since we already showed top 3
+        return `
+          <div class="leaderboard-row">
+            <span class="rank-col">#${rank}</span>
+            <span class="name-col">${user.name}</span>
+            <span class="score-col">${user.total} pts</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      await supabaseClient.auth.signOut();
+      window.location.href = "index.html";
+    });
+
+    document.addEventListener("DOMContentLoaded", loadLeaderboard);
+  </script>
+</body>
+</html>
