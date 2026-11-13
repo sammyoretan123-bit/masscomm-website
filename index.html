@@ -7,424 +7,71 @@
   <link rel="stylesheet" href="css/style.css" />
   <link rel="icon" type="image/jpeg" href="images/mass communication logo.jpg" />
   
-  <!-- Swiper CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
   <style>
     /* --- HERO SLIDER STYLES --- */
-    .hero-slider {
-      width: 100%;
-      height: 70vh; 
-      min-height: 500px;
-      background: #0a0a0a; 
-    }
-    
-    .swiper-slide {
-      position: relative;
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      overflow: hidden; 
-    }
-
-    .slide-1-bg {
-      background-color: #0d0214; 
-      background-image: 
-        radial-gradient(circle at 15% 50%, rgba(106, 13, 173, 0.4), transparent 40%),
-        radial-gradient(circle at 85% 30%, rgba(142, 45, 226, 0.3), transparent 40%);
-    }
-
-    .glow-orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(60px);
-      z-index: 1;
-      animation: float 8s ease-in-out infinite;
-    }
+    .hero-slider { width: 100%; height: 70vh; min-height: 500px; background: #0a0a0a; }
+    .swiper-slide { position: relative; background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; text-align: center; overflow: hidden; }
+    .slide-1-bg { background-color: #0d0214; background-image: radial-gradient(circle at 15% 50%, rgba(106, 13, 173, 0.4), transparent 40%), radial-gradient(circle at 85% 30%, rgba(142, 45, 226, 0.3), transparent 40%); }
+    .glow-orb { position: absolute; border-radius: 50%; filter: blur(60px); z-index: 1; animation: float 8s ease-in-out infinite; }
     .orb-1 { width: 400px; height: 400px; background: #6a0dad; top: -100px; left: -100px; opacity: 0.5; }
     .orb-2 { width: 300px; height: 300px; background: #9b51e0; bottom: -50px; right: -50px; animation-delay: -4s; opacity: 0.4; }
-
-    @keyframes float {
-      0% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(30px, 20px) scale(1.05); }
-      100% { transform: translate(0, 0) scale(1); }
-    }
-
-    .slide-overlay {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.65); 
-      z-index: 2;
-    }
-
-    .slide-content {
-      position: relative;
-      z-index: 3;
-      max-width: 800px;
-      padding: 20px;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .slide-content h1 {
-      font-size: 3.5rem;
-      margin-bottom: 15px;
-      font-weight: 800;
-      letter-spacing: -1px;
-      background: linear-gradient(to right, #ffffff, #d4b4ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0px 4px 10px rgba(106, 13, 173, 0.5);
-    }
-
-    .slide-content p {
-      font-size: 1.15rem;
-      margin-bottom: 30px;
-      line-height: 1.6;
-      color: #e0d4eb;
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
-    }
-
-    .slide-btn {
-      display: inline-block;
-      background: #6a0dad;
-      color: #fff;
-      padding: 14px 35px;
-      font-size: 1.1rem;
-      font-weight: bold;
-      text-decoration: none;
-      border-radius: 50px;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(106, 13, 173, 0.4);
-      border: 1px solid rgba(255,255,255,0.2);
-    }
-
-    .slide-btn:hover {
-      background: #8e2de2;
-      transform: translateY(-3px);
-      box-shadow: 0 6px 20px rgba(142, 45, 226, 0.6);
-    }
-
-    .swiper-pagination-bullet-active {
-      background: #6a0dad !important;
-      width: 24px !important;
-      border-radius: 5px !important;
-    }
+    @keyframes float { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(30px, 20px) scale(1.05); } 100% { transform: translate(0, 0) scale(1); } }
+    .slide-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.65); z-index: 2; }
+    .slide-content { position: relative; z-index: 3; max-width: 800px; padding: 20px; color: #fff; display: flex; flex-direction: column; align-items: center; }
+    .slide-content h1 { font-size: 3.5rem; margin-bottom: 15px; font-weight: 800; letter-spacing: -1px; background: linear-gradient(to right, #ffffff, #d4b4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0px 4px 10px rgba(106, 13, 173, 0.5); }
+    .slide-content p { font-size: 1.15rem; margin-bottom: 30px; line-height: 1.6; color: #e0d4eb; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
+    .slide-btn { display: inline-block; background: #6a0dad; color: #fff; padding: 14px 35px; font-size: 1.1rem; font-weight: bold; text-decoration: none; border-radius: 50px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(106, 13, 173, 0.4); border: 1px solid rgba(255,255,255,0.2); }
+    .slide-btn:hover { background: #8e2de2; transform: translateY(-3px); box-shadow: 0 6px 20px rgba(142, 45, 226, 0.6); }
+    .swiper-pagination-bullet-active { background: #6a0dad !important; width: 24px !important; border-radius: 5px !important; }
 
     /* --- STATISTICS SECTION STYLES --- */
-    .stats-section {
-      background-color: #0d0d0d; 
-      padding: 80px 20px;
-      text-align: center;
-      border-top: 1px solid #222;
-      border-bottom: 1px solid #222;
-    }
-
-    .stats-section h2 {
-      color: #fff;
-      font-size: 2.5rem;
-      margin-bottom: 50px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 30px;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    .stat-card {
-      background: rgba(106, 13, 173, 0.1); 
-      border: 1px solid rgba(106, 13, 173, 0.3);
-      padding: 40px 20px;
-      border-radius: 12px;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 10px 30px rgba(106, 13, 173, 0.2);
-      border-color: #6a0dad;
-    }
-
-    .stat-number {
-      font-size: 3.5rem;
-      font-weight: 900;
-      color: #fff;
-      margin-bottom: 10px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .stat-number span {
-      color: #9b51e0; 
-    }
-
-    .stat-label {
-      color: #aaa;
-      font-size: 1.1rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-weight: bold;
-    }
-
-    /* --- Premium Executives Background --- */
-    .executives-premium-bg {
-      background-color: #0d0214;
-      background-image: 
-        radial-gradient(circle at 20% 30%, rgba(142, 45, 226, 0.4), transparent 40%),
-        radial-gradient(circle at 80% 70%, rgba(106, 13, 173, 0.5), transparent 40%),
-        linear-gradient(135deg, #0d0214 0%, #1a052b 100%);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .executives-premium-bg::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-      background-size: 40px 40px;
-      z-index: 1;
-    }
-
-    .exec-orb-1 {
-      position: absolute;
-      width: 300px; height: 300px;
-      background: #9b51e0;
-      border-radius: 50%;
-      filter: blur(80px);
-      top: -50px; left: -50px;
-      opacity: 0.6;
-      animation: float 6s ease-in-out infinite;
-      z-index: 1;
-    }
-    .exec-orb-2 {
-      position: absolute;
-      width: 250px; height: 250px;
-      background: #e50914; 
-      border-radius: 50%;
-      filter: blur(80px);
-      bottom: -50px; right: -50px;
-      opacity: 0.4;
-      animation: float 8s ease-in-out infinite reverse;
-      z-index: 1;
-    }
+    .stats-section { background-color: #0d0d0d; padding: 80px 20px; text-align: center; border-top: 1px solid #222; border-bottom: 1px solid #222; }
+    .stats-section h2 { color: #fff; font-size: 2.5rem; margin-bottom: 50px; text-transform: uppercase; letter-spacing: 2px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; max-width: 1100px; margin: 0 auto; }
+    .stat-card { background: rgba(106, 13, 173, 0.1); border: 1px solid rgba(106, 13, 173, 0.3); padding: 40px 20px; border-radius: 12px; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .stat-card:hover { transform: translateY(-10px); box-shadow: 0 10px 30px rgba(106, 13, 173, 0.2); border-color: #6a0dad; }
+    .stat-number { font-size: 3.5rem; font-weight: 900; color: #fff; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; }
+    .stat-number span { color: #9b51e0; }
+    .stat-label { color: #aaa; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
 
     /* --- NEW: Side-by-Side Section --- */
-    .home-split-section {
-      background-color: #141414;
-      padding: 60px 20px;
-      display: flex;
-      justify-content: center;
-    }
+    .home-split-section { background-color: #141414; padding: 60px 20px; display: flex; justify-content: center; }
+    .split-container { display: grid; grid-template-columns: 1fr 1.5fr; gap: 40px; max-width: 1200px; width: 100%; }
+    .quick-links-section { text-align: left; }
+    .quick-links-section h2 { color: #fff; font-size: 1.8rem; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px; border-bottom: 2px solid #6a0dad; padding-bottom: 10px; display: inline-block; }
+    .quick-links-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+    .quick-link-card { background: linear-gradient(135deg, rgba(106, 13, 173, 0.2) 0%, rgba(20, 20, 20, 0.8) 100%); border: 1px solid rgba(106, 13, 173, 0.4); border-radius: 12px; padding: 20px; text-decoration: none; color: #fff; display: flex; align-items: center; gap: 15px; transition: all 0.3s ease; }
+    .quick-link-card:hover { transform: translateX(5px); border-color: #6a0dad; box-shadow: 0 5px 15px rgba(106, 13, 173, 0.3); }
+    .quick-link-icon { font-size: 1.8rem; }
+    .quick-link-card h3 { font-size: 1.1rem; margin: 0; }
+    .events-section { text-align: left; }
+    .events-section h2 { color: #fff; font-size: 1.8rem; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px; border-bottom: 2px solid #6a0dad; padding-bottom: 10px; display: inline-block; }
+    .events-list { display: flex; flex-direction: column; gap: 20px; }
+    .event-item { display: flex; gap: 20px; background: #1f1f1f; padding: 20px; border-radius: 10px; transition: background 0.3s ease; text-decoration: none; color: #fff; }
+    .event-item:hover { background: #2a2a2a; }
+    .event-date-box { background: #6a0dad; color: #fff; padding: 10px 15px; border-radius: 8px; text-align: center; min-width: 70px; height: fit-content; }
+    .event-date-day { font-size: 1.8rem; font-weight: bold; line-height: 1; }
+    .event-date-month { font-size: 0.8rem; text-transform: uppercase; font-weight: bold; }
+    .event-info { display: flex; flex-direction: column; justify-content: center; }
+    .event-info h3 { color: #fff; font-size: 1.1rem; margin: 0 0 5px; }
+    .event-info p { color: #9b51e0; font-size: 0.9rem; margin: 0; display: flex; align-items: center; gap: 5px; }
 
-    .split-container {
-      display: grid;
-      grid-template-columns: 1fr 1.5fr; 
-      gap: 40px;
-      max-width: 1200px;
-      width: 100%;
-    }
-
-    /* Quick Links */
-    .quick-links-section {
-      text-align: left;
-    }
-
-    .quick-links-section h2 {
-      color: #fff;
-      font-size: 1.8rem;
-      margin-bottom: 25px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      border-bottom: 2px solid #6a0dad;
-      padding-bottom: 10px;
-      display: inline-block;
-    }
-
-    .quick-links-grid {
-      display: grid;
-      grid-template-columns: 1fr; 
-      gap: 15px;
-    }
-
-    .quick-link-card {
-      background: linear-gradient(135deg, rgba(106, 13, 173, 0.2) 0%, rgba(20, 20, 20, 0.8) 100%);
-      border: 1px solid rgba(106, 13, 173, 0.4);
-      border-radius: 12px;
-      padding: 20px;
-      text-decoration: none;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      transition: all 0.3s ease;
-    }
-
-    .quick-link-card:hover {
-      transform: translateX(5px);
-      border-color: #6a0dad;
-      box-shadow: 0 5px 15px rgba(106, 13, 173, 0.3);
-    }
-
-    .quick-link-icon {
-      font-size: 1.8rem;
-    }
-
-    .quick-link-card h3 {
-      font-size: 1.1rem;
-      margin: 0;
-    }
-
-    /* Upcoming Events */
-    .events-section {
-      text-align: left;
-    }
-
-    .events-section h2 {
-      color: #fff;
-      font-size: 1.8rem;
-      margin-bottom: 25px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      border-bottom: 2px solid #6a0dad;
-      padding-bottom: 10px;
-      display: inline-block;
-    }
-
-    .events-list {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .event-item {
-      display: flex;
-      gap: 20px;
-      background: #1f1f1f;
-      padding: 20px;
-      border-radius: 10px;
-      transition: background 0.3s ease;
-      text-decoration: none;
-      color: #fff;
-    }
-
-    .event-item:hover {
-      background: #2a2a2a;
-    }
-
-    .event-date-box {
-      background: #6a0dad;
-      color: #fff;
-      padding: 10px 15px;
-      border-radius: 8px;
-      text-align: center;
-      min-width: 70px;
-      height: fit-content;
-    }
-
-    .event-date-day {
-      font-size: 1.8rem;
-      font-weight: bold;
-      line-height: 1;
-    }
-
-    .event-date-month {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      font-weight: bold;
-    }
-
-    .event-info {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .event-info h3 {
-      color: #fff;
-      font-size: 1.1rem;
-      margin: 0 0 5px;
-    }
-
-    .event-info p {
-      color: #9b51e0;
-      font-size: 0.9rem;
-      margin: 0;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-
-    /* ========================================= */
-    /* --- MOBILE RESPONSIVENESS (SCREENS < 768px) --- */
-    /* ========================================= */
     @media (max-width: 768px) {
-      .hero-slider {
-        height: 50vh; 
-        min-height: 350px;
-      }
-      
-      .slide-content {
-        padding-top: 60px; 
-      }
-
-      .slide-content h1 {
-        font-size: 2rem; 
-      }
-      
-      .slide-content p {
-        font-size: 0.9rem; 
-        margin-bottom: 15px;
-        display: -webkit-box;
-        -webkit-line-clamp: 3; 
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-      }
-
-      .slide-btn {
-        padding: 10px 20px;
-        font-size: 0.9rem;
-      }
-
-      .stats-section h2, .quick-links-section h2, .events-section h2 {
-        font-size: 1.5rem;
-      }
-
-      .stat-number {
-        font-size: 2.5rem;
-      }
-
-      .stats-grid {
-        grid-template-columns: repeat(2, 1fr); 
-        gap: 15px;
-      }
-
-      .split-container {
-        grid-template-columns: 1fr;
-        gap: 30px;
-      }
+      .hero-slider { height: 50vh; min-height: 350px; }
+      .slide-content { padding-top: 60px; }
+      .slide-content h1 { font-size: 2rem; }
+      .slide-content p { font-size: 0.9rem; margin-bottom: 15px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+      .slide-btn { padding: 10px 20px; font-size: 0.9rem; }
+      .stats-section h2, .quick-links-section h2, .events-section h2 { font-size: 1.5rem; }
+      .stat-number { font-size: 2.5rem; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+      .split-container { grid-template-columns: 1fr; gap: 30px; }
     }
-
     @media (max-width: 480px) {
-      .stats-grid {
-        grid-template-columns: 1fr; 
-      }
-      .slide-content h1 {
-        font-size: 1.8rem;
-      }
+      .stats-grid { grid-template-columns: 1fr; }
+      .slide-content h1 { font-size: 1.8rem; }
     }
   </style>
 </head>
@@ -464,7 +111,6 @@
           <ul class="dropdown">
               <li><a href="activities.html">Activities</a></li>
 <li><a href="gallery.html">Gallery</a></li>
-            
             <li><a href="anthem.html">NAMACOS Anthem</a></li>
           </ul>
         </li>
@@ -483,9 +129,7 @@
 
   <!-- ============ HERO SLIDER (Dynamic) ============ -->
   <div class="swiper hero-slider">
-    <div class="swiper-wrapper" id="slider-container">
-      <!-- Slides will be loaded here -->
-    </div>
+    <div class="swiper-wrapper" id="slider-container"></div>
     <div class="swiper-pagination"></div>
   </div>
 
@@ -512,11 +156,9 @@
     </div>
   </section>
 
-  <!-- ============ SPLIT SECTION (QUICK LINKS & EVENTS) ============ -->
+  <!-- ============ SPLIT SECTION ============ -->
   <section class="home-split-section">
     <div class="split-container">
-      
-      <!-- LEFT SIDE: Quick Links -->
       <div class="quick-links-section">
         <h2>Quick Links</h2>
         <div class="quick-links-grid">
@@ -539,14 +181,12 @@
         </div>
       </div>
 
-      <!-- RIGHT SIDE: Upcoming Events -->
       <div class="events-section">
         <h2>Upcoming Events</h2>
         <div class="events-list" id="events-list">
           <p style="color: #aaa;">Loading events...</p>
         </div>
       </div>
-
     </div>
   </section>
 
@@ -564,28 +204,17 @@
   </footer>
 
   <!-- ============ SCRIPTS ============ -->
-  <!-- Supabase Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
-  
   <script src="js/main.js"></script>
-
-  <!-- Swiper JS -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
   <script>
-    // --- 1. LOAD SLIDER FROM SUPABASE ---
     async function loadSlider() {
       const container = document.getElementById('slider-container');
-      
       try {
-        const { data, error } = await supabaseClient
-          .from('homepage_slider')
-          .select('*')
-          .order('order', { ascending: true });
-
+        const { data, error } = await supabaseClient.from('homepage_slider').select('*').order('order', { ascending: true });
         if (error) throw error;
-
         if (!data || data.length === 0) {
           container.innerHTML = `<div class="swiper-slide slide-1-bg"><div class="slide-content"><h1>Welcome</h1><p>Please add slides in the CMS.</p></div></div>`;
         } else {
@@ -594,104 +223,39 @@
             const bgStyle = !isPurple && slide.image ? `background-image: url('${slide.image}');` : '';
             let slideClass = '';
             let orbs = '';
-
-            if (isPurple) {
-              slideClass = 'slide-1-bg';
-              orbs = '<div class="glow-orb orb-1"></div><div class="glow-orb orb-2"></div>';
-            } else if (slide.title && slide.title.includes('Executives')) {
-              slideClass = 'executives-premium-bg';
-              orbs = '<div class="exec-orb-1"></div><div class="exec-orb-2"></div>';
-            }
-
+            if (isPurple) { slideClass = 'slide-1-bg'; orbs = '<div class="glow-orb orb-1"></div><div class="glow-orb orb-2"></div>'; }
+            else if (slide.title && slide.title.includes('Executives')) { slideClass = 'executives-premium-bg'; orbs = '<div class="exec-orb-1"></div><div class="exec-orb-2"></div>'; }
             let finalLink = slide.button_link;
-            if (!finalLink || finalLink === '-' || finalLink === '#') {
-               if (slide.title && slide.title.includes('NAMACOS')) finalLink = 'cinema.html';
-               else if (slide.title && slide.title.includes('Material')) finalLink = 'materials.html';
-               else finalLink = 'index.html';
-            }
-
+            if (!finalLink || finalLink === '-' || finalLink === '#') { if (slide.title && slide.title.includes('NAMACOS')) finalLink = 'cinema.html'; else if (slide.title && slide.title.includes('Material')) finalLink = 'materials.html'; else finalLink = 'index.html'; }
             const buttonHTML = slide.button_text ? `<a href="${finalLink}" class="slide-btn">${slide.button_text}</a>` : '';
-
-            return `
-              <div class="swiper-slide ${slideClass}" style="${bgStyle}">
-                ${orbs}
-                <div class="slide-overlay"></div>
-                <div class="slide-content">
-                  <h1>${slide.title || ''}</h1>
-                  <p>${slide.text || ''}</p>
-                  ${buttonHTML}
-                </div>
-              </div>
-            `;
+            return `<div class="swiper-slide ${slideClass}" style="${bgStyle}">${orbs}<div class="slide-overlay"></div><div class="slide-content"><h1>${slide.title || ''}</h1><p>${slide.text || ''}</p>${buttonHTML}</div></div>`;
           }).join('');
         }
-
-        // Start Swiper
         setTimeout(() => {
-          new Swiper(".hero-slider", {
-            spaceBetween: 0,
-            centeredSlides: true,
-            autoplay: { delay: 5000, disableOnInteraction: false },
-            pagination: { el: ".swiper-pagination", clickable: true },
-            effect: "slide", 
-            loop: data.length > 1 ? true : false,
-            speed: 800,
-            allowTouchMove: true,
-            fadeEffect: { crossFade: true }
-          });
+          new Swiper(".hero-slider", { spaceBetween: 0, centeredSlides: true, autoplay: { delay: 5000, disableOnInteraction: false }, pagination: { el: ".swiper-pagination", clickable: true }, effect: "slide", loop: data.length > 1 ? true : false, speed: 800, allowTouchMove: true, fadeEffect: { crossFade: true } });
         }, 200);
-
       } catch (err) {
-        console.error("Slider error:", err);
         container.innerHTML = `<div class="swiper-slide slide-1-bg"><div class="slide-content"><h1>Welcome</h1><p>Slider is currently updating.</p></div></div>`;
       }
     }
 
-    // --- 2. LOAD UPCOMING EVENTS FROM SUPABASE ---
     async function loadEvents() {
       const eventsList = document.getElementById('events-list');
       try {
-        const { data, error } = await supabaseClient
-          .from('news')
-          .select('*')
-          .order('date', { ascending: false })
-          .limit(3);
-
+        const { data, error } = await supabaseClient.from('news').select('*').order('date', { ascending: false }).limit(3);
         if (error) throw error;
-
-        if (!data || data.length === 0) {
-          eventsList.innerHTML = `<p style="color: #aaa;">No upcoming events at the moment.</p>`;
-          return;
-        }
-
+        if (!data || data.length === 0) { eventsList.innerHTML = `<p style="color: #aaa;">No upcoming events at the moment.</p>`; return; }
         eventsList.innerHTML = data.map(event => {
           const dateObj = new Date(event.date);
           const day = isNaN(dateObj) ? "01" : dateObj.getDate().toString().padStart(2, '0');
           const month = isNaN(dateObj) ? "JAN" : dateObj.toLocaleString('default', { month: 'short' }).toUpperCase();
-
-          return `
-            <a href="news.html" class="event-item">
-              <div class="event-date-box">
-                <div class="event-date-day">${day}</div>
-                <div class="event-date-month">${month}</div>
-              </div>
-              <div class="event-info">
-                <h3>${event.title || 'Untitled Event'}</h3>
-                <p>🕒 ${event.author ? 'By ' + event.author : 'Department Event'}</p>
-              </div>
-            </a>
-          `;
+          return `<a href="news.html" class="event-item"><div class="event-date-box"><div class="event-date-day">${day}</div><div class="event-date-month">${month}</div></div><div class="event-info"><h3>${event.title || 'Untitled Event'}</h3><p>🕒 ${event.author ? 'By ' + event.author : 'Department Event'}</p></div></a>`;
         }).join('');
-
-      } catch (err) {
-        console.error("Events error:", err);
-        eventsList.innerHTML = `<p style="color: #aaa;">Unable to load events.</p>`;
-      }
+      } catch (err) { eventsList.innerHTML = `<p style="color: #aaa;">Unable to load events.</p>`; }
     }
 
-    // --- 3. ANIMATED COUNTERS ---
     const counters = document.querySelectorAll('.counter');
-    const speed = 200; 
+    const speed = 200;
     const observer = new IntersectionObserver((entries, observer) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -700,44 +264,64 @@
             const target = +counter.getAttribute('data-target');
             const count = +counter.innerText;
             const inc = target / speed;
-            if (count < target) {
-              counter.innerText = Math.ceil(count + inc);
-              setTimeout(updateCount, 1);
-            } else {
-              counter.innerText = target;
-            }
+            if (count < target) { counter.innerText = Math.ceil(count + inc); setTimeout(updateCount, 1); } else { counter.innerText = target; }
           };
-          updateCount();
-          observer.unobserve(counter); 
+          updateCount(); observer.unobserve(counter);
         }
       });
-    }, { threshold: 0.5 }); 
+    }, { threshold: 0.5 });
     counters.forEach(counter => observer.observe(counter));
 
-    // --- 4. INTERCEPT COURSE MATERIALS LINKS ---
     document.addEventListener("DOMContentLoaded", async () => {
       if (typeof supabaseClient !== 'undefined') {
         const { data: { session } } = await supabaseClient.auth.getSession();
-        
         const links = document.querySelectorAll('a[href="materials.html"]');
         links.forEach(link => {
           link.addEventListener("click", (e) => {
             e.preventDefault();
-            if (session) {
-              window.location.href = "dashboard.html"; 
-            } else {
-              window.location.href = "login.html"; 
-            }
+            if (session) { window.location.href = "dashboard.html"; } else { window.location.href = "login.html"; }
           });
         });
       }
     });
 
-    // --- 5. START EVERYTHING ON PAGE LOAD ---
     document.addEventListener("DOMContentLoaded", () => {
       loadSlider();
       loadEvents();
     });
   </script>
+
+  <!-- ============ SIDE-DRAWER MOBILE CSS (For index.html only) ============ -->
+  <style>
+    @media screen and (max-width: 768px) {
+      .nav-links {
+        display: flex !important;
+        flex-direction: column !important;
+        position: fixed !important;
+        top: 0 !important;
+        right: -100% !important;
+        width: 280px !important;
+        height: 100vh !important;
+        background: #111 !important;
+        padding: 80px 0 20px 0 !important;
+        margin: 0 !important;
+        z-index: 99999 !important;
+        box-shadow: -5px 0 25px rgba(0,0,0,0.5) !important;
+        transition: right 0.3s ease-in-out !important;
+        overflow-y: auto !important;
+      }
+      .nav-links.active { right: 0 !important; }
+      .menu-backdrop { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 99998; backdrop-filter: blur(2px); }
+      .menu-backdrop.active { display: block; }
+      .nav-links > li { width: 100% !important; margin: 0 !important; padding: 0 !important; border-bottom: 1px solid #222 !important; }
+      .nav-links > li > a { display: block !important; padding: 15px 25px !important; color: #fff !important; font-size: 1rem !important; font-weight: 500 !important; text-align: left !important; text-decoration: none !important; transition: background 0.2s !important; }
+      .nav-links > li > a:hover { background: #222 !important; }
+      .nav-links .dropdown { display: none !important; background: #0a0a0a !important; padding: 0 !important; margin: 0 !important; width: 100% !important; }
+      .nav-links > li.open .dropdown { display: block !important; }
+      .nav-links .dropdown a { display: block !important; padding: 12px 25px 12px 40px !important; color: #aaa !important; font-size: 0.9rem !important; text-decoration: none !important; }
+      .nav-links .dropdown a:hover { background: #222 !important; color: #fff !important; }
+      .menu-toggle { display: block !important; color: #fff !important; font-size: 24px !important; cursor: pointer !important; background: none !important; border: none !important; z-index: 100000 !important; }
+    }
+  </style>
 </body>
 </html>
