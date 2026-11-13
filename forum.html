@@ -44,7 +44,7 @@
         <span>Mass Communication AAUA</span>
       </div>
       
-      <!-- Notice the id="navLinks" and class="nav-links" -->
+      <!-- The ID here is CRITICAL for the JS to work -->
       <ul class="nav-links" id="navLinks">
         <li><a href="index.html">Home</a></li>
         <li><a href="dashboard.html">My Dashboard</a></li>
@@ -64,8 +64,8 @@
         <li><button id="logout-btn" style="background: #e50914; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Log Out</button></li>
       </ul>
       
-      <!-- Hamburger Icon -->
-      <div class="menu-toggle" id="menu-toggle">&#9776;</div>
+      <!-- The Hamburger Button (Notice inline onclick to guarantee it works) -->
+      <div class="menu-toggle" id="menu-toggle" onclick="toggleMenu()">&#9776;</div>
     </nav>
   </header>
 
@@ -86,6 +86,38 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
   <script>
+    // --- DIRECT MENU TOGGLE (Bypasses main.js) ---
+    function toggleMenu() {
+      const nav = document.getElementById('navLinks');
+      const icon = document.getElementById('menu-toggle');
+      
+      // If the menu is currently a dropdown (on mobile)
+      if (window.innerWidth <= 768) {
+        if (nav.style.display === 'flex') {
+          nav.style.display = 'none';
+        } else {
+          // Force it to display as a vertical block right under the navbar
+          nav.style.display = 'flex';
+          nav.style.flexDirection = 'column';
+          nav.style.position = 'absolute';
+          nav.style.top = '70px';
+          nav.style.right = '20px';
+          nav.style.background = '#000';
+          nav.style.width = '200px';
+          nav.style.padding = '20px';
+          nav.style.borderRadius = '8px';
+          nav.style.zIndex = '1000';
+          nav.style.boxShadow = '0 5px 15px rgba(0,0,0,0.5)';
+          
+          // Style the list items inside
+          Array.from(nav.children).forEach(li => {
+            li.style.margin = '10px 0';
+            li.style.textAlign = 'right';
+          });
+        }
+      }
+    }
+
     // --- DARK MODE LOGIC ---
     const themeToggleBtn = document.getElementById('theme-toggle');
     if (localStorage.getItem('theme') === 'dark') {
@@ -258,42 +290,7 @@
       window.location.href = "index.html";
     });
 
-    // --- THE FIX: MANUAL MOBILE MENU TOGGLE FOR THIS PAGE ---
-    // This guarantees the button works, even if main.js fails.
-    document.getElementById('menu-toggle').addEventListener('click', function() {
-      document.getElementById('navLinks').classList.toggle('active');
-    });
-
     document.addEventListener("DOMContentLoaded", loadPosts);
   </script>
-
-  <!-- FORCED CSS (Placed at the very bottom so it overrides style.css) -->
-  <style>
-    @media screen and (max-width: 768px) {
-      .menu-toggle {
-        display: block !important;
-      }
-      .nav-links {
-        display: none !important;
-      }
-      .nav-links.active {
-        display: flex !important;
-        flex-direction: column !important;
-        position: absolute !important;
-        top: 70px !important;
-        right: 20px !important;
-        background: #000 !important;
-        width: 200px !important;
-        padding: 20px !important;
-        border-radius: 8px !important;
-        z-index: 1000 !important;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.5) !important;
-      }
-      .nav-links.active li {
-        margin: 10px 0 !important;
-        text-align: right !important;
-      }
-    }
-  </style>
 </body>
 </html>
