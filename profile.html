@@ -3,17 +3,67 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Profile | NAMACOS</title>
+  <title>Student Dashboard | NAMACOS</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="icon" type="image/jpeg" href="images/mass communication logo.jpg" />
   <style>
-    .profile-container { max-width: 600px; margin: 40px auto; padding: 20px; }
-    .profile-card { background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; }
-    .avatar-preview { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid #6a0dad; margin-bottom: 20px; background: #eee; }
-    .profile-card label { display: block; text-align: left; font-weight: bold; margin-bottom: 5px; color: #333; }
-    .profile-card input[type="text"], .profile-card input[type="file"] { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-    .profile-card button { width: 100%; padding: 12px; background: #6a0dad; color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; }
-    .profile-card button:hover { background: #8e2de2; }
+    .dashboard-container { max-width: 1200px; margin: 40px auto; padding: 20px; }
+    .welcome-banner { background: linear-gradient(135deg, #6a0dad 0%, #1a052b 100%); padding: 40px; border-radius: 12px; color: #fff; margin-bottom: 40px; overflow-wrap: break-word; }
+    .welcome-banner h1 { margin: 0 0 10px; font-size: 2.5rem; }
+    .welcome-banner p { margin: 0; color: #e0d4eb; font-size: 1.1rem; }
+    .courses-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .course-card { background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #6a0dad; display: flex; flex-direction: column; justify-content: space-between; }
+    .course-card h3 { color: #0d0d0d; margin-top: 0; }
+    .course-card p { color: #666; font-size: 0.95rem; }
+    .progress-bar { background: #eee; border-radius: 10px; height: 10px; margin: 15px 0; overflow: hidden; }
+    .progress-fill { background: #6a0dad; height: 100%; width: 0%; transition: width 0.3s; }
+    .btn-continue { display: inline-block; background: #6a0dad; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 10px; text-align: center; }
+    .quiz-score-badge { display: inline-block; background: #1e7e34; color: #fff; padding: 3px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; margin-bottom: 10px; }
+
+    /* Profile Avatar in Navbar */
+    .nav-avatar {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #6a0dad;
+      vertical-align: middle;
+    }
+
+    /* Mobile Responsiveness & Navbar Fix */
+    @media (max-width: 768px) {
+      .welcome-banner h1 { font-size: 1.6rem; }
+      .welcome-banner { padding: 25px; }
+      .courses-grid { grid-template-columns: 1fr; }
+      
+      .menu-toggle {
+        display: block !important;
+        color: #fff;
+        font-size: 28px;
+        cursor: pointer;
+        z-index: 1001;
+      }
+      .nav-links {
+        display: none; 
+        flex-direction: column;
+        position: absolute;
+        top: 70px;
+        right: 20px;
+        background: #000;
+        width: 200px;
+        padding: 20px;
+        border-radius: 8px;
+        z-index: 1000;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+      }
+      .nav-links.active {
+        display: flex !important; 
+      }
+      .nav-links li {
+        margin: 10px 0;
+        text-align: right;
+      }
+    }
   </style>
 </head>
 <body>
@@ -24,130 +74,161 @@
         <img src="images/mass communication logo.jpg" alt="Department Logo" />
         <span>Mass Communication AAUA</span>
       </div>
+      
       <ul class="nav-links" id="navLinks">
-        <li><a href="dashboard.html">My Dashboard</a></li>
-        <li><a href="profile.html" style="color: #6a0dad; font-weight: bold;">My Profile</a></li>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="dashboard.html" style="color: #6a0dad; font-weight: bold;">My Dashboard</a></li>
+        <li><a href="profile.html">My Profile</a></li>
+        
+        <!-- Profile Picture in Navbar -->
+        <li style="display: flex; align-items: center;">
+          <a href="profile.html" style="padding: 0;">
+            <img id="dashboard-avatar" src="images/mass communication logo.jpg" alt="Profile" class="nav-avatar" />
+          </a>
+        </li>
+        
         <li><button id="logout-btn" style="background: #e50914; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Log Out</button></li>
       </ul>
+      
       <div class="menu-toggle" id="menu-toggle">&#9776;</div>
     </nav>
   </header>
 
-  <div class="profile-container">
-    <div class="profile-card">
-      <h2 style="color: #6a0dad; margin-top: 0; margin-bottom: 30px;">My Profile Settings</h2>
-      
-      <img id="avatar-preview" src="images/mass communication logo.jpg" class="avatar-preview" />
-      
-      <form id="profile-form">
-        <label>Full Name</label>
-        <input type="text" id="full-name" placeholder="e.g. John Doe" required />
+  <div class="dashboard-container">
+    <div class="welcome-banner">
+      <h1>Welcome back, <span id="student-name">Student</span>!</h1>
+      <p>Here are your enrolled courses and progress.</p>
+    </div>
 
-        <label>Profile Picture</label>
-        <input type="file" id="avatar-file" accept="image/*" />
-
-        <button type="submit" id="save-btn">Save Profile</button>
-        <p id="status-msg" style="margin-top: 15px; font-weight: bold;"></p>
-      </form>
+    <h2 style="color: #0d0d0d; margin-bottom: 20px;">My Courses</h2>
+    <div class="courses-grid" id="courses-grid">
+      <p>Loading courses...</p>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
   <script>
-    let currentUser = null;
-
-    async function loadProfile() {
+    async function loadDashboard() {
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session) { window.location.href = "login.html"; return; }
-      currentUser = session.user;
 
-      // Fetch existing profile data
+      // 1. Fetch User Profile to get their real name AND avatar
       const { data: profile } = await supabaseClient
         .from('profiles')
-        .select('*')
-        .eq('id', currentUser.id)
+        .select('full_name, avatar_url')
+        .eq('id', session.user.id)
         .single();
 
-      if (profile) {
-        document.getElementById('full-name').value = profile.full_name || '';
-        if (profile.avatar_url) {
-          document.getElementById('avatar-preview').src = profile.avatar_url;
-        }
-      }
-    }
-
-    document.getElementById('profile-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const saveBtn = document.getElementById('save-btn');
-      const statusMsg = document.getElementById('status-msg');
-      const fileInput = document.getElementById('avatar-file');
-      const fullName = document.getElementById('full-name').value;
-
-      saveBtn.textContent = "Saving...";
-      saveBtn.disabled = true;
-      statusMsg.textContent = "";
-
-      let avatarUrl = document.getElementById('avatar-preview').src;
-
-      // 1. Upload new image if selected
-      if (fileInput.files.length > 0) {
-        const file = fileInput.files[0];
-        const fileExt = file.name.split('.').pop();
-        
-        // FIXED: Use the User's ID as a folder name, then the file inside it.
-        // This perfectly matches the Supabase Storage RLS policy.
-        const fileName = `${currentUser.id}/${Date.now()}.${fileExt}`;
-
-        // Upload the file (No upsert flag needed)
-        const { data: uploadData, error: uploadError } = await supabaseClient.storage
-          .from('avatars')
-          .upload(fileName, file);
-
-        if (uploadError) {
-          statusMsg.style.color = "red";
-          statusMsg.textContent = "Error uploading image: " + uploadError.message;
-          saveBtn.textContent = "Save Profile";
-          saveBtn.disabled = false;
-          return;
-        }
-
-        // Get the public URL
-        const { data: publicUrlData } = supabaseClient.storage
-          .from('avatars')
-          .getPublicUrl(uploadData.path);
-        
-        avatarUrl = publicUrlData.publicUrl;
-      }
-
-      // 2. Save to database
-      const { error: dbError } = await supabaseClient
-        .from('profiles')
-        .upsert({ 
-          id: currentUser.id, 
-          full_name: fullName, 
-          avatar_url: avatarUrl 
-        });
-
-      if (dbError) {
-        statusMsg.style.color = "red";
-        statusMsg.textContent = "Error saving profile: " + dbError.message;
+      // Display real name
+      if (profile && profile.full_name) {
+        document.getElementById('student-name').textContent = profile.full_name;
       } else {
-        statusMsg.style.color = "green";
-        statusMsg.textContent = "Profile saved successfully!";
-        document.getElementById('avatar-preview').src = avatarUrl;
+        document.getElementById('student-name').textContent = session.user.email.split('@')[0];
       }
 
-      saveBtn.textContent = "Save Profile";
-      saveBtn.disabled = false;
-    });
+      // Display avatar picture in the top right (if it exists)
+      const avatarImg = document.getElementById('dashboard-avatar');
+      if (avatarImg) {
+        if (profile && profile.avatar_url) {
+          avatarImg.src = profile.avatar_url;
+        } else {
+          avatarImg.src = "images/mass communication logo.jpg"; // Fallback logo
+        }
+      }
+
+      // 2. Fetch Courses
+      const { data: courses, error: courseError } = await supabaseClient.from('courses').select('*');
+      const grid = document.getElementById('courses-grid');
+      
+      if (courseError) {
+        grid.innerHTML = `<p style="color: red;">Error loading courses: ${courseError.message}</p>`;
+        return;
+      }
+
+      if (!courses || courses.length === 0) {
+        grid.innerHTML = `<p style="color: #666;">No courses available yet.</p>`;
+        return;
+      }
+
+      let coursesHTML = '';
+      for (let course of courses) {
+        // Calculate Progress
+        const { count: totalMaterials } = await supabaseClient
+          .from('materials')
+          .select('*', { count: 'exact', head: true })
+          .eq('course_code', course.code);
+
+        const { data: completed } = await supabaseClient
+          .from('progress')
+          .select('material_id')
+          .eq('user_id', session.user.id);
+
+        let completedCount = 0;
+        if (completed && totalMaterials > 0) {
+           const { data: courseMaterials } = await supabaseClient
+             .from('materials')
+             .select('id')
+             .eq('course_code', course.code);
+           
+           if (courseMaterials) {
+             const courseMaterialIds = courseMaterials.map(m => m.id);
+             completedCount = completed.filter(p => courseMaterialIds.includes(p.material_id)).length;
+           }
+        }
+
+        let percentage = totalMaterials > 0 ? Math.round((completedCount / totalMaterials) * 100) : 0;
+
+        // Fetch Quiz Score
+        const { data: quizData } = await supabaseClient
+          .from('quiz_scores')
+          .select('score, total_questions')
+          .eq('user_id', session.user.id)
+          .eq('course_code', course.code)
+          .order('score', { ascending: false })
+          .limit(1);
+
+        let quizBadge = '';
+        if (quizData && quizData.length > 0) {
+          const q = quizData[0];
+          const qPercentage = Math.round((q.score / q.total_questions) * 100);
+          quizBadge = `<span class="quiz-score-badge">Quiz: ${qPercentage}%</span>`;
+        }
+
+        // Render Card
+        coursesHTML += `
+          <div class="course-card">
+            <div>
+              <h3>${course.title}</h3>
+              <p>${course.description || 'Start learning today.'}</p>
+              ${quizBadge}
+            </div>
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size: 0.8rem; color:#666; margin-top:10px;">
+                <span>${completedCount} of ${totalMaterials} lessons complete</span>
+                <span>${percentage}%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: ${percentage}%;"></div>
+              </div>
+              
+              ${percentage === 100 ? `<a href="certificate.html?name=${profile && profile.full_name ? profile.full_name : session.user.email.split('@')[0]}&course=${course.title}" target="_blank" class="btn-continue" style="background: #1e7e34; margin-top: 5px;">🏆 Download Certificate</a>` : ''}
+              
+              <a href="course-view.html?id=${course.id}" class="btn-continue" style="margin-left: 5px;">Continue Learning</a>
+            </div>
+          </div>
+        `;
+      }
+
+      grid.innerHTML = coursesHTML;
+    }
 
     document.getElementById('logout-btn').addEventListener('click', async () => {
       await supabaseClient.auth.signOut();
       window.location.href = "index.html";
     });
 
-    document.addEventListener("DOMContentLoaded", loadProfile);
+    document.addEventListener("DOMContentLoaded", loadDashboard);
   </script>
 </body>
 </html>
