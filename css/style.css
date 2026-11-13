@@ -705,7 +705,7 @@ section img,
   .menu-toggle {
     display: block !important;
     color: #fff !important;
-    font-size: 24px !important; /* REDUCED SIZE HERE */
+    font-size: 24px !important;
     line-height: 1 !important;
     cursor: pointer !important;
     z-index: 9999 !important;
@@ -720,9 +720,9 @@ section img,
     top: 65px !important;
     right: 20px !important;
     background: #000 !important;
-    width: 220px !important;
+    width: 200px !important;
     flex-direction: column !important;
-    padding: 20px !important;
+    padding: 10px 20px !important; /* Reduced padding */
     border-radius: 8px !important;
     box-shadow: 0 5px 15px rgba(0,0,0,0.5) !important;
     z-index: 9998 !important;
@@ -733,18 +733,23 @@ section img,
     display: flex !important; 
   }
 
+  /* FORCE THE LIST ITEMS TO BE COMPACT */
   .nav-links li {
-    margin: 12px 0 !important;
+    margin: 5px 0 !important;
+    padding: 0 !important; /* Removes the hidden spacing */
     text-align: right !important;
-    width: 100% !important;
+    width: auto !important; /* Stops it from stretching */
     display: block !important;
+    background: transparent !important;
   }
   
+  /* FORCE THE LINKS TO BE COMPACT */
   .nav-links a {
     display: block !important;
-    width: 100% !important;
+    width: auto !important;
     color: #fff !important;
-    padding: 10px 0 !important;
+    padding: 8px 0 !important; /* Tighter links */
     text-decoration: none !important;
+    font-size: 0.95rem !important;
   }
 }
