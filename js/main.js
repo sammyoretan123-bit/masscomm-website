@@ -1,7 +1,7 @@
 /* ============================================
    MASS COMMUNICATION DEPARTMENT
    File: js/main.js
-   Purpose: Mobile menu + dropdown + Slider Lightbox + Zoom & Pan (Excluding Profile Cards)
+   Purpose: Mobile menu + dropdown + Slider Lightbox + Zoom & Pan
    ============================================ */
 
 /* ---------- MOBILE MENU TOGGLE ---------- */
@@ -167,7 +167,7 @@ function initSiteLightbox() {
     if (e.key === "ArrowRight") showImage(currentIndex + 1);
   });
 
-  // Zooming (Mouse Wheel) - ONLY on the image
+  // Zooming (Mouse Wheel)
   img.addEventListener("wheel", (e) => {
     e.preventDefault(); 
     const zoomSensitivity = 0.1;
@@ -189,7 +189,7 @@ function initSiteLightbox() {
     updateImageTransform();
   }, { passive: false });
 
-  // Panning (Click and Drag) - ONLY on the image
+  // Panning
   img.addEventListener("mousedown", (e) => {
     if (scale <= 1) return; 
     isDragging = true;
@@ -220,10 +220,7 @@ function initSiteLightbox() {
     if (target.closest("footer")) return;
     if (target.naturalWidth > 0 && target.naturalWidth < 80) return;
 
-    // THIS IS THE MAGIC LINE
-    // If the image is inside a .member card (Lecturer, HOD, Exec), do NOTHING.
-    if (target.closest(".member")) return; 
-
+    // Find ALL images in the same container
     const container = target.closest(".gallery-grid") || target.closest(".team-grid") || target.closest(".activity-gallery") || target.parentElement;
     const containerImages = Array.from(container.querySelectorAll("img")).filter(i => i.naturalWidth > 80);
 
