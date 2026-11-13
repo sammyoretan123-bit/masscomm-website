@@ -12,9 +12,12 @@
     .welcome-banner h1 { margin: 0 0 10px; font-size: 2.5rem; }
     .welcome-banner p { margin: 0; color: #e0d4eb; font-size: 1.1rem; }
     .courses-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-    .course-card { background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #6a0dad; display: flex; flex-direction: column; justify-content: space-between; }
-    .course-card h3 { color: #0d0d0d; margin-top: 0; }
-    .course-card p { color: #666; font-size: 0.95rem; }
+    
+    /* Course Card Base */
+    .course-card { background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #6a0dad; display: flex; flex-direction: column; justify-content: space-between; transition: background-color 0.3s; }
+    .course-card h3 { margin-top: 0; color: #0d0d0d; }
+    .course-card p { font-size: 0.95rem; color: #666; }
+    
     .progress-bar { background: #eee; border-radius: 10px; height: 10px; margin: 15px 0; overflow: hidden; }
     .progress-fill { background: #6a0dad; height: 100%; width: 0%; transition: width 0.3s; }
     .btn-continue { display: inline-block; background: #6a0dad; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 10px; text-align: center; }
@@ -22,10 +25,11 @@
 
     .nav-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid #6a0dad; vertical-align: middle; }
 
-    /* Dark Mode Specific Fixes for Dashboard */
-    body.dark-mode .course-card h3 { color: #fff !important; }
-    body.dark-mode .course-card p { color: #ccc !important; }
-    body.dark-mode .progress-bar { background: #333 !important; }
+    /* --- DARK MODE FIXES --- */
+    body.dark-mode .course-card { background: #1e1e1e !important; }
+    body.dark-mode .course-card h3 { color: #ffffff !important; }
+    body.dark-mode .course-card p { color: #bbbbbb !important; }
+    body.dark-mode .progress-bar { background: #333333 !important; }
     body.dark-mode .welcome-banner { background: linear-gradient(135deg, #3a0b5c 0%, #0d0214 100%) !important; }
 
     @media (max-width: 768px) {
@@ -55,7 +59,6 @@
         <li><a href="forum.html">Community</a></li>
         <li><a href="profile.html">My Profile</a></li>
         
-        <!-- Dark Mode Toggle -->
         <li>
           <button id="theme-toggle" style="background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; padding: 0 10px;">🌙</button>
         </li>
@@ -74,7 +77,6 @@
 
   <div class="dashboard-container">
     
-    <!-- ANNOUNCEMENT BANNER -->
     <div id="announcement-banner" style="display: none; background: #fff3cd; border-left: 5px solid #ffc107; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); position: relative;">
       <h4 id="ann-title" style="margin: 0 0 5px; color: #856404; font-size: 1.1rem;"></h4>
       <p id="ann-message" style="margin: 0; color: #856404;"></p>
@@ -86,7 +88,7 @@
       <p>Here are your enrolled courses and progress.</p>
     </div>
 
-    <h2 style="margin-bottom: 20px;">My Courses</h2>
+    <h2 style="margin-bottom: 20px;" class="page-title">My Courses</h2>
     <div class="courses-grid" id="courses-grid">
       <p>Loading courses...</p>
     </div>
@@ -98,7 +100,6 @@
     // --- DARK MODE LOGIC ---
     const themeToggleBtn = document.getElementById('theme-toggle');
     
-    // Check if user previously selected dark mode
     if (localStorage.getItem('theme') === 'dark') {
       document.body.classList.add('dark-mode');
       if (themeToggleBtn) themeToggleBtn.textContent = '☀️';
@@ -108,7 +109,6 @@
       themeToggleBtn.addEventListener('click', () => {
         document.body.classList.toggle('dark-mode');
         
-        // Save preference to browser
         if (document.body.classList.contains('dark-mode')) {
           localStorage.setItem('theme', 'dark');
           themeToggleBtn.textContent = '☀️';
