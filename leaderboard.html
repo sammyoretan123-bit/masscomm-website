@@ -33,26 +33,16 @@
         <img src="images/mass communication logo.jpg" alt="Logo" />
         <span>Mass Communication AAUA</span>
       </div>
-      
       <ul class="nav-links" id="navLinks">
         <li><a href="index.html">Home</a></li>
         <li><a href="dashboard.html">My Dashboard</a></li>
         <li><a href="leaderboard.html" style="color: #6a0dad; font-weight: bold;">Leaderboard</a></li>
         <li><a href="history.html">My History</a></li>
         <li><a href="forum.html">Community</a></li>
-        
-        <li>
-          <button id="theme-toggle" style="background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; padding: 0 10px;">🌙</button>
-        </li>
-
-        <li style="display: flex; align-items: center;">
-          <a href="profile.html" style="padding: 0;" title="My Profile">
-            <img id="nav-avatar-img" src="images/mass communication logo.jpg" alt="Profile" class="nav-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Student&background=6a0dad&color=fff';" />
-          </a>
-        </li>
+        <li><button id="theme-toggle" style="background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; padding: 0 10px;">🌙</button></li>
+        <li style="display: flex; align-items: center;"><a href="profile.html" style="padding: 0;" title="My Profile"><img id="nav-avatar-img" src="images/mass communication logo.jpg" alt="Profile" class="nav-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Student&background=6a0dad&color=fff';" /></a></li>
         <li><button id="logout-btn" style="background: #e50914; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Log Out</button></li>
       </ul>
-      
       <div class="menu-toggle" id="menu-toggle">&#9776;</div>
     </nav>
   </header>
@@ -67,51 +57,21 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
   <script>
-    // --- DARK MODE LOGIC ---
     const themeToggleBtn = document.getElementById('theme-toggle');
-    if (localStorage.getItem('theme') === 'dark') {
-      document.body.classList.add('dark-mode');
-      if (themeToggleBtn) themeToggleBtn.textContent = '☀️';
-    }
-    if (themeToggleBtn) {
-      themeToggleBtn.addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
-        if (document.body.classList.contains('dark-mode')) {
-          localStorage.setItem('theme', 'dark');
-          themeToggleBtn.textContent = '☀️';
-        } else {
-          localStorage.setItem('theme', 'light');
-          themeToggleBtn.textContent = '🌙';
-        }
-      });
-    }
+    if (localStorage.getItem('theme') === 'dark') { document.body.classList.add('dark-mode'); if (themeToggleBtn) themeToggleBtn.textContent = '☀️'; }
+    if (themeToggleBtn) { themeToggleBtn.addEventListener('click', () => { document.body.classList.toggle('dark-mode'); if (document.body.classList.contains('dark-mode')) { localStorage.setItem('theme', 'dark'); themeToggleBtn.textContent = '☀️'; } else { localStorage.setItem('theme', 'light'); themeToggleBtn.textContent = '🌙'; } }); }
 
-    // --- MANUAL MOBILE MENU TOGGLE ---
-    document.getElementById('menu-toggle').addEventListener('click', () => {
-      document.getElementById('navLinks').classList.toggle('active');
-    });
+    document.getElementById('menu-toggle').addEventListener('click', () => { document.getElementById('navLinks').classList.toggle('active'); });
 
-    // --- LEADERBOARD LOGIC ---
     async function loadLeaderboard() {
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session) { window.location.href = "login.html"; return; }
-
       const { data: profile } = await supabaseClient.from('profiles').select('avatar_url').eq('id', session.user.id).single();
       if (profile && profile.avatar_url) { document.getElementById('nav-avatar-img').src = profile.avatar_url; }
-
       const { data: scores, error: scoresError } = await supabaseClient.from('quiz_scores').select('*');
       const { data: profiles, error: profilesError } = await supabaseClient.from('profiles').select('id, full_name');
-
-      if (scoresError || profilesError) {
-        document.getElementById('leaderboard-list').innerHTML = `<p style="color: red; text-align: center;">Could not load leaderboard.</p>`;
-        return;
-      }
-
-      if (!scores || scores.length === 0) {
-        document.getElementById('leaderboard-list').innerHTML = `<p style="color: #666; text-align: center;">No scores recorded yet. Take a quiz to get on the board!</p>`;
-        return;
-      }
-
+      if (scoresError || profilesError) { document.getElementById('leaderboard-list').innerHTML = `<p style="color: red; text-align: center;">Could not load leaderboard.</p>`; return; }
+      if (!scores || scores.length === 0) { document.getElementById('leaderboard-list').innerHTML = `<p style="color: #666; text-align: center;">No scores recorded yet. Take a quiz to get on the board!</p>`; return; }
       const userStats = {};
       scores.forEach(score => {
         const userId = String(score.user_id).trim();
@@ -122,26 +82,17 @@
         }
         userStats[userId].total += score.score;
       });
-
       const sortedStats = Object.values(userStats).sort((a, b) => b.total - a.total);
       const podium = document.getElementById('podium');
       const top3 = sortedStats.slice(0, 3);
       let podiumHTML = '';
-
       if (top3[1]) podiumHTML += `<div class="podium-step second"><div class="podium-rank">🥈</div><div class="podium-name" title="${top3[1].name}">${top3[1].name}</div><div class="podium-score">${top3[1].total} pts</div></div>`;
       if (top3[0]) podiumHTML += `<div class="podium-step first"><div class="podium-rank">🥇</div><div class="podium-name" title="${top3[0].name}">${top3[0].name}</div><div class="podium-score">${top3[0].total} pts</div></div>`;
       if (top3[2]) podiumHTML += `<div class="podium-step third"><div class="podium-rank">🥉</div><div class="podium-name" title="${top3[2].name}">${top3[2].name}</div><div class="podium-score">${top3[2].total} pts</div></div>`;
-      
       podium.innerHTML = podiumHTML;
-
       const list = document.getElementById('leaderboard-list');
       const restOfList = sortedStats.slice(3);
-      
-      if (restOfList.length === 0) {
-        list.innerHTML = `<p style="text-align: center; color: #666; font-size: 0.9rem; margin-top: 20px;">That's everyone for now!</p>`;
-        return;
-      }
-
+      if (restOfList.length === 0) { list.innerHTML = `<p style="text-align: center; color: #666; font-size: 0.9rem; margin-top: 20px;">That's everyone for now!</p>`; return; }
       list.innerHTML = restOfList.map((user, index) => `
         <div class="leaderboard-row">
           <span class="rank-col">#${index + 4}</span>
@@ -150,23 +101,8 @@
         </div>
       `).join('');
     }
-
-    document.getElementById('logout-btn').addEventListener('click', async () => {
-      await supabaseClient.auth.signOut();
-      window.location.href = "index.html";
-    });
+    document.getElementById('logout-btn').addEventListener('click', async () => { await supabaseClient.auth.signOut(); window.location.href = "index.html"; });
     document.addEventListener("DOMContentLoaded", loadLeaderboard);
   </script>
-
-  <!-- FORCED CSS FOR MOBILE MENU -->
-  <style>
-    @media screen and (max-width: 768px) {
-      .menu-toggle { display: block !important; color: #fff !important; font-size: 28px !important; cursor: pointer !important; z-index: 9999 !important; }
-      .nav-links { display: none !important; position: absolute !important; top: 70px !important; right: 20px !important; background: #000 !important; width: 220px !important; flex-direction: column !important; padding: 20px !important; border-radius: 8px !important; box-shadow: 0 5px 15px rgba(0,0,0,0.5) !important; z-index: 9998 !important; }
-      .nav-links.active { display: flex !important; }
-      .nav-links li { margin: 12px 0 !important; text-align: right !important; width: 100% !important; display: block !important; }
-      .nav-links a { display: block !important; width: 100% !important; color: #fff !important; padding: 10px 0 !important; text-decoration: none !important; }
-    }
-  </style>
 </body>
 </html>

@@ -700,23 +700,24 @@ section img,
 
 /* ============================================
    BULLETPROOF MOBILE MENU OVERRIDES
-   (Placed at the bottom to win all CSS conflicts)
    ============================================ */
 @media screen and (max-width: 768px) {
   .menu-toggle {
     display: block !important;
     color: #fff !important;
-    font-size: 28px !important;
+    font-size: 24px !important; /* REDUCED SIZE HERE */
+    line-height: 1 !important;
     cursor: pointer !important;
     z-index: 9999 !important;
     background: none !important;
     border: none !important;
+    padding: 5px !important;
   }
 
   .nav-links {
     display: none !important; 
     position: absolute !important;
-    top: 70px !important;
+    top: 65px !important;
     right: 20px !important;
     background: #000 !important;
     width: 220px !important;
