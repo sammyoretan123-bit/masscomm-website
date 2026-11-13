@@ -3,107 +3,124 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>About | Mass Communication Department</title>
+  <title>About the Department | Mass Communication Department</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="icon" type="image/jpeg" href="images/mass communication logo.jpg" />
+  <style>
+    body { background: #f4f6f9; color: #333; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: none; margin: 0; padding: 0; }
+    .section-title { text-align: center; padding: 40px 20px 20px; }
+    .section-title h2 { font-size: 2.5rem; margin-bottom: 10px; color: #0d0d0d; }
+    .section-title p { font-size: 1.1rem; color: #666; }
+    header { background: #000; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+    .navbar { display: flex; justify-content: space-between; align-items: center; padding: 10px 40px; max-width: 1200px; margin: 0 auto; }
+    .logo { display: flex; align-items: center; gap: 10px; color: #fff; font-weight: bold; font-size: 1.2rem; }
+    .logo img { height: 45px; border-radius: 50%; }
+    .nav-links { display: flex; align-items: center; gap: 25px; }
+    .nav-links > li { position: relative; }
+    .nav-links a { color: #fff; font-weight: 500; transition: color 0.3s; font-size: 0.95rem; }
+    .nav-links a:hover { color: #6a0dad; }
+    .dropdown { display: none; position: absolute; top: 100%; left: 0; background: #1a1a1a; padding: 10px 0; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); min-width: 200px; z-index: 1001; }
+    .dropdown a { display: block; padding: 10px 20px; font-size: 0.9rem; }
+    .dropdown a:hover { background: #333; color: #fff; }
+    .nav-links > li:hover .dropdown { display: block; }
+    .arrow { font-size: 0.7rem; margin-left: 5px; }
+    .menu-toggle { display: none; }
+
+    /* --- CONTENT CARD STYLES --- */
+    .content-section { max-width: 900px; margin: 0 auto 50px; padding: 0 20px; }
+    .content-card {
+      background: #fff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+      margin-bottom: 30px;
+      border-top: 4px solid #6a0dad;
+    }
+    .content-card h3 { color: #6a0dad; font-size: 1.6rem; margin-bottom: 15px; }
+    .content-card p { color: #444; font-size: 1.05rem; line-height: 1.8; margin-bottom: 15px; }
+    .content-card ul { list-style-type: disc; padding-left: 20px; }
+    .content-card ul li { color: #444; font-size: 1.05rem; line-height: 1.8; margin-bottom: 10px; }
+
+    footer { background: #0d0d0d; color: #aaa; text-align: center; padding: 40px 20px; border-top: 1px solid #222; margin-top: 50px; }
+    .footer-credit { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; }
+    .footer-credit img { height: 40px; }
+    .footer-credit-text { text-align: left; }
+    .powered-by { font-size: 0.8rem; color: #666; }
+    .movement-name { font-weight: bold; color: #fff; }
+    .admin-name { font-size: 0.8rem; color: #9b51e0; }
+
+    @media screen and (max-width: 768px) {
+      .navbar { padding: 10px 20px; }
+      .menu-toggle { display: block !important; color: #fff; font-size: 24px; cursor: pointer; z-index: 10001; }
+      .nav-links { display: none !important; position: absolute !important; top: 65px !important; right: 15px !important; background: #000 !important; width: 250px !important; flex-direction: column !important; padding: 10px 0 !important; border-radius: 8px !important; box-shadow: 0 5px 15px rgba(0,0,0,0.5) !important; z-index: 10000 !important; }
+      .nav-links.active { display: flex !important; }
+      .nav-links > li { width: 100% !important; border-bottom: 1px solid #222 !important; }
+      .nav-links > li:last-child { border-bottom: none !important; }
+      .nav-links a { display: block !important; padding: 12px 20px !important; color: #fff !important; font-size: 0.95rem !important; text-align: left !important; }
+      .dropdown { display: none !important; position: static !important; background: #111 !important; padding: 0 !important; box-shadow: none !important; }
+      .nav-links > li.open .dropdown { display: block !important; }
+      .dropdown a { padding: 10px 20px 10px 35px !important; color: #bbb !important; font-size: 0.85rem !important; }
+      .content-card { padding: 25px; }
+    }
+  </style>
 </head>
 <body>
-
-  <!-- ============ NAVBAR ============ -->
   <header>
     <nav class="navbar">
-      <div class="logo">
-        <img src="images/mass communication logo.jpg" alt="Department Logo" />
-        <span>Mass Communication AAUA</span>
-      </div>
-
+      <div class="logo"><img src="images/mass communication logo.jpg" alt="Department Logo" /><span>Mass Communication AAUA</span></div>
       <ul class="nav-links" id="navLinks">
-
         <li><a href="index.html">Home</a></li>
-
-        <li>
-          <a href="#">About <span class="arrow">&#9662;</span></a>
-          <ul class="dropdown">
-            <li><a href="about.html">About Department</a></li>
-            <li><a href="courses.html">Courses</a></li>
-            <li><a href="materials.html">Course Materials</a></li>
-            <li><a href="sequence-prad.html">PRAD</a></li>
-            <li><a href="sequence-broadcast.html">Broadcast</a></li>
-            <li><a href="sequence-print.html">Print</a></li>
-          </ul>
-        </li>
-
-        <li>
-          <a href="#">People <span class="arrow">&#9662;</span></a>
-          <ul class="dropdown">
-            <li><a href="hod.html">HOD</a></li>
-            <li><a href="lecturers.html">Lecturers</a></li>
-            <li><a href="executives.html">Student Executives</a></li>
-<li><a href="alumni.html">Alumni</a></li>
-          </ul>
-        </li>
-
-        <li>
-          <a href="#">Students <span class="arrow">&#9662;</span></a>
-          <ul class="dropdown">
-            <li><a href="sets.html">Sets</a></li>
-          </ul>
-        </li>
-
-        <li>
-          <a href="#">Activities <span class="arrow">&#9662;</span></a>
-          <ul class="dropdown">
-              <li><a href="activities.html">Activities</a></li>
-<li><a href="gallery.html">Gallery</a></li>
-
-            
-          </ul>
-        </li>
-
-        <li>
-          <a href="#">Media <span class="arrow">&#9662;</span></a>
-          <ul class="dropdown">
-            <li><a href="news.html">News</a></li>
-            <li><a href="blog.html">Blog</a></li>
-          </ul>
-        </li>
-
-        <li><a href="cinema.html">NAMACOS TV</a></li>
-<li><a href="contact.html">Contact</a></li>`
-
+        <li><a href="#">About <span class="arrow">&#9662;</span></a><ul class="dropdown"><li><a href="about.html">About Department</a></li><li><a href="courses.html">Courses</a></li><li><a href="materials.html">Course Materials</a></li><li><a href="sequence-prad.html">PRAD</a></li><li><a href="sequence-broadcast.html">Broadcast</a></li><li><a href="sequence-print.html">Print</a></li></ul></li>
+        <li><a href="#">People <span class="arrow">&#9662;</span></a><ul class="dropdown"><li><a href="hod.html">HOD</a></li><li><a href="lecturers.html">Lecturers</a></li><li><a href="executives.html">Student Executives</a></li><li><a href="alumni.html">Alumni</a></li></ul></li>
+        <li><a href="#">Students <span class="arrow">&#9662;</span></a><ul class="dropdown"><li><a href="sets.html">Sets</a></li></ul></li>
+        <li><a href="#">Activities <span class="arrow">&#9662;</span></a><ul class="dropdown"><li><a href="activities.html">Activities</a></li><li><a href="gallery.html">Gallery</a></li></ul></li>
+        <li><a href="#">Media <span class="arrow">&#9662;</span></a><ul class="dropdown"><li><a href="news.html">News</a></li><li><a href="blog.html">Blog</a></li></ul></li>
+        <li><a href="cinema.html">NAMACOS TV</a></li><li><a href="contact.html">Contact</a></li>
       </ul>
-
       <div class="menu-toggle" id="menu-toggle">&#9776;</div>
     </nav>
   </header>
 
-  <!-- ============ PAGE TITLE ============ -->
   <section class="section-title">
-    <h2 id="about-heading">About the Department</h2>
-    <p id="about-subtitle">Learn more about Mass Communication</p>
+    <h2>About the Department</h2>
+    <p>Learn more about Mass Communication</p>
   </section>
 
-  <!-- ============ ABOUT CONTENT ============ -->
-  <section class="team">
-    <div id="about-content">
-      <p style="text-align:center; width:100%; color:#666;">Loading about info...</p>
+  <section class="content-section">
+    <div class="content-card">
+      <h3>Who We Are</h3>
+      <p>The Department of Mass Communication is one of the leading departments in the institution, dedicated to training students in journalism, broadcasting, public relations, advertising, and media studies. Our curriculum blends theory with practical training to produce well-rounded media professionals.</p>
+    </div>
+
+    <div class="content-card">
+      <h3>Our Mission</h3>
+      <p>To provide quality education in mass communication that equips students with the knowledge, skills, and ethical values needed to excel in the media industry and contribute positively to society.</p>
+    </div>
+
+    <div class="content-card">
+      <h3>Our Vision</h3>
+      <p>To be a centre of excellence in media education, research, and practice — producing graduates who are globally competitive and socially responsible.</p>
+    </div>
+
+    <div class="content-card">
+      <h3>Programmes Offered</h3>
+      <ul>
+        <li>B.Sc. Mass Communication</li>
+        <li>Ph.D. in Mass Communication</li>
+        <li>Diploma in Mass Communication</li>
+      </ul>
     </div>
   </section>
 
-  <!-- ============ FOOTER ============ -->
   <footer>
     <p>&copy; 2026 Mass Communication Department &mdash; Student Association.</p>
     <div class="footer-credit">
       <img src="images/the-vanguard-logo.jpg" alt="The Vanguard Movement Logo" />
-      <div class="footer-credit-text">
-        <div class="powered-by">Built &amp; Managed by</div>
-        <div class="movement-name">The Vanguard Movement</div>
-        <div class="admin-name">Oretan Led-Admin &bull; 2026/2027</div>
-      </div>
+      <div class="footer-credit-text"><div class="powered-by">Built &amp; Managed by</div><div class="movement-name">The Vanguard Movement</div><div class="admin-name">Oretan Led-Admin &bull; 2026/2027</div></div>
     </div>
   </footer>
-
   <script src="js/main.js"></script>
-  <script src="js/about.js"></script>
 </body>
 </html>
