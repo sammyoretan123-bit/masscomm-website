@@ -228,7 +228,9 @@
                 <div class="progress-fill" style="width: ${percentage}%;"></div>
               </div>
               
-              <a href="certificate.html?name=${profile && profile.full_name ? profile.full_name : session.user.email.split('@')[0]}&course=${course.title}" target="_blank" class="btn-continue" style="background: #1e7e34; margin-top: 5px;">🏆 Download Certificate</a>
+              ${percentage === 100 ? `
+                <a href="certificate.html?name=${profile && profile.full_name ? profile.full_name : session.user.email.split('@')[0]}&course=${course.title}" target="_blank" class="btn-continue" style="background: #1e7e34; margin-top: 5px;">🏆 Download Certificate</a>
+              ` : ''}
               
               <a href="course-view.html?id=${course.id}" class="btn-continue" style="margin-left: 5px;">Continue Learning</a>
             </div>
