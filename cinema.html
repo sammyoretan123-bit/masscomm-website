@@ -6,282 +6,123 @@
   <title>NAMACOS TV | Mass Communication Department</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="icon" type="image/jpeg" href="images/mass communication logo.jpg" />
+  
   <style>
-    /* Netflix-style custom styles */
-    body { background-color: #141414; color: #fff; }
+    /* --- BASE PAGE STYLES --- */
+    body { background-color: #141414; color: #fff; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: none; }
+    .section-title { text-align: center; padding: 40px 20px 20px; }
+    .section-title h2 { font-size: 2.5rem; margin-bottom: 10px; color: #fff; }
+    .section-title p { font-size: 1.1rem; color: #aaa; }
     
-    /* Original Grid Layout (For browsing) */
-    .cinema-grid { 
-      display: grid; 
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
-      gap: 25px; 
-      max-width: 1200px; 
-      margin: 0 auto; 
-      padding: 20px 0; 
-    }
-    
-    /* NEW: Wide Search Result Layout (Like Netflix) */
+    /* --- NAVBAR --- */
+    header { background: #000; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+    .navbar { display: flex; justify-content: space-between; align-items: center; padding: 10px 40px; max-width: 1200px; margin: 0 auto; }
+    .logo { display: flex; align-items: center; gap: 10px; color: #fff; font-weight: bold; font-size: 1.2rem; }
+    .logo img { height: 45px; border-radius: 50%; }
+    .nav-links { display: flex; align-items: center; gap: 25px; }
+    .nav-links > li { position: relative; }
+    .nav-links a { color: #fff; font-weight: 500; transition: color 0.3s; font-size: 0.95rem; }
+    .nav-links a:hover { color: #6a0dad; }
+    .dropdown { display: none; position: absolute; top: 100%; left: 0; background: #1a1a1a; padding: 10px 0; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); min-width: 200px; z-index: 1001; }
+    .dropdown a { display: block; padding: 10px 20px; font-size: 0.9rem; }
+    .dropdown a:hover { background: #333; color: #fff; }
+    .nav-links > li:hover .dropdown { display: block; }
+    .arrow { font-size: 0.7rem; margin-left: 5px; }
+    .menu-toggle { display: none; }
+
+    /* --- FOOTER --- */
+    footer { background: #0d0d0d; color: #aaa; text-align: center; padding: 40px 20px; border-top: 1px solid #222; margin-top: 50px; }
+    .footer-credit { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; }
+    .footer-credit img { height: 40px; }
+    .footer-credit-text { text-align: left; }
+    .powered-by { font-size: 0.8rem; color: #666; }
+    .movement-name { font-weight: bold; color: #fff; }
+    .admin-name { font-size: 0.8rem; color: #9b51e0; }
+
+    /* --- CINEMA SPECIFIC STYLES --- */
+    .cinema-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 25px; max-width: 1200px; margin: 0 auto; padding: 20px 0; }
     .search-result-layout { display: flex; flex-direction: column; gap: 20px; max-width: 1200px; margin: 0 auto; padding: 20px; }
-    
-    .search-item { 
-      display: flex; 
-      background: #181818; 
-      border-radius: 8px; 
-      overflow: hidden; 
-      cursor: pointer; 
-      transition: background 0.3s;
-      border: 1px solid #333;
-    }
+    .search-item { display: flex; background: #181818; border-radius: 8px; overflow: hidden; cursor: pointer; transition: background 0.3s; border: 1px solid #333; }
     .search-item:hover { background: #282828; }
-    
-    .search-item-img {
-      width: 300px;
-      height: 170px;
-      object-fit: cover;
-      flex-shrink: 0;
-    }
-    
-    .search-item-info {
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    
+    .search-item-img { width: 300px; height: 170px; object-fit: cover; flex-shrink: 0; }
+    .search-item-info { padding: 20px; display: flex; flex-direction: column; justify-content: center; }
     .search-item-info h3 { font-size: 1.5rem; margin-bottom: 10px; color: #fff; }
     .search-item-info p { font-size: 0.95rem; color: #aaa; margin-bottom: 15px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-    
-    .play-btn-wide {
-      background: #fff; color: #000; border: none; padding: 10px 25px; font-size: 1rem; border-radius: 4px; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; width: fit-content;
-    }
+    .play-btn-wide { background: #fff; color: #000; border: none; padding: 10px 25px; font-size: 1rem; border-radius: 4px; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; width: fit-content; }
     .play-btn-wide:hover { background: #e50914; color: #fff; }
 
-    /* Movie Card Setup */
-    .movie-card { 
-      background: #222; 
-      border-radius: 8px; 
-      overflow: hidden; 
-      transition: transform 0.3s, box-shadow 0.3s; 
-      cursor: pointer; 
-      box-shadow: 0 4px 10px rgba(0,0,0,0.5); 
-    }
-    .movie-card:hover { 
-      transform: scale(1.05); 
-      z-index: 10; 
-      box-shadow: 0 8px 20px rgba(0,0,0,0.8);
-    }
-
-    /* Poster Container & Hover Overlay */
-    .poster-container {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      overflow: hidden;
-      background: #000;
-    }
-
-    .poster-container img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s ease;
-    }
-
-    .poster-overlay {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .movie-card:hover .poster-overlay {
-      opacity: 1;
-    }
-
-    .movie-card:hover .poster-container img {
-      transform: scale(1.1);
-    }
-
-    /* Play Button */
-    .play-circle {
-      width: 60px;
-      height: 60px;
-      background: rgba(255, 255, 255, 0.9);
-      color: #141414;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 24px;
-      padding-left: 5px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-      transition: transform 0.2s ease, background 0.2s ease;
-    }
-
-    .movie-card:hover .play-circle {
-      transform: scale(1.1);
-      background: #fff;
-    }
-
-    /* Make text fully readable, but limit to 3 lines */
-    .movie-info { padding: 15px; text-align: center; }
+    /* --- MOVIE CARD & HOVER PLAY ICON --- */
+    .movie-card { background: #222; border-radius: 8px; overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+    .movie-card:hover { transform: scale(1.05); z-index: 10; box-shadow: 0 8px 20px rgba(0,0,0,0.8); }
+    .poster-container { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; background: #000; }
+    .poster-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+    .poster-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; }
+    .movie-card:hover .poster-overlay { opacity: 1; }
+    .movie-card:hover .poster-container img { transform: scale(1.1); }
     
-    .movie-info h3 { 
-      font-size: 1.1rem; 
-      margin-bottom: 8px; 
-      color: #fff; 
-      white-space: normal; 
-      overflow: visible; 
-    }
-    
-    .movie-info p { 
-      font-size: 0.85rem; 
-      color: #ccc; 
-      line-height: 1.4; 
-      margin-bottom: 12px;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    
-    /* The elegant category badge - NOW PURPLE */
-    .movie-category {
-      display: inline-block;
-      font-size: 0.7rem; 
-      color: #fff;
-      background: #6a0dad;
-      padding: 4px 12px;
-      border-radius: 20px;
-      text-transform: uppercase; 
-      font-weight: bold;
-      letter-spacing: 0.5px;
-    }
-    
-    /* Video Player Modal */
-    .modal { 
-      position: fixed; 
-      top: 0; left: 0; width: 100%; height: 100%; 
-      background: rgba(0,0,0,0.85); 
-      z-index: 9999; 
+    /* THE FIX: Target play-circle */
+    .play-circle { 
+      width: 60px; 
+      height: 60px; 
+      background: rgba(255, 255, 255, 0.9); 
+      color: #141414; 
+      border-radius: 50%; 
       display: flex; 
       justify-content: center; 
-      align-items: center;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
+      align-items: center; 
+      font-size: 24px; 
+      padding-left: 5px; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5); 
+      transition: transform 0.2s ease, background 0.2s ease; 
     }
-    
-    .modal.show {
-      opacity: 1;
-      visibility: visible;
-    }
+    .movie-card:hover .play-circle { transform: scale(1.1); background: #fff; }
 
+    .movie-info { padding: 15px; text-align: center; }
+    .movie-info h3 { font-size: 1.1rem; margin-bottom: 8px; color: #fff; white-space: normal; overflow: visible; }
+    .movie-info p { font-size: 0.85rem; color: #ccc; line-height: 1.4; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .movie-category { display: inline-block; font-size: 0.7rem; color: #fff; background: #6a0dad; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px; }
+
+    /* Video Modal */
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
+    .modal.show { opacity: 1; visibility: visible; }
     .modal-content { width: 90%; max-width: 900px; background: #000; border-radius: 10px; overflow: hidden; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
     .modal-content iframe { width: 100%; aspect-ratio: 16/9; border: none; display: block; }
-    
-    .close-btn { 
-      position: absolute; 
-      top: -40px; 
-      right: 0; 
-      color: #fff; 
-      font-size: 35px; 
-      cursor: pointer; 
-      z-index: 10; 
-      font-weight: bold; 
-      transition: color 0.2s;
-    }
+    .close-btn { position: absolute; top: -40px; right: 0; color: #fff; font-size: 35px; cursor: pointer; z-index: 10; font-weight: bold; transition: color 0.2s; }
     .close-btn:hover { color: #e50914; }
-    
-    .section-title h2, .section-title p { color: #fff !important; }
 
-    /* --- PREMIUM SEARCH BAR STYLES --- */
-    .search-container {
-      flex: 1; 
-      max-width: 500px;
-      position: relative;
-      display: flex;
-      align-items: center;
-      transition: transform 0.2s ease;
-    }
+    /* Premium Search Bar */
+    .search-container { flex: 1; max-width: 500px; position: relative; display: flex; align-items: center; transition: transform 0.2s ease; }
+    .search-container:focus-within { transform: scale(1.02); }
+    .search-container input { width: 100%; padding: 14px 50px 14px 20px; border-radius: 50px; border: 1px solid #444; background: rgba(51, 51, 51, 0.8); color: #fff; font-size: 1rem; outline: none; transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); }
+    .search-container input:focus { background: #222; border-color: #e50914; box-shadow: 0 0 10px rgba(229, 9, 20, 0.3); }
+    .search-icon-btn { position: absolute; right: 5px; background: none; border: none; color: #aaa; cursor: pointer; padding: 10px; display: flex; align-items: center; justify-content: center; transition: color 0.2s ease, transform 0.2s ease; }
+    .search-icon-btn:hover, .search-container input:focus + .search-icon-btn { color: #fff; transform: scale(1.1); }
+    .search-icon-btn svg { width: 22px; height: 22px; }
 
-    .search-container:focus-within {
-      transform: scale(1.02); 
-    }
-    
-    .search-container input {
-      width: 100%;
-      padding: 14px 50px 14px 20px; 
-      border-radius: 50px; 
-      border: 1px solid #444;
-      background: rgba(51, 51, 51, 0.8);
-      color: #fff;
-      font-size: 1rem;
-      outline: none;
-      transition: all 0.3s ease;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
-    }
+    /* Hero Banner */
+    .hero-container { max-width: 1200px; margin: 0 auto 40px; padding: 0 20px; }
+    #featured-banner { position: relative; width: 100%; height: 500px; border-radius: 16px; overflow: hidden; background-size: cover; background-position: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
-    .search-container input:focus {
-      background: #222;
-      border-color: #e50914; 
-      box-shadow: 0 0 10px rgba(229, 9, 20, 0.3);
-    }
+    /* --- MOBILE RESPONSIVENESS --- */
+    @media screen and (max-width: 768px) {
+      .navbar { padding: 10px 20px; }
+      .menu-toggle { display: block !important; color: #fff; font-size: 24px; cursor: pointer; z-index: 10001; }
+      .nav-links { display: none !important; position: absolute !important; top: 65px !important; right: 15px !important; background: #000 !important; width: 250px !important; flex-direction: column !important; padding: 10px 0 !important; border-radius: 8px !important; box-shadow: 0 5px 15px rgba(0,0,0,0.5) !important; z-index: 10000 !important; }
+      .nav-links.active { display: flex !important; }
+      .nav-links > li { width: 100% !important; border-bottom: 1px solid #222 !important; }
+      .nav-links > li:last-child { border-bottom: none !important; }
+      .nav-links a { display: block !important; padding: 12px 20px !important; color: #fff !important; font-size: 0.95rem !important; text-align: left !important; }
+      .dropdown { display: none !important; position: static !important; background: #111 !important; padding: 0 !important; box-shadow: none !important; }
+      .nav-links > li.open .dropdown { display: block !important; }
+      .dropdown a { padding: 10px 20px 10px 35px !important; color: #bbb !important; font-size: 0.85rem !important; }
 
-    .search-icon-btn {
-      position: absolute;
-      right: 5px;
-      background: none;
-      border: none;
-      color: #aaa;
-      cursor: pointer;
-      padding: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: color 0.2s ease, transform 0.2s ease;
-    }
-
-    .search-icon-btn:hover, .search-container input:focus + .search-icon-btn {
-      color: #fff;
-      transform: scale(1.1);
-    }
-
-    .search-icon-btn svg {
-      width: 22px;
-      height: 22px;
-    }
-
-    /* --- FIX FOR UGLY BROWSER AUTOFILL BOXES --- */
-    input:-webkit-autofill,
-    input:-webkit-autofill:hover, 
-    input:-webkit-autofill:focus, 
-    input:-webkit-autofill:active{
-        -webkit-box-shadow: 0 0 30px 0px #333 inset !important;
-        -webkit-text-fill-color: white !important;
-        transition: background-color 5000s ease-in-out 0s;
-    }
-
-    /* --- CONTAINED BANNER STYLES --- */
-    .hero-container {
-      max-width: 1200px; 
-      margin: 0 auto 40px; 
-      padding: 0 20px;
-    }
-    
-    #featured-banner {
-      position: relative;
-      width: 100%;
-      height: 500px; 
-      border-radius: 16px; 
-      overflow: hidden;
-      background-size: cover;
-      background-position: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      #featured-banner { height: 300px; }
+      .section-title h2 { font-size: 2rem; }
+      #featured-title { font-size: 2rem !important; }
+      .search-item { flex-direction: column; }
+      .search-item-img { width: 100%; height: 200px; }
     }
   </style>
 </head>
@@ -296,8 +137,7 @@
       </div>
       <ul class="nav-links" id="navLinks">
         <li><a href="index.html">Home</a></li>
-        <li>
-          <a href="#">About <span class="arrow">&#9662;</span></a>
+        <li><a href="#">About <span class="arrow">&#9662;</span></a>
           <ul class="dropdown">
             <li><a href="about.html">About Department</a></li>
             <li><a href="courses.html">Courses</a></li>
@@ -307,37 +147,31 @@
             <li><a href="sequence-print.html">Print</a></li>
           </ul>
         </li>
-        <li>
-          <a href="#">People <span class="arrow">&#9662;</span></a>
+        <li><a href="#">People <span class="arrow">&#9662;</span></a>
           <ul class="dropdown">
             <li><a href="hod.html">HOD</a></li>
             <li><a href="lecturers.html">Lecturers</a></li>
             <li><a href="executives.html">Student Executives</a></li>
-<li><a href="alumni.html">Alumni</a></li>
+            <li><a href="alumni.html">Alumni</a></li>
           </ul>
         </li>
-        <li>
-          <a href="#">Students <span class="arrow">&#9662;</span></a>
+        <li><a href="#">Students <span class="arrow">&#9662;</span></a>
+          <ul class="dropdown"><li><a href="sets.html">Sets</a></li></ul>
+        </li>
+        <li><a href="#">Activities <span class="arrow">&#9662;</span></a>
           <ul class="dropdown">
-            <li><a href="sets.html">Sets</a></li>
+            <li><a href="activities.html">Activities</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="anthem.html">NAMACOS Anthem</a></li>
           </ul>
         </li>
-        <li>
-          <a href="#">Activities <span class="arrow">&#9662;</span></a>
-          <ul class="dropdown">
-              <li><a href="activities.html">Activities</a></li>
-<li><a href="gallery.html">Gallery</a></li>
-            
-          </ul>
-        </li>
-        <li>
-          <a href="#">Media <span class="arrow">&#9662;</span></a>
+        <li><a href="#">Media <span class="arrow">&#9662;</span></a>
           <ul class="dropdown">
             <li><a href="news.html">News</a></li>
             <li><a href="blog.html">Blog</a></li>
           </ul>
         </li>
-        <li><a href="cinema.html">NAMACOS TV</a></li>
+        <li><a href="cinema.html" style="color: #6a0dad; font-weight: bold;">NAMACOS TV</a></li>
         <li><a href="contact.html">Contact</a></li>
       </ul>
       <div class="menu-toggle" id="menu-toggle">&#9776;</div>
@@ -350,12 +184,11 @@
     <p>Watch movie premieres and documentaries</p>
   </section>
 
-  <!-- ============ MOVIES SECTION (VISIBLE BY DEFAULT) ============ -->
+  <!-- ============ MOVIES SECTION ============ -->
   <section class="team" id="movies-section" style="display:block; background: transparent; padding: 0;">
     
     <!-- SEARCH BAR -->
     <div style="max-width: 1200px; margin: 40px auto 20px; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 15px; padding: 0 20px; position: relative; z-index: 20;">
-      
       <div class="search-container">
         <input type="text" id="search-bar" placeholder="Search for a movie or documentary..." autocomplete="off" />
         <button class="search-icon-btn" id="search-icon-btn" aria-label="Search">
@@ -364,23 +197,14 @@
           </svg>
         </button>
       </div>
-
     </div>
 
-    <!-- CONTAINER FOR SEARCH RESULTS (HIDDEN BY DEFAULT) -->
     <div id="search-results" style="display: none;"></div>
 
-    <!-- NORMAL BROWSING AREA (HIDDEN WHEN SEARCHING) -->
     <div id="normal-browsing-area">
-      
-      <!-- CONTAINED HERO BANNER -->
       <div class="hero-container">
         <div id="featured-banner" style="display: none;">
-          
-          <!-- LIGHTER GRADIENT OVERLAY -->
           <div style="position: absolute; inset: 0; background: linear-gradient(to right, rgba(20,20,20,0.7) 0%, rgba(20,20,20,0.1) 50%, rgba(20,20,20,0) 100%), linear-gradient(to top, rgba(20,20,20,0.9) 0%, rgba(20,20,20,0) 30%);"></div>
-          
-          <!-- Text Content -->
           <div style="position: absolute; bottom: 20%; left: 5%; z-index: 10; max-width: 500px; text-align: left;">
             <h1 id="featured-title" style="font-size: 3.5rem; margin-bottom: 15px; text-shadow: 2px 2px 4px #000; color: #fff; line-height: 1.1;">Featured Movie</h1>
             <p id="featured-desc" style="font-size: 1rem; color: #ddd; margin-bottom: 20px; text-shadow: 1px 1px 3px #000; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.5;">Description here</p>
@@ -389,7 +213,6 @@
         </div>
       </div>
 
-      <!-- MAIN GRID AREA -->
       <div style="max-width: 1200px; margin: 0 auto 40px; padding: 0 20px;">
         <h3 style="color: #fff; margin-bottom: 15px; font-size: 1.5rem;">Trending Now</h3>
         <div id="movies-grid" class="cinema-grid" style="padding: 0;">
@@ -405,9 +228,7 @@
       <span class="close-btn" onclick="closeVideo()">&times;</span>
       <div id="video-container"></div>
       <div style="text-align: center; padding: 20px; background: #000;">
-        <button onclick="closeVideo()" class="btn" style="background: #e50914; color: #fff; border: none; padding: 12px 30px; font-size: 1rem; cursor: pointer; border-radius: 6px;">
-          ← Back to NAMACOS TV
-        </button>
+        <button onclick="closeVideo()" class="btn" style="background: #e50914; color: #fff; border: none; padding: 12px 30px; font-size: 1rem; cursor: pointer; border-radius: 6px;">← Back to NAMACOS TV</button>
       </div>
     </div>
   </div>
@@ -428,8 +249,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
   <script src="js/main.js"></script>
-  
-  <!-- FIXED SCRIPT PATH HERE -->
   <script src="js/cinema.js"></script>
 </body>
 </html>
