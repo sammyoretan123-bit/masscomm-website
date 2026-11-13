@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard | NAMACOS</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" type="image/jpeg" href="images/mass communication logo.jpg" />
+  <style>
+    .admin-container { max-width: 900px; margin: 40px auto; padding: 20px; }
+    .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+    .tab-btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; background: #eee; color: #333; }
+    .tab-btn.active { background: #6a0dad; color: #fff; }
+    .admin-form { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #6a0dad; display: none; }
+    .admin-form.active { display: block; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #333; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-family: inherit; }
+    .btn-save { background: #1e7e34; color: #fff; padding: 12px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
+    .btn-save:hover { background: #155d27; }
+    .status-msg { text-align: center; font-weight: bold; margin-top: 15px; }
+    
+    /* Navbar */
+    .nav-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid #6a0dad; vertical-align: middle; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <img src="images/mass communication logo.jpg" alt="Logo" />
+        <span>Mass Communication AAUA</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="dashboard.html">My Dashboard</a></li>
+        <li><a href="admin.html" style="color: #e50914; font-weight: bold;">Admin Panel</a></li>
+        <li><button id="logout-btn" style="background: #e50914; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Log Out</button></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="admin-container">
+    <h1 style="color: #0d0d0d; margin-bottom: 20px;">Admin Dashboard</h1>
+    
+    <!-- TABS -->
+    <div class="admin-tabs">
+      <button class="tab-btn active" onclick="switchTab('course')">Add Course</button>
+      <button class="tab-btn" onclick="switchTab('lesson')">Add Lesson</button>
+      <button class="tab-btn" onclick="switchTab('quiz')">Add Quiz Question</button>
+    </div>
+
+    <!-- 1. ADD COURSE FORM -->
+    <div id="form-course" class="admin-form active">
+      <h3 style="color: #6a0dad; margin-top: 0;">Add a New Course</h3>
+      <div class="form-group">
+        <label>Course Code (e.g., MAC 101)</label>
+        <input type="text" id="course-code" placeholder="MAC 101" />
+      </div>
+      <div class="form-group">
+        <label>Course Title</label>
+        <input type="text" id="course-title" placeholder="Introduction to Communication" />
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="course-desc" rows="3" placeholder="Short description of the course..."></textarea>
+      </div>
+      <button class="btn-save" onclick="addCourse()">Add Course</button>
+      <p id="msg-course" class="status-msg"></p>
+    </div>
+
+    <!-- 2. ADD LESSON FORM -->
+    <div id="form-lesson" class="admin-form">
+      <h3 style="color: #6a0dad; margin-top: 0;">Add a Lesson</h3>
+      <div class="form-group">
+        <label>Course Code</label>
+        <input type="text" id="lesson-code" placeholder="MAC 101" />
+      </div>
+      <div class="form-group">
+        <label>Lesson Title</label>
+        <input type="text" id="lesson-title" placeholder="Week 1: Basics of Communication" />
+      </div>
+      <div class="form-group">
+        <label>Order Index (1, 2, 3...)</label>
+        <input type="number" id="lesson-order" placeholder="1" />
+      </div>
+      <div class="form-group">
+        <label>PDF File URL (Optional)</label>
+        <input type="text" id="lesson-pdf" placeholder="https://..." />
+      </div>
+      <div class="form-group">
+        <label>Video Embed URL (Optional)</label>
+        <input type="text" id="lesson-video" placeholder="https://www.youtube.com/embed/..." />
+      </div>
+      <div class="form-group">
+        <label>Description / Notes</label>
+        <textarea id="lesson-desc" rows="3" placeholder="Write the lesson text here..."></textarea>
+      </div>
+      <button class="btn-save" onclick="addLesson()">Add Lesson</button>
+      <p id="msg-lesson" class="status-msg"></p>
+    </div>
+
+    <!-- 3. ADD QUIZ FORM -->
+    <div id="form-quiz" class="admin-form">
+      <h3 style="color: #6a0dad; margin-top: 0;">Add a Quiz Question</h3>
+      <div class="form-group">
+        <label>Course Code</label>
+        <input type="text" id="quiz-code" placeholder="MAC 101" />
+      </div>
+      <div class="form-group">
+        <label>Question</label>
+        <input type="text" id="quiz-question" placeholder="What is...?" />
+      </div>
+      <div class="form-group">
+        <label>Option A</label>
+        <input type="text" id="quiz-a" />
+      </div>
+      <div class="form-group">
+        <label>Option B</label>
+        <input type="text" id="quiz-b" />
+      </div>
+      <div class="form-group">
+        <label>Option C</label>
+        <input type="text" id="quiz-c" />
+      </div>
+      <div class="form-group">
+        <label>Option D</label>
+        <input type="text" id="quiz-d" />
+      </div>
+      <div class="form-group">
+        <label>Correct Answer</label>
+        <select id="quiz-correct">
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="C">C</option>
+          <option value="D">D</option>
+        </select>
+      </div>
+      <button class="btn-save" onclick="addQuiz()">Add Question</button>
+      <p id="msg-quiz" class="status-msg"></p>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    // --- SECURITY CHECK ---
+    async function checkAdmin() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) { window.location.href = "login.html"; return; }
+
+      const { data: profile } = await supabaseClient
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
+
+      // If the database doesn't say 'admin', kick them out immediately
+      if (!profile || profile.role !== 'admin') {
+        alert("Access Denied: You are not an administrator.");
+        window.location.href = "dashboard.html";
+      }
+    }
+    checkAdmin();
+
+    // --- TAB SWITCHING ---
+    function switchTab(tabName) {
+      document.querySelectorAll('.admin-form').forEach(f => f.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      
+      document.getElementById('form-' + tabName).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    // --- FORM SUBMISSIONS ---
+    
+    // 1. Add Course
+    async function addCourse() {
+      const code = document.getElementById('course-code').value;
+      const title = document.getElementById('course-title').value;
+      const desc = document.getElementById('course-desc').value;
+      const msg = document.getElementById('msg-course');
+
+      if (!code || !title) { msg.style.color = 'red'; msg.textContent = 'Code and Title are required.'; return; }
+
+      msg.style.color = 'blue'; msg.textContent = 'Saving...';
+      const { error } = await supabaseClient.from('courses').insert([{ code, title, description: desc }]);
+
+      if (error) { msg.style.color = 'red'; msg.textContent = 'Error: ' + error.message; }
+      else { msg.style.color = 'green'; msg.textContent = '✅ Course added successfully!'; document.getElementById('course-code').value = ''; document.getElementById('course-title').value = ''; document.getElementById('course-desc').value = ''; }
+    }
+
+    // 2. Add Lesson
+    async function addLesson() {
+      const code = document.getElementById('lesson-code').value;
+      const title = document.getElementById('lesson-title').value;
+      const order = document.getElementById('lesson-order').value;
+      const pdf = document.getElementById('lesson-pdf').value;
+      const video = document.getElementById('lesson-video').value;
+      const desc = document.getElementById('lesson-desc').value;
+      const msg = document.getElementById('msg-lesson');
+
+      if (!code || !title) { msg.style.color = 'red'; msg.textContent = 'Code and Title are required.'; return; }
+
+      msg.style.color = 'blue'; msg.textContent = 'Saving...';
+      const { error } = await supabaseClient.from('materials').insert([{ 
+        course_code: code, 
+        title: title, 
+        order_index: parseInt(order) || 0, 
+        file_url: pdf, 
+        video_url: video, 
+        description: desc 
+      }]);
+
+      if (error) { msg.style.color = 'red'; msg.textContent = 'Error: ' + error.message; }
+      else { msg.style.color = 'green'; msg.textContent = '✅ Lesson added successfully!'; document.getElementById('lesson-title').value = ''; }
+    }
+
+    // 3. Add Quiz
+    async function addQuiz() {
+      const code = document.getElementById('quiz-code').value;
+      const question = document.getElementById('quiz-question').value;
+      const a = document.getElementById('quiz-a').value;
+      const b = document.getElementById('quiz-b').value;
+      const c = document.getElementById('quiz-c').value;
+      const d = document.getElementById('quiz-d').value;
+      const correct = document.getElementById('quiz-correct').value;
+      const msg = document.getElementById('msg-quiz');
+
+      if (!code || !question || !a || !b || !c || !d) { msg.style.color = 'red'; msg.textContent = 'All fields are required.'; return; }
+
+      msg.style.color = 'blue'; msg.textContent = 'Saving...';
+      const { error } = await supabaseClient.from('quizzes').insert([{ 
+        course_code: code, 
+        question: question, 
+        option_a: a, 
+        option_b: b, 
+        option_c: c, 
+        option_d: d, 
+        correct_answer: correct 
+      }]);
+
+      if (error) { msg.style.color = 'red'; msg.textContent = 'Error: ' + error.message; }
+      else { msg.style.color = 'green'; msg.textContent = '✅ Question added successfully!'; document.getElementById('quiz-question').value = ''; }
+    }
+
+    // Logout
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      await supabaseClient.auth.signOut();
+      window.location.href = "index.html";
+    });
+  </script>
+</body>
+</html>
