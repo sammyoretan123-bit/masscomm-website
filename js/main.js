@@ -4,48 +4,58 @@
    Purpose: Mobile menu + dropdown + Slider Lightbox + Zoom & Pan
    ============================================ */
 
-/* ---------- BULLETPROOF MOBILE MENU TOGGLE ---------- */
+/* ---------- MOBILE MENU & DROPDOWN LOGIC ---------- */
 document.addEventListener("DOMContentLoaded", () => {
   const menuBtn = document.getElementById('menu-toggle');
   const navMenu = document.getElementById('navLinks');
 
+  // 1. Hamburger Toggle
   if (menuBtn && navMenu) {
     menuBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      e.stopPropagation();
+      e.stopPropagation(); 
       navMenu.classList.toggle('active');
     });
   }
+
+  // 2. Dropdown Toggle (Mobile only)
+  const dropdownParents = document.querySelectorAll('.nav-links > li');
   
-  // Close menu when clicking a link (for site-wide behavior)
-  const navLinksArray = document.querySelectorAll('.nav-links a');
-  navLinksArray.forEach(link => {
+  dropdownParents.forEach((parent) => {
+    const link = parent.querySelector('a');
+    const dropdown = parent.querySelector('.dropdown');
+
+    if (link && dropdown) {
+      link.addEventListener('click', (e) => {
+        if (window.innerWidth <= 768) {
+          e.preventDefault(); // Stop page reload
+          e.stopPropagation(); // Keep menu open
+          
+          // Close other open dropdowns
+          dropdownParents.forEach((other) => {
+            if (other !== parent) other.classList.remove('open');
+          });
+          
+          // Toggle this specific dropdown
+          parent.classList.toggle('open');
+        }
+      });
+    }
+  });
+
+  // 3. Close menu when clicking a final link (like "Home" or "Contact")
+  const allLinks = document.querySelectorAll('.nav-links a');
+  allLinks.forEach(link => {
     link.addEventListener('click', () => {
-      if (navMenu && navMenu.classList.contains('active')) {
-        navMenu.classList.remove('active');
+      const parentLi = link.parentElement;
+      // Only close the menu if the link is NOT a dropdown parent
+      if (!parentLi.querySelector('.dropdown')) {
+        if (navMenu && navMenu.classList.contains('active')) {
+          navMenu.classList.remove('active');
+        }
       }
     });
   });
-});
-
-/* ---------- DROPDOWN TOGGLE (mobile only) ---------- */
-const dropdownParents = document.querySelectorAll('.nav-links > li');
-
-dropdownParents.forEach((parent) => {
-  const link = parent.querySelector('a');
-  const dropdown = parent.querySelector('.dropdown');
-
-  if (link && dropdown) {
-    link.addEventListener('click', (e) => {
-      if (window.innerWidth <= 768) {
-        e.preventDefault();
-        dropdownParents.forEach((other) => {
-          if (other !== parent) other.classList.remove('open');
-        });
-        parent.classList.toggle('open');
-      }
-    });
-  }
 });
 
 /* ============================================
@@ -55,7 +65,6 @@ dropdownParents.forEach((parent) => {
 function initSiteLightbox() {
   if (document.getElementById("lightbox-overlay")) return;
 
-  // ---------- Overlay ----------
   const overlay = document.createElement("div");
   overlay.id = "lightbox-overlay";
   overlay.style.cssText = `
@@ -73,7 +82,6 @@ function initSiteLightbox() {
     box-sizing: border-box;
   `;
 
-  // ---------- Image Container ----------
   const imageContainer = document.createElement("div");
   imageContainer.style.cssText = `
     width: 100%;
@@ -84,7 +92,6 @@ function initSiteLightbox() {
     overflow: hidden;
   `;
 
-  // ---------- Image ----------
   const img = document.createElement("img");
   img.id = "lightbox-image";
   img.style.cssText = `
@@ -100,7 +107,6 @@ function initSiteLightbox() {
     cursor: grab;
   `;
 
-  // ---------- Close Button ----------
   const closeBtn = document.createElement("div");
   closeBtn.innerHTML = "&times;";
   closeBtn.style.cssText = `
@@ -111,7 +117,6 @@ function initSiteLightbox() {
     border: 1px solid rgba(255,255,255,0.2);
   `;
 
-  // ---------- Prev Button ----------
   const prevBtn = document.createElement("div");
   prevBtn.innerHTML = "&#10094;";
   prevBtn.style.cssText = `
@@ -120,7 +125,6 @@ function initSiteLightbox() {
     opacity: 0.6; z-index: 10000; user-select: none; display: none;
   `;
 
-  // ---------- Next Button ----------
   const nextBtn = document.createElement("div");
   nextBtn.innerHTML = "&#10095;";
   nextBtn.style.cssText = `
@@ -129,7 +133,6 @@ function initSiteLightbox() {
     opacity: 0.6; z-index: 10000; user-select: none; display: none;
   `;
 
-  // Append elements
   imageContainer.appendChild(img);
   overlay.appendChild(imageContainer);
   overlay.appendChild(closeBtn);
@@ -137,14 +140,12 @@ function initSiteLightbox() {
   overlay.appendChild(nextBtn);
   document.body.appendChild(overlay);
 
-  // ---------- State ----------
   let galleryImages = [];
   let currentIndex = 0;
   let scale = 1;
   let isDragging = false;
   let startX, startY, translateX = 0, translateY = 0;
 
-  // ---------- Helper Functions ----------
   function resetZoom() {
     scale = 1;
     translateX = 0;
@@ -170,19 +171,14 @@ function initSiteLightbox() {
     resetZoom();
   }
 
-  // ---------- Event Listeners ----------
-
-  // Close
   closeBtn.addEventListener("click", closeLightbox);
   overlay.addEventListener("click", (e) => {
     if (e.target === overlay) closeLightbox(); 
   });
 
-  // Navigation
   prevBtn.addEventListener("click", (e) => { e.stopPropagation(); showImage(currentIndex - 1); });
   nextBtn.addEventListener("click", (e) => { e.stopPropagation(); showImage(currentIndex + 1); });
 
-  // Keyboard
   document.addEventListener("keydown", (e) => {
     if (overlay.style.display !== "flex") return;
     if (e.key === "Escape") closeLightbox();
@@ -190,16 +186,11 @@ function initSiteLightbox() {
     if (e.key === "ArrowRight") showImage(currentIndex + 1);
   });
 
-  // Zooming (Mouse Wheel)
   img.addEventListener("wheel", (e) => {
     e.preventDefault(); 
     const zoomSensitivity = 0.1;
-    
-    if (e.deltaY < 0) {
-      scale += zoomSensitivity; 
-    } else {
-      scale -= zoomSensitivity; 
-    }
+    if (e.deltaY < 0) scale += zoomSensitivity; 
+    else scale -= zoomSensitivity; 
 
     if (scale < 1) scale = 1;
     if (scale > 4) scale = 4;
@@ -208,11 +199,9 @@ function initSiteLightbox() {
       translateX = 0;
       translateY = 0;
     }
-
     updateImageTransform();
   }, { passive: false });
 
-  // Panning
   img.addEventListener("mousedown", (e) => {
     if (scale <= 1) return; 
     isDragging = true;
@@ -235,7 +224,6 @@ function initSiteLightbox() {
     else img.style.cursor = "default";
   });
 
-  // ---------- Trigger Logic ----------
   document.addEventListener("click", (e) => {
     const target = e.target;
     if (target.tagName !== "IMG") return;
@@ -268,7 +256,6 @@ function initSiteLightbox() {
   });
 }
 
-// Initialize when page loads
 document.addEventListener("DOMContentLoaded", () => {
   initSiteLightbox();
 });
