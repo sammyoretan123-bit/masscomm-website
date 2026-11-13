@@ -14,6 +14,20 @@ if (toggle && navLinks) {
   });
 }
 
+/* ---------- CLOSE MOBILE MENU ON LINK CLICK (SITE-WIDE) ---------- */
+// This ensures that no matter which page you are on, clicking a link closes the hamburger menu
+document.addEventListener("click", (e) => {
+  // Check if the clicked element is a link (<a>) inside the nav-links
+  const clickedLink = e.target.closest('.nav-links a');
+  
+  if (clickedLink) {
+    const menu = document.getElementById('navLinks');
+    if (menu && menu.classList.contains('active')) {
+      menu.classList.remove('active');
+    }
+  }
+});
+
 /* ---------- DROPDOWN TOGGLE (mobile only) ---------- */
 const dropdownParents = document.querySelectorAll('.nav-links > li');
 
@@ -55,7 +69,7 @@ function initSiteLightbox() {
     justify-content: center;
     align-items: center;
     overflow: hidden;
-    padding: 20px; /* Added padding to keep image away from edges */
+    padding: 20px;
     box-sizing: border-box;
   `;
 
@@ -74,8 +88,8 @@ function initSiteLightbox() {
   const img = document.createElement("img");
   img.id = "lightbox-image";
   img.style.cssText = `
-    max-width: 85%; /* Reduced from 100% */
-    max-height: 85vh; /* Keeps it within screen bounds */
+    max-width: 85%;
+    max-height: 85vh;
     width: auto;
     height: auto;
     object-fit: contain;
