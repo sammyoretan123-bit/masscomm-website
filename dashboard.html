@@ -22,6 +22,12 @@
 
     .nav-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid #6a0dad; vertical-align: middle; }
 
+    /* Dark Mode Specific Fixes for Dashboard */
+    body.dark-mode .course-card h3 { color: #fff !important; }
+    body.dark-mode .course-card p { color: #ccc !important; }
+    body.dark-mode .progress-bar { background: #333 !important; }
+    body.dark-mode .welcome-banner { background: linear-gradient(135deg, #3a0b5c 0%, #0d0214 100%) !important; }
+
     @media (max-width: 768px) {
       .welcome-banner h1 { font-size: 1.6rem; }
       .welcome-banner { padding: 25px; }
@@ -48,6 +54,12 @@
         <li><a href="leaderboard.html">Leaderboard</a></li>
         <li><a href="forum.html">Community</a></li>
         <li><a href="profile.html">My Profile</a></li>
+        
+        <!-- Dark Mode Toggle -->
+        <li>
+          <button id="theme-toggle" style="background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; padding: 0 10px;">🌙</button>
+        </li>
+
         <li style="display: flex; align-items: center;">
           <a href="profile.html" style="padding: 0;">
             <img id="nav-avatar-img" src="images/mass communication logo.jpg" alt="Profile" class="nav-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Student&background=6a0dad&color=fff';" />
@@ -74,7 +86,7 @@
       <p>Here are your enrolled courses and progress.</p>
     </div>
 
-    <h2 style="color: #0d0d0d; margin-bottom: 20px;">My Courses</h2>
+    <h2 style="margin-bottom: 20px;">My Courses</h2>
     <div class="courses-grid" id="courses-grid">
       <p>Loading courses...</p>
     </div>
@@ -83,11 +95,36 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
   <script>
+    // --- DARK MODE LOGIC ---
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    
+    // Check if user previously selected dark mode
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark-mode');
+      if (themeToggleBtn) themeToggleBtn.textContent = '☀️';
+    }
+
+    if (themeToggleBtn) {
+      themeToggleBtn.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        
+        // Save preference to browser
+        if (document.body.classList.contains('dark-mode')) {
+          localStorage.setItem('theme', 'dark');
+          themeToggleBtn.textContent = '☀️';
+        } else {
+          localStorage.setItem('theme', 'light');
+          themeToggleBtn.textContent = '🌙';
+        }
+      });
+    }
+
+    // --- MAIN DASHBOARD LOGIC ---
     async function loadDashboard() {
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session) { window.location.href = "login.html"; return; }
 
-      // --- FETCH ANNOUNCEMENT ---
+      // Fetch Announcement
       const { data: announcements } = await supabaseClient
         .from('announcements')
         .select('*')
@@ -101,8 +138,8 @@
         document.getElementById('ann-message').textContent = latestAnn.message;
         document.getElementById('announcement-banner').style.display = 'block';
       }
-      // --------------------------
 
+      // Fetch Profile
       const { data: profile } = await supabaseClient
         .from('profiles')
         .select('full_name, avatar_url')
@@ -119,6 +156,7 @@
         document.getElementById('nav-avatar-img').src = profile.avatar_url;
       }
 
+      // Fetch Courses
       const { data: courses, error: courseError } = await supabaseClient.from('courses').select('*');
       const grid = document.getElementById('courses-grid');
       
@@ -128,7 +166,7 @@
       }
 
       if (!courses || courses.length === 0) {
-        grid.innerHTML = `<p style="color: #666;">No courses available yet.</p>`;
+        grid.innerHTML = `<p>No courses available yet.</p>`;
         return;
       }
 
@@ -182,7 +220,7 @@
               ${quizBadge}
             </div>
             <div>
-              <div style="display:flex; justify-content:space-between; font-size: 0.8rem; color:#666; margin-top:10px;">
+              <div style="display:flex; justify-content:space-between; font-size: 0.8rem; margin-top:10px;">
                 <span>${completedCount} of ${totalMaterials} lessons complete</span>
                 <span>${percentage}%</span>
               </div>
@@ -206,7 +244,6 @@
       window.location.href = "index.html";
     });
 
-    // Mobile menu toggle
     document.getElementById('menu-toggle').addEventListener('click', () => {
       document.getElementById('navLinks').classList.toggle('active');
     });
