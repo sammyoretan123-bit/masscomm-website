@@ -8,30 +8,18 @@
   <link rel="icon" type="image/jpeg" href="images/mass communication logo.jpg" />
   <style>
     .quiz-container { max-width: 800px; margin: 40px auto; padding: 20px; }
-    
-    /* Timer Styles */
     .timer-bar { position: sticky; top: 0; z-index: 100; background: #fff; padding: 15px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #6a0dad; }
     .timer-text { font-size: 1.5rem; font-weight: bold; color: #0d0d0d; }
     .timer-text.warning { color: #e50914; animation: pulse 1s infinite; }
-    
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
-    }
-
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
     .question-card { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border-left: 5px solid #ccc; }
     .question-card h3 { color: #0d0d0d; margin-top: 0; margin-bottom: 15px; }
     .option-label { display: block; background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; border: 1px solid #eee; transition: 0.2s; }
     .option-label:hover { background: #f0e6fa; border-color: #6a0dad; }
     .option-label input { margin-right: 10px; }
-    
     .submit-btn { background: #6a0dad; color: #fff; padding: 15px 30px; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; }
     .submit-btn:hover { background: #8e2de2; }
-    
     .result-box { background: #1e7e34; color: #fff; padding: 30px; border-radius: 12px; text-align: center; font-size: 1.5rem; display: none; margin-top: 20px; flex-direction: column; gap: 20px; align-items: center; }
-    
-    /* Navbar Styles */
     .nav-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid #6a0dad; vertical-align: middle; }
   </style>
 </head>
@@ -39,24 +27,13 @@
 
   <header>
     <nav class="navbar">
-      <div class="logo">
-        <img src="images/mass communication logo.jpg" alt="Logo" />
-        <span>Mass Communication AAUA</span>
-      </div>
+      <div class="logo"><img src="images/mass communication logo.jpg" alt="Logo" /><span>Mass Communication AAUA</span></div>
       <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
         <li><a href="dashboard.html">My Dashboard</a></li>
         <li><a href="forum.html">Community</a></li>
         <li><a href="profile.html">My Profile</a></li>
-        <li style="display: flex; align-items: center;">
-          <a href="profile.html" style="padding: 0;">
-            <img id="nav-avatar-img" 
-                 src="images/mass communication logo.jpg" 
-                 alt="Profile" 
-                 class="nav-avatar" 
-                 onerror="this.src='https://ui-avatars.com/api/?name=Student&background=6a0dad&color=fff';" />
-          </a>
-        </li>
+        <li style="display: flex; align-items: center;"><a href="profile.html" style="padding: 0;"><img id="nav-avatar-img" src="images/mass communication logo.jpg" alt="Profile" class="nav-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Student&background=6a0dad&color=fff';" /></a></li>
         <li><button id="logout-btn" style="background: #e50914; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Log Out</button></li>
       </ul>
     </nav>
@@ -67,14 +44,11 @@
       <span style="font-weight: bold; color: #666;">Time Remaining:</span>
       <span class="timer-text" id="timer">15:00</span>
     </div>
-
     <h1 id="quiz-title" style="color: #0d0d0d;">Loading Quiz...</h1>
-    
     <form id="quiz-form">
       <div id="questions-list"></div>
       <button type="submit" class="submit-btn" id="submit-btn" style="display: none;">Submit Quiz</button>
     </form>
-
     <div class="result-box" id="result-box"></div>
   </div>
 
@@ -83,10 +57,9 @@
   <script>
     let correctAnswers = {}; 
     let timerInterval;
-    let timeLeft = 15 * 60; // 15 minutes
+    let timeLeft = 15 * 60; 
     let isSubmitted = false;
 
-    // Prevent leaving the page accidentally
     window.addEventListener('beforeunload', function (e) {
       if (!isSubmitted && document.getElementById('quiz-form').style.display !== 'none') {
         e.preventDefault();
@@ -97,7 +70,6 @@
     function startTimer() {
       const timerDisplay = document.getElementById('timer');
       document.getElementById('timer-bar').style.display = 'flex';
-
       timerInterval = setInterval(() => {
         if (timeLeft <= 0) {
           clearInterval(timerInterval);
@@ -105,15 +77,11 @@
           autoSubmit();
           return;
         }
-
         timeLeft--;
         const minutes = Math.floor(timeLeft / 60);
         const seconds = timeLeft % 60;
         timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-        if (timeLeft <= 120) {
-          timerDisplay.classList.add('warning');
-        }
+        if (timeLeft <= 120) timerDisplay.classList.add('warning');
       }, 1000);
     }
 
@@ -121,11 +89,8 @@
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session) { window.location.href = "login.html"; return; }
 
-      // Load the user's profile picture for the navbar
       const { data: profile } = await supabaseClient.from('profiles').select('avatar_url').eq('id', session.user.id).single();
-      if (profile && profile.avatar_url) {
-        document.getElementById('nav-avatar-img').src = profile.avatar_url;
-      }
+      if (profile && profile.avatar_url) document.getElementById('nav-avatar-img').src = profile.avatar_url;
 
       const urlParams = new URLSearchParams(window.location.search);
       const courseCode = urlParams.get('code'); 
@@ -137,10 +102,7 @@
 
       document.getElementById('quiz-title').textContent = `CBT: ${courseCode}`;
 
-      const { data: questions, error } = await supabaseClient
-        .from('quizzes')
-        .select('*')
-        .eq('course_code', courseCode);
+      const { data: questions, error } = await supabaseClient.from('quizzes').select('*').eq('course_code', courseCode);
 
       if (error || !questions || questions.length === 0) {
         document.getElementById('quiz-title').textContent = "No questions available for this course yet.";
@@ -148,10 +110,8 @@
       }
 
       const questionsList = document.getElementById('questions-list');
-      
       questionsList.innerHTML = questions.map((q, index) => {
         correctAnswers[q.id] = q.correct_answer; 
-
         return `
           <div class="question-card">
             <h3>${index + 1}. ${q.question}</h3>
@@ -194,6 +154,8 @@
 
       const percentage = Math.round((score / totalQuestions) * 100);
 
+      console.log("Attempting to save score:", { user_id: session.user.id, course_code: courseCode, score: score, total_questions: totalQuestions });
+
       const { error: saveError } = await supabaseClient
         .from('quiz_scores')
         .insert([{ 
@@ -203,13 +165,21 @@
           total_questions: totalQuestions 
         }]);
 
-      if (saveError) console.error("Error saving score:", saveError);
+      // ADDED ALERT TO CATCH ERRORS
+      if (saveError) {
+        alert("DATABASE SAVE FAILED! Reason: " + saveError.message);
+        console.error("Error saving score:", saveError);
+        isSubmitted = false; // Allow them to try again
+        return;
+      } else {
+        console.log("Score saved successfully to database!");
+      }
 
       const resultBox = document.getElementById('result-box');
       resultBox.style.display = 'flex'; 
       resultBox.innerHTML = `
         <span style="margin: 0; font-weight: bold;">You scored ${score} out of ${totalQuestions} (${percentage}%)</span>
-        <a href="dashboard.html" style="background: #fff; color: #1e7e34; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 1rem;">Back to Dashboard</a>
+        <a href="leaderboard.html" style="background: #fff; color: #1e7e34; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 1rem;">Go to Leaderboard</a>
       `;
       resultBox.style.background = percentage >= 50 ? '#1e7e34' : '#e50914'; 
     }
@@ -220,12 +190,10 @@
     }
 
     document.getElementById('quiz-form').addEventListener('submit', processSubmission);
-
     document.getElementById('logout-btn').addEventListener('click', async () => {
       await supabaseClient.auth.signOut();
       window.location.href = "index.html";
     });
-
     document.addEventListener("DOMContentLoaded", loadQuiz);
   </script>
 </body>
