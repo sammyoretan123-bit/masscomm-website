@@ -24,6 +24,11 @@
 
     .nav-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid #6a0dad; vertical-align: middle; }
 
+    /* --- SEARCH BAR STYLES --- */
+    .search-container { margin-bottom: 25px; display: flex; gap: 15px; align-items: center; }
+    .search-input { flex: 1; max-width: 400px; padding: 12px 20px; border: 1px solid #ccc; border-radius: 30px; font-size: 1rem; outline: none; transition: 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .search-input:focus { border-color: #6a0dad; box-shadow: 0 2px 12px rgba(106, 13, 173, 0.2); }
+
     /* --- DARK MODE FIXES --- */
     body.dark-mode .course-card { background-color: #1e1e1e !important; border-color: #333 !important; }
     body.dark-mode .course-card h3 { color: #ffffff !important; }
@@ -32,6 +37,7 @@
     body.dark-mode .progress-bar { background-color: #333333 !important; }
     body.dark-mode .page-title { color: #ffffff !important; }
     body.dark-mode .welcome-banner { background: linear-gradient(135deg, #3a0b5c 0%, #0d0214 100%) !important; }
+    body.dark-mode .search-input { background-color: #1e1e1e !important; color: #fff !important; border-color: #333 !important; }
 
     @media (max-width: 768px) {
       .welcome-banner h1 { font-size: 1.6rem; }
@@ -41,6 +47,7 @@
       .nav-links { display: none; flex-direction: column; position: absolute; top: 70px; right: 20px; background: #000; width: 200px; padding: 20px; border-radius: 8px; z-index: 1000; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
       .nav-links.active { display: flex !important; }
       .nav-links li { margin: 10px 0; text-align: right; }
+      .search-input { width: 100%; max-width: 100%; }
     }
   </style>
 </head>
@@ -60,7 +67,6 @@
         <li><a href="forum.html">Community</a></li>
         <li><a href="profile.html">My Profile</a></li>
         
-        <!-- Admin Link (Hidden for students) -->
         <li id="admin-link-container" style="display: none;">
           <a href="admin.html" style="color: #e50914; font-weight: bold;">⚙️ Admin</a>
         </li>
@@ -95,6 +101,12 @@
     </div>
 
     <h2 style="margin-bottom: 20px;" class="page-title">My Courses</h2>
+    
+    <!-- SEARCH BAR -->
+    <div class="search-container">
+      <input type="text" id="course-search" class="search-input" placeholder="🔍 Search by course title or code (e.g., MAC 101)..." onkeyup="filterCourses()" />
+    </div>
+
     <div class="courses-grid" id="courses-grid">
       <p>Loading courses...</p>
     </div>
@@ -122,6 +134,25 @@
       });
     }
 
+    // --- SEARCH FILTER LOGIC ---
+    function filterCourses() {
+      const input = document.getElementById('course-search').value.toLowerCase();
+      const cards = document.querySelectorAll('.course-card');
+
+      cards.forEach(card => {
+        // Get the title and description text inside the card
+        const title = card.querySelector('h3').textContent.toLowerCase();
+        const desc = card.querySelector('p').textContent.toLowerCase();
+
+        // If the search matches the title or description, show it. Otherwise, hide it.
+        if (title.includes(input) || desc.includes(input)) {
+          card.style.display = 'flex'; // Show card
+        } else {
+          card.style.display = 'none'; // Hide card
+        }
+      });
+    }
+
     // --- MAIN DASHBOARD LOGIC ---
     async function loadDashboard() {
       const { data: { session } } = await supabaseClient.auth.getSession();
@@ -142,7 +173,7 @@
         document.getElementById('announcement-banner').style.display = 'block';
       }
 
-      // Fetch Profile (Now including role)
+      // Fetch Profile
       const { data: profile } = await supabaseClient
         .from('profiles')
         .select('full_name, avatar_url, role')
@@ -159,7 +190,6 @@
         document.getElementById('nav-avatar-img').src = profile.avatar_url;
       }
 
-      // Show Admin Link if user is admin
       if (profile && profile.role === 'admin') {
         document.getElementById('admin-link-container').style.display = 'block';
       }
