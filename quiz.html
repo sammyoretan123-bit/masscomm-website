@@ -3,18 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quiz | NAMACOS</title>
+  <title>CBT Mode | NAMACOS</title>
   <link rel="stylesheet" href="css/style.css" />
   <style>
     .quiz-container { max-width: 800px; margin: 40px auto; padding: 20px; }
-    .question-card { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border-left: 5px solid #6a0dad; }
+    
+    /* Timer Styles */
+    .timer-bar { position: sticky; top: 0; z-index: 100; background: #fff; padding: 15px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #6a0dad; }
+    .timer-text { font-size: 1.5rem; font-weight: bold; color: #0d0d0d; }
+    .timer-text.warning { color: #e50914; animation: pulse 1s infinite; }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .question-card { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border-left: 5px solid #ccc; }
     .question-card h3 { color: #0d0d0d; margin-top: 0; margin-bottom: 15px; }
     .option-label { display: block; background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; border: 1px solid #eee; transition: 0.2s; }
     .option-label:hover { background: #f0e6fa; border-color: #6a0dad; }
     .option-label input { margin-right: 10px; }
+    
     .submit-btn { background: #6a0dad; color: #fff; padding: 15px 30px; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; }
     .submit-btn:hover { background: #8e2de2; }
-    .result-box { background: #1e7e34; color: #fff; padding: 30px; border-radius: 12px; text-align: center; font-size: 1.5rem; display: none; margin-top: 20px; }
+    
+    .result-box { background: #1e7e34; color: #fff; padding: 30px; border-radius: 12px; text-align: center; font-size: 1.5rem; display: none; margin-top: 20px; flex-direction: column; gap: 20px; align-items: center; }
   </style>
 </head>
 <body>
@@ -33,6 +47,11 @@
   </header>
 
   <div class="quiz-container">
+    <div class="timer-bar" id="timer-bar" style="display: none;">
+      <span style="font-weight: bold; color: #666;">Time Remaining:</span>
+      <span class="timer-text" id="timer">15:00</span>
+    </div>
+
     <h1 id="quiz-title" style="color: #0d0d0d;">Loading Quiz...</h1>
     
     <form id="quiz-form">
@@ -47,12 +66,46 @@
   <script src="js/supabase-client.js"></script>
   <script>
     let correctAnswers = {}; 
+    let timerInterval;
+    let timeLeft = 15 * 60; // 15 minutes in seconds
+    let isSubmitted = false;
+
+    // Prevent leaving the page accidentally
+    window.addEventListener('beforeunload', function (e) {
+      if (!isSubmitted && document.getElementById('quiz-form').style.display !== 'none') {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    });
+
+    function startTimer() {
+      const timerDisplay = document.getElementById('timer');
+      document.getElementById('timer-bar').style.display = 'flex';
+
+      timerInterval = setInterval(() => {
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          timerDisplay.textContent = "00:00";
+          autoSubmit();
+          return;
+        }
+
+        timeLeft--;
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+        // Turn red if less than 2 minutes
+        if (timeLeft <= 120) {
+          timerDisplay.classList.add('warning');
+        }
+      }, 1000);
+    }
 
     async function loadQuiz() {
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session) { window.location.href = "login.html"; return; }
 
-      // Get the course code from the URL (e.g., quiz.html?code=MAC 101)
       const urlParams = new URLSearchParams(window.location.search);
       const courseCode = urlParams.get('code'); 
 
@@ -61,9 +114,8 @@
         return;
       }
 
-      document.getElementById('quiz-title').textContent = `Quiz: ${courseCode}`;
+      document.getElementById('quiz-title').textContent = `CBT: ${courseCode}`;
 
-      // Fetch questions for this specific course
       const { data: questions, error } = await supabaseClient
         .from('quizzes')
         .select('*')
@@ -76,7 +128,6 @@
 
       const questionsList = document.getElementById('questions-list');
       
-      // Render the questions
       questionsList.innerHTML = questions.map((q, index) => {
         correctAnswers[q.id] = q.correct_answer; 
 
@@ -92,45 +143,63 @@
       }).join('');
 
       document.getElementById('submit-btn').style.display = 'block';
+      startTimer(); // Start the timer once questions are loaded
+    }
 
-      // Handle Form Submission
-      document.getElementById('quiz-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        let score = 0;
-        const formData = new FormData(e.target);
+    async function processSubmission(e) {
+      if (e) e.preventDefault(); // Stop form from refreshing page
+      if (isSubmitted) return;
+      isSubmitted = true;
 
-        // Calculate Score
-        for (let [key, value] of formData.entries()) {
-          const questionId = key.split('_')[1];
-          if (correctAnswers[questionId] === value) {
-            score++;
-          }
+      clearInterval(timerInterval); // Stop the timer
+      document.getElementById('submit-btn').style.display = 'none';
+      document.getElementById('timer-bar').style.display = 'none';
+
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      const form = document.getElementById('quiz-form');
+      const formData = new FormData(form);
+      
+      let score = 0;
+      let totalQuestions = Object.keys(correctAnswers).length;
+      const urlParams = new URLSearchParams(window.location.search);
+      const courseCode = urlParams.get('code'); 
+
+      for (let [key, value] of formData.entries()) {
+        const questionId = key.split('_')[1];
+        if (correctAnswers[questionId] === value) {
+          score++;
         }
+      }
 
-        const total = questions.length;
-        const percentage = Math.round((score / total) * 100);
+      const percentage = Math.round((score / totalQuestions) * 100);
 
-        // Save score to Supabase
-        const { error: saveError } = await supabaseClient
-          .from('quiz_scores')
-          .insert([{ 
-            user_id: session.user.id, 
-            course_code: courseCode, 
-            score: score, 
-            total_questions: total 
-          }]);
+      // Save score to Supabase
+      const { error: saveError } = await supabaseClient
+        .from('quiz_scores')
+        .insert([{ 
+          user_id: session.user.id, 
+          course_code: courseCode, 
+          score: score, 
+          total_questions: totalQuestions 
+        }]);
 
-        if (saveError) console.error("Error saving score:", saveError);
+      if (saveError) console.error("Error saving score:", saveError);
 
-               // Show Result
-        const resultBox = document.getElementById('result-box');
-        resultBox.style.display = 'flex'; // Changed to flex so it aligns side by side
-        resultBox.innerHTML = `
-          <span style="margin: 0; font-weight: bold;">You scored ${score} out of ${total} (${percentage}%)</span>
-          <a href="dashboard.html" style="background: #fff; color: #1e7e34; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 1rem;">Back to Dashboard</a>
-        `;
-        resultBox.style.background = percentage >= 50 ? '#1e7e34' : '#e50914'; 
-        document.getElementById('submit-btn').style.display = 'none';
+      const resultBox = document.getElementById('result-box');
+      resultBox.style.display = 'flex'; 
+      resultBox.innerHTML = `
+        <span style="margin: 0; font-weight: bold;">You scored ${score} out of ${totalQuestions} (${percentage}%)</span>
+        <a href="dashboard.html" style="background: #fff; color: #1e7e34; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 1rem;">Back to Dashboard</a>
+      `;
+      resultBox.style.background = percentage >= 50 ? '#1e7e34' : '#e50914'; 
+    }
+
+    function autoSubmit() {
+      alert("Time is up! Your quiz is being submitted automatically.");
+      processSubmission();
+    }
+
+    document.getElementById('quiz-form').addEventListener('submit', processSubmission);
 
     document.getElementById('logout-btn').addEventListener('click', async () => {
       await supabaseClient.auth.signOut();
