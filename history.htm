@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Quiz History | NAMACOS</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" type="image/jpeg" href="images/mass communication logo.jpg" />
+  <style>
+    .history-container { max-width: 900px; margin: 40px auto; padding: 20px; }
+    .page-title { color: #0d0d0d; margin-bottom: 20px; font-size: 2rem; }
+    
+    .history-card { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 20px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 5px solid #6a0dad; }
+    .history-info h3 { margin: 0 0 5px; color: #333; font-size: 1.2rem; }
+    .history-info p { margin: 0; color: #666; font-size: 0.9rem; }
+    
+    .score-badge { font-size: 1.5rem; font-weight: bold; padding: 10px 20px; border-radius: 8px; text-align: center; }
+    .score-pass { background: #e6f4ea; color: #1e7e34; }
+    .score-fail { background: #fce8e6; color: #e50914; }
+    
+    .empty-state { text-align: center; padding: 50px; background: #fff; border-radius: 10px; color: #666; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    
+    .nav-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid #6a0dad; vertical-align: middle; }
+
+    /* Dark Mode Fixes */
+    body.dark-mode .history-card { background-color: #1e1e1e !important; border-color: #333 !important; }
+    body.dark-mode .history-card h3 { color: #fff !important; }
+    body.dark-mode .history-card p { color: #bbb !important; }
+    body.dark-mode .page-title { color: #fff !important; }
+    body.dark-mode .empty-state { background-color: #1e1e1e !important; color: #bbb !important; }
+
+    @media (max-width: 768px) {
+      .history-card { flex-direction: column; align-items: flex-start; gap: 15px; }
+      .menu-toggle { display: block !important; color: #fff; font-size: 28px; cursor: pointer; }
+      .nav-links { display: none; flex-direction: column; position: absolute; top: 70px; right: 20px; background: #000; width: 200px; padding: 20px; border-radius: 8px; z-index: 1000; }
+      .nav-links.active { display: flex !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <img src="images/mass communication logo.jpg" alt="Logo" />
+        <span>Mass Communication AAUA</span>
+      </div>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="dashboard.html">My Dashboard</a></li>
+        <li><a href="leaderboard.html">Leaderboard</a></li>
+        <li><a href="history.html" style="color: #6a0dad; font-weight: bold;">My History</a></li>
+        <li><a href="forum.html">Community</a></li>
+        <li style="display: flex; align-items: center;">
+          <a href="profile.html" style="padding: 0;" title="My Profile">
+            <img id="nav-avatar-img" src="images/mass communication logo.jpg" alt="Profile" class="nav-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Student&background=6a0dad&color=fff';" />
+          </a>
+        </li>
+        <li><button id="logout-btn" style="background: #e50914; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Log Out</button></li>
+      </ul>
+      <div class="menu-toggle" id="menu-toggle">&#9776;</div>
+    </nav>
+  </header>
+
+  <div class="history-container">
+    <h1 class="page-title">My Quiz History</h1>
+    <div id="history-list">
+      <p>Loading your results...</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    // Dark mode toggle
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    if (localStorage.getItem('theme') === 'dark') { document.body.classList.add('dark-mode'); }
+
+    async function loadHistory() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) { window.location.href = "login.html"; return; }
+
+      // Load Avatar
+      const { data: profile } = await supabaseClient.from('profiles').select('avatar_url').eq('id', session.user.id).single();
+      if (profile && profile.avatar_url) {
+        document.getElementById('nav-avatar-img').src = profile.avatar_url;
+      }
+
+      // Fetch all quiz scores for this user, newest first
+      const { data: scores, error } = await supabaseClient
+        .from('quiz_scores')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .order('created_at', { ascending: false });
+
+      const list = document.getElementById('history-list');
+
+      if (error || !scores || scores.length === 0) {
+        list.innerHTML = `
+          <div class="empty-state">
+            <h3>No quizzes taken yet</h3>
+            <p>Go to your dashboard and take a quiz to see your results here!</p>
+            <a href="dashboard.html" class="btn-continue" style="margin-top: 15px; display: inline-block;">Go to Dashboard</a>
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = scores.map(score => {
+        const percentage = Math.round((score.score / score.total_questions) * 100);
+        const date = new Date(score.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit' });
+        const passed = percentage >= 50;
+        
+        return `
+          <div class="history-card">
+            <div class="history-info">
+              <h3>${score.course_code}</h3>
+              <p>Taken on ${date}</p>
+            </div>
+            <div class="score-badge ${passed ? 'score-pass' : 'score-fail'}">
+              ${percentage}% <br>
+              <span style="font-size: 0.8rem; font-weight: normal;">(${score.score} / ${score.total_questions})</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    document.getElementById('menu-toggle').addEventListener('click', () => {
+      document.getElementById('navLinks').classList.toggle('active');
+    });
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      await supabaseClient.auth.signOut();
+      window.location.href = "index.html";
+    });
+
+    document.addEventListener("DOMContentLoaded", loadHistory);
+  </script>
+</body>
+</html>
