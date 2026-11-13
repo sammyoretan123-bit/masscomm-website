@@ -50,18 +50,22 @@
         <img src="images/mass communication logo.jpg" alt="Logo" />
         <span>Mass Communication AAUA</span>
       </div>
-      <ul class="nav-links">
+      
+      <!-- Added id="navLinks" here -->
+      <ul class="nav-links" id="navLinks">
         <li><a href="dashboard.html">My Dashboard</a></li>
         <li><a href="admin.html" style="color: #e50914; font-weight: bold;">Admin Panel</a></li>
         <li><button id="logout-btn" style="background: #e50914; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Log Out</button></li>
       </ul>
+      
+      <!-- Added the hamburger icon here -->
+      <div class="menu-toggle" id="menu-toggle">&#9776;</div>
     </nav>
   </header>
 
   <div class="admin-container">
     <h1 style="color: #0d0d0d; margin-bottom: 20px;">Admin Dashboard</h1>
     
-    <!-- TABS -->
     <div class="admin-tabs">
       <button class="tab-btn active" onclick="switchTab('course', this)">Add Course</button>
       <button class="tab-btn" onclick="switchTab('lesson', this)">Add Lesson</button>
@@ -70,7 +74,6 @@
       <button class="tab-btn" onclick="switchTab('students', this)">Enrolled Students</button>
     </div>
 
-    <!-- 1. ADD COURSE -->
     <div id="form-course" class="admin-form active">
       <h3 style="color: #6a0dad; margin-top: 0;">Add a New Course</h3>
       <div class="form-group"><label>Course Code (e.g., MAC 101)</label><input type="text" id="course-code" placeholder="MAC 101" /></div>
@@ -80,7 +83,6 @@
       <p id="msg-course" class="status-msg"></p>
     </div>
 
-    <!-- 2. ADD LESSON -->
     <div id="form-lesson" class="admin-form">
       <h3 style="color: #6a0dad; margin-top: 0;">Add a Lesson</h3>
       <div class="form-group"><label>Course Code</label><input type="text" id="lesson-code" placeholder="MAC 101" /></div>
@@ -93,7 +95,6 @@
       <p id="msg-lesson" class="status-msg"></p>
     </div>
 
-    <!-- 3. ADD QUIZ -->
     <div id="form-quiz" class="admin-form">
       <h3 style="color: #6a0dad; margin-top: 0;">Add a Quiz Question</h3>
       <div class="form-group"><label>Course Code</label><input type="text" id="quiz-code" placeholder="MAC 101" /></div>
@@ -107,13 +108,11 @@
       <p id="msg-quiz" class="status-msg"></p>
     </div>
 
-    <!-- 4. MANAGE COURSES -->
     <div id="form-manage" class="admin-form">
       <h3 style="color: #6a0dad; margin-top: 0;">Manage Courses</h3>
       <div id="manage-list"><p>Loading courses...</p></div>
     </div>
 
-    <!-- 5. ENROLLED STUDENTS -->
     <div id="form-students" class="admin-form">
       <h3 style="color: #6a0dad; margin-top: 0;">Enrolled Students</h3>
       <p style="color: #666; font-size: 0.9rem; margin-bottom: 15px;">Students who have completed at least one lesson.</p>
@@ -139,6 +138,11 @@
       }
     }
     checkAdmin();
+
+    // --- MANUAL MOBILE MENU TOGGLE ---
+    document.getElementById('menu-toggle').addEventListener('click', () => {
+      document.getElementById('navLinks').classList.toggle('active');
+    });
 
     // --- TAB SWITCHING ---
     function switchTab(tabName, btnElement) {
@@ -276,31 +280,22 @@
       const listContainer = document.getElementById('students-list');
       listContainer.innerHTML = '<p>Loading student data...</p>';
 
-      // 1. Fetch all progress records
       const { data: progress, error: progErr } = await supabaseClient.from('progress').select('user_id, material_id');
-      
-      // 2. Fetch all profiles to get names
       const { data: profiles, error: profErr } = await supabaseClient.from('profiles').select('id, full_name');
-      
-      // 3. Fetch all materials to match material_id to course_code
       const { data: materials, error: matErr } = await supabaseClient.from('materials').select('id, course_code');
       
       if (progErr || profErr || matErr) { listContainer.innerHTML = '<p style="color:red;">Error loading data.</p>'; return; }
       if (!progress || progress.length === 0) { listContainer.innerHTML = '<p>No students have completed any lessons yet.</p>'; return; }
 
-      // Group by student and course
       const studentStats = {};
 
       progress.forEach(record => {
-        // Find the profile name
         const profile = profiles.find(p => String(p.id) === String(record.user_id));
         const name = (profile && profile.full_name) ? profile.full_name : "Unknown Student";
 
-        // Find the course code for this material
         const material = materials.find(m => m.id === record.material_id);
         const courseCode = material ? material.course_code : "Unknown Course";
 
-        // Create unique key for student + course
         const key = `${record.user_id}-${courseCode}`;
 
         if (!studentStats[key]) {
@@ -338,5 +333,47 @@
       window.location.href = "index.html";
     });
   </script>
+
+  <!-- FORCED CSS FOR MOBILE MENU (Bypasses style.css) -->
+  <style>
+    @media screen and (max-width: 768px) {
+      .menu-toggle {
+        display: block !important;
+        color: #fff !important;
+        font-size: 28px !important;
+        cursor: pointer !important;
+        z-index: 9999 !important;
+      }
+      .nav-links {
+        display: none !important; 
+        position: absolute !important;
+        top: 70px !important;
+        right: 20px !important;
+        background: #000 !important;
+        width: 220px !important;
+        flex-direction: column !important;
+        padding: 20px !important;
+        border-radius: 8px !important;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.5) !important;
+        z-index: 9998 !important;
+      }
+      .nav-links.active {
+        display: flex !important; 
+      }
+      .nav-links li {
+        margin: 12px 0 !important;
+        text-align: right !important;
+        width: 100% !important;
+        display: block !important;
+      }
+      .nav-links a {
+        display: block !important;
+        width: 100% !important;
+        color: #fff !important;
+        padding: 10px 0 !important;
+        text-decoration: none !important;
+      }
+    }
+  </style>
 </body>
 </html>
