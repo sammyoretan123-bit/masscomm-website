@@ -22,7 +22,7 @@
       width: 100%;
       max-width: 900px;
       background: #fff;
-      padding: 50px;
+      padding: 40px;
       border: 15px solid #6a0dad;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       text-align: center;
@@ -32,36 +32,39 @@
 
     .inner-border {
       border: 2px solid #e0d4eb;
-      padding: 40px 20px;
+      padding: 30px 20px;
       height: 100%;
       box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
     .logo {
-      width: 90px;
+      width: 80px;
       border-radius: 50%;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
 
     h1 {
       color: #6a0dad;
-      font-size: 2.8rem;
-      margin: 0 0 10px;
+      font-size: 2.5rem;
+      margin: 0 0 5px;
       text-transform: uppercase;
       letter-spacing: 2px;
     }
 
     .subtitle {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       color: #666;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
       font-style: italic;
     }
 
     .student-name {
-      font-size: 3rem;
+      font-size: 2.8rem;
       color: #0d0d0d;
-      margin: 20px 0;
+      margin: 15px 0;
       border-bottom: 2px solid #6a0dad;
       display: inline-block;
       padding: 0 20px 5px;
@@ -70,9 +73,9 @@
     }
 
     .course-title {
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       color: #333;
-      margin: 20px 0;
+      margin: 15px 0;
       font-weight: bold;
     }
 
@@ -80,17 +83,18 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
-      margin-top: 60px;
-      padding: 0 40px;
+      margin-top: 40px;
+      padding: 0 20px;
     }
 
     .signature-box {
       text-align: center;
+      width: 250px;
     }
 
     .signature-line {
       border-top: 1px solid #333;
-      width: 220px;
+      width: 100%;
       margin-bottom: 5px;
     }
 
@@ -127,7 +131,7 @@
       transform: translateX(-50%) scale(1.05);
     }
 
-    /* --- PRINT STYLES (This makes the PDF download perfectly) --- */
+    /* --- PRINT STYLES --- */
     @media print {
       @page { size: A4 landscape; margin: 0; }
       body {
@@ -154,31 +158,50 @@
 
   <div class="certificate-container">
     <div class="inner-border">
-      <img src="images/mass communication logo.jpg" alt="Logo" class="logo" onerror="this.style.display='none'"/>
       
-      <h1>Certificate of Completion</h1>
-      <p class="subtitle">This is to certify that</p>
-      
-      <div class="student-name" id="cert-name">Student Name</div>
-      
-      <p class="subtitle">has successfully completed the course</p>
-      
-      <div class="course-title" id="cert-course">Course Title</div>
-      
-      <div class="footer-area">
-        <div class="signature-box">
-          <p style="margin-bottom: 40px; font-weight: bold;" id="cert-date">Date</p>
-          <div class="signature-line"></div>
-          <p class="signature-title">Date</p>
-        </div>
+      <!-- Top Section -->
+      <div>
+        <img src="images/mass communication logo.jpg" alt="Logo" class="logo" onerror="this.style.display='none'"/>
+        <h1>Certificate of Completion</h1>
+        <p class="subtitle">This is to certify that</p>
         
+        <div class="student-name" id="cert-name">Student Name</div>
+        
+        <p class="subtitle">has successfully completed the course</p>
+        
+        <div class="course-title" id="cert-course">Course Title</div>
+      </div>
+      
+      <!-- Signatures Section -->
+      <div class="footer-area">
+        <!-- Left Side: HOD -->
         <div class="signature-box">
-          <p style="margin-bottom: 40px; font-style: italic; color: #6a0dad;">Namacos AAUA</p>
+          <p style="margin-bottom: 40px; font-style: italic; color: #6a0dad;">NAMACOS AAUA</p>
           <div class="signature-line"></div>
           <p class="signature-name">Dr. Ishola Kamorudeen Lamidi</p>
           <p class="signature-title">Head of Department</p>
         </div>
+        
+        <!-- Right Side: President -->
+        <div class="signature-box">
+          <p style="margin-bottom: 40px; font-style: italic; color: #6a0dad;">Student Executive</p>
+          <div class="signature-line"></div>
+          <p class="signature-name">Samuel Oretan</p>
+          <p class="signature-title">President</p>
+        </div>
       </div>
+
+      <!-- Bottom Centered Section (Date & Admin Info) -->
+      <div style="text-align: center; margin-top: 30px;">
+        <p style="font-weight: bold; font-size: 1.1rem; margin-bottom: 10px; color: #333;">
+          Date: <span id="cert-date"></span>
+        </p>
+        <p style="font-size: 0.85rem; color: #777; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin: 0;">
+          Oretan-Led Administration 2026/2027<br>
+          Vanguard Movement – Set 2023/2024
+        </p>
+      </div>
+
     </div>
   </div>
 
