@@ -94,10 +94,12 @@
       if (fileInput.files.length > 0) {
         const file = fileInput.files[0];
         const fileExt = file.name.split('.').pop();
-        // Unique filename prevents "upsert" permission errors
-        const fileName = `${currentUser.id}-${Date.now()}.${fileExt}`;
+        
+        // FIXED: Use the User's ID as a folder name, then the file inside it.
+        // This perfectly matches the Supabase Storage RLS policy.
+        const fileName = `${currentUser.id}/${Date.now()}.${fileExt}`;
 
-        // Upload the file (No upsert flag)
+        // Upload the file (No upsert flag needed)
         const { data: uploadData, error: uploadError } = await supabaseClient.storage
           .from('avatars')
           .upload(fileName, file);
