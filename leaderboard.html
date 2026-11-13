@@ -87,11 +87,14 @@
         document.getElementById('nav-avatar-img').src = profile.avatar_url;
       }
 
-      // Fetch all quiz scores
-      const { data: scores, error } = await supabaseClient.from('quiz_scores').select('*');
+      // 1. Fetch ALL quiz scores
+      const { data: scores, error: scoresError } = await supabaseClient.from('quiz_scores').select('*');
       
-      if (error) {
-        console.error("Error fetching scores:", error);
+      // 2. Fetch ALL profiles to get names
+      const { data: profiles, error: profilesError } = await supabaseClient.from('profiles').select('id, full_name');
+      
+      if (scoresError || profilesError) {
+        console.error("Error loading data:", scoresError || profilesError);
         document.getElementById('leaderboard-list').innerHTML = `<p style="color: red; text-align: center;">Could not load leaderboard.</p>`;
         return;
       }
@@ -101,28 +104,29 @@
         return;
       }
 
-      // Fetch all profiles to match user_id to full_name
-      const { data: profiles } = await supabaseClient.from('profiles').select('id, full_name');
-      
-      // 1. Group and sum the scores per user
+      // 3. Group and sum the scores per user
       const userStats = {};
       
       scores.forEach(score => {
         const userId = score.user_id;
+        
+        // If we haven't seen this user yet, create their profile entry
         if (!userStats[userId]) {
-          // Find the user's name from the profiles array
-          const userProfile = profiles ? profiles.find(p => p.id === userId) : null;
-          const name = userProfile && userProfile.full_name ? userProfile.full_name : "Anonymous Student";
+          // Find their name in the profiles array
+          const userProfile = profiles.find(p => p.id === userId);
+          const name = (userProfile && userProfile.full_name) ? userProfile.full_name : "Unknown Student";
           
           userStats[userId] = { id: userId, name: name, total: 0 };
         }
+        
+        // Add their score to their total
         userStats[userId].total += score.score;
       });
 
-      // 2. Convert object to array and sort from highest to lowest score
+      // 4. Convert object to array and sort from highest to lowest score
       const sortedStats = Object.values(userStats).sort((a, b) => b.total - a.total);
 
-      // 3. Render the Top 3 Podium
+      // 5. Render the Top 3 Podium
       const podium = document.getElementById('podium');
       const top3 = sortedStats.slice(0, 3);
       let podiumHTML = '';
@@ -157,7 +161,7 @@
       }
       podium.innerHTML = podiumHTML;
 
-      // 4. Render the rest of the list (Rank 4 downwards)
+      // 6. Render the rest of the list (Rank 4 downwards)
       const list = document.getElementById('leaderboard-list');
       const restOfList = sortedStats.slice(3);
       
