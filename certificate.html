@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Certificate Generator | NAMACOS</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    body { margin: 0; padding: 0; background: #eee; font-family: 'Georgia', serif; }
+    
+    /* A4 Landscape size */
+    #certificate-wrapper {
+      width: 1122px; 
+      height: 793px; 
+      background: #fff;
+      position: relative;
+      padding: 40px;
+      box-sizing: border-box;
+      display: none; 
+    }
+
+    .cert-border-outer {
+      border: 15px solid #6a0dad;
+      height: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    .cert-border-inner {
+      border: 2px solid #d4b4ff;
+      height: 100%;
+      padding: 40px;
+      text-align: center;
+      position: relative;
+      background-image: radial-gradient(circle at 50% 50%, rgba(106, 13, 173, 0.03) 0%, transparent 70%);
+    }
+
+    .cert-logo { width: 100px; margin-bottom: 20px; border-radius: 50%; }
+    
+    .cert-title {
+      font-size: 45px; color: #6a0dad; text-transform: uppercase;
+      letter-spacing: 4px; margin: 0 0 10px 0; font-weight: bold;
+    }
+
+    .cert-subtitle { font-size: 20px; color: #555; margin-bottom: 30px; font-style: italic; }
+    .cert-text { font-size: 22px; color: #333; margin-bottom: 20px; }
+
+    .student-name {
+      font-size: 50px; color: #0d0d0d; border-bottom: 3px solid #6a0dad;
+      display: inline-block; padding: 0 40px 10px 40px; margin-bottom: 30px; font-weight: bold;
+    }
+
+    .course-name { font-size: 30px; color: #6a0dad; font-weight: bold; margin-bottom: 50px; }
+
+    .cert-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 60px; padding: 0 50px; }
+    .signature-box { text-align: center; width: 250px; }
+    .signature-line { border-top: 2px solid #333; margin-bottom: 10px; }
+    .signature-name { font-weight: bold; font-size: 18px; color: #0d0d0d; }
+    .signature-title { font-size: 14px; color: #666; }
+    .cert-date { font-size: 16px; color: #555; }
+  </style>
+</head>
+<body>
+
+  <div id="certificate-wrapper">
+    <div class="cert-border-outer">
+      <div class="cert-border-inner">
+        <img src="images/mass communication logo.jpg" alt="Logo" class="cert-logo" />
+        <h1 class="cert-title">Certificate of Completion</h1>
+        <p class="cert-subtitle">This is to certify that</p>
+        <div class="student-name" id="cert-student-name">Student Name</div>
+        <p class="cert-text">has successfully completed the course</p>
+        <div class="course-name" id="cert-course-name">Course Title</div>
+        <div class="cert-footer">
+          <div class="cert-date">Date: <span id="cert-date">January 1, 2026</span></div>
+          <div class="signature-box">
+            <div class="signature-line"></div>
+            <div class="signature-name">Dr. Ishola Kamorudeen Lamidi</div>
+            <div class="signature-title">Head of Department</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Get data from the URL (e.g., certificate.html?name=John&course=MAC%20101)
+      const urlParams = new URLSearchParams(window.location.search);
+      const studentName = urlParams.get('name') || 'Student Name';
+      const courseName = urlParams.get('course') || 'Course Title';
+      
+      // Get current date
+      const today = new Date();
+      const dateStr = today.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+      // Inject the data
+      document.getElementById('cert-student-name').textContent = studentName;
+      document.getElementById('cert-course-name').textContent = courseName;
+      document.getElementById('cert-date').textContent = dateStr;
+
+      // Show the certificate temporarily to generate PDF
+      document.getElementById('certificate-wrapper').style.display = 'block';
+
+      // Trigger the PDF download
+      const element = document.getElementById('certificate-wrapper');
+      const opt = {
+        margin:       0,
+        filename:     `${studentName} - ${courseName} Certificate.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'px', format: [1122, 793], orientation: 'landscape' }
+      };
+
+      // Generate and save PDF
+      html2pdf().set(opt).from(element).save().then(() => {
+        // After downloading, close the tab automatically
+        window.close();
+      });
+    });
+  </script>
+</body>
+</html>
