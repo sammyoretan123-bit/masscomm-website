@@ -58,12 +58,8 @@
   <div class="leaderboard-container">
     <h1 style="color: #0d0d0d; text-align: center; margin-bottom: 30px;">🏆 Top Students</h1>
 
-    <!-- The Top 3 Podium -->
-    <div class="podium" id="podium">
-      <!-- Filled by JavaScript -->
-    </div>
+    <div class="podium" id="podium"></div>
 
-    <!-- The Rest of the List -->
     <div class="list-header">
       <span>Rank</span>
       <span>Student Name</span>
@@ -87,19 +83,14 @@
         document.getElementById('nav-avatar-img').src = profile.avatar_url;
       }
 
-      // 1. Fetch quiz scores AND join the profiles table to get the name automatically
-      const { data: scores, error: scoresError } = await supabaseClient
-        .from('quiz_scores')
-        .select(`
-          score, 
-          user_id,
-          profiles (
-            full_name
-          )
-        `);
+      // 1. Fetch ALL quiz scores
+      const { data: scores, error: scoresError } = await supabaseClient.from('quiz_scores').select('*');
       
-      if (scoresError) {
-        console.error("Error loading data:", scoresError);
+      // 2. Fetch ALL profiles
+      const { data: profiles, error: profilesError } = await supabaseClient.from('profiles').select('id, full_name');
+      
+      if (scoresError || profilesError) {
+        console.error("Error loading data:", scoresError || profilesError);
         document.getElementById('leaderboard-list').innerHTML = `<p style="color: red; text-align: center;">Could not load leaderboard.</p>`;
         return;
       }
@@ -109,20 +100,20 @@
         return;
       }
 
-      // 2. Group and sum the scores per user
+      // 3. Group and sum the scores per user
       const userStats = {};
       
       scores.forEach(score => {
-        const userId = score.user_id;
+        // Force both IDs to lowercase strings so they match perfectly
+        const userId = String(score.user_id).toLowerCase().trim();
         
         if (!userStats[userId]) {
-          // If the join worked, we get the name directly from the database!
-          let name = "Unknown Student";
+          // Find the profile using the forced string match
+          const userProfile = profiles.find(p => String(p.id).toLowerCase().trim() === userId);
           
-          if (score.profiles && score.profiles.full_name) {
-            name = score.profiles.full_name;
-          } else if (score.profiles && score.profiles.full_name === null) {
-             name = "Student (No Name)";
+          let name = "Unknown Student";
+          if (userProfile && userProfile.full_name) {
+            name = userProfile.full_name;
           }
           
           userStats[userId] = { id: userId, name: name, total: 0 };
@@ -132,15 +123,14 @@
         userStats[userId].total += score.score;
       });
 
-      // 3. Convert object to array and sort from highest to lowest score
+      // 4. Convert object to array and sort from highest to lowest score
       const sortedStats = Object.values(userStats).sort((a, b) => b.total - a.total);
 
-      // 4. Render the Top 3 Podium
+      // 5. Render the Top 3 Podium
       const podium = document.getElementById('podium');
       const top3 = sortedStats.slice(0, 3);
       let podiumHTML = '';
 
-      // Build the podium (Order: 2nd, 1st, 3rd so the 1st is in the middle)
       if (top3[1]) { // 2nd place
         podiumHTML += `
           <div class="podium-step second">
@@ -170,7 +160,7 @@
       }
       podium.innerHTML = podiumHTML;
 
-      // 5. Render the rest of the list (Rank 4 downwards)
+      // 6. Render the rest of the list
       const list = document.getElementById('leaderboard-list');
       const restOfList = sortedStats.slice(3);
       
@@ -180,7 +170,7 @@
       }
 
       list.innerHTML = restOfList.map((user, index) => {
-        const rank = index + 4; // Since we already showed top 3
+        const rank = index + 4;
         return `
           <div class="leaderboard-row">
             <span class="rank-col">#${rank}</span>
