@@ -31,63 +31,23 @@
     .arrow { font-size: 0.7rem; margin-left: 5px; }
     .menu-toggle { display: none; }
 
-    /* --- SETS PAGE SPECIFIC STYLES --- */
-    .team { padding: 20px; }
-    #sets-list { max-width: 1100px; margin: 0 auto; }
-    
-    .set-card {
-      background: #fff;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-      margin-bottom: 40px;
-      border: 1px solid #eee;
+    /* --- FIX FOR GALLERY IMAGES (The Core Issue) --- */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
     }
-    
-    .set-header {
-      background: #6a0dad;
-      color: #fff;
-      padding: 15px 25px;
-      text-align: left;
-    }
-    .set-header h3 { margin: 0; font-size: 1.3rem; text-transform: uppercase; color: #fff; }
-    .set-header p { margin: 5px 0 0; font-size: 0.85rem; color: #e0d4eb; }
-    
-    .set-content {
-      padding: 30px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    
-    .set-rep-img {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 4px solid #6a0dad;
-      margin-bottom: 10px;
-    }
-    
-    .set-rep-name { color: #0d0d0d; font-weight: bold; font-size: 1.1rem; margin-bottom: 5px; }
-    .set-rep-role { color: #6a0dad; font-weight: bold; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 20px; }
-    
-    .set-gallery-link {
-      color: #6a0dad;
-      font-weight: bold;
-      text-decoration: underline;
-      font-size: 0.9rem;
-      margin-bottom: 20px;
-      cursor: pointer;
-    }
-    
-    .set-group-photo {
+    .gallery-grid img {
       width: 100%;
-      max-height: 500px;
+      height: 200px;
       object-fit: cover;
       border-radius: 8px;
-      border: 1px solid #ddd;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .gallery-grid img:hover {
+      transform: scale(1.03);
     }
 
     /* --- FOOTER --- */
