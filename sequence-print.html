@@ -35,6 +35,7 @@
     .content-card ul { list-style-type: disc; padding-left: 20px; }
     .content-card ul li { color: #444; font-size: 1.05rem; line-height: 1.8; margin-bottom: 10px; }
 
+    /* Lecturer Cards Grid */
     .team { padding: 20px; }
     .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; max-width: 900px; margin: 0 auto; }
     .member { background: #fff; border-radius: 12px; padding: 25px 15px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); display: flex; flex-direction: column; align-items: center; text-align: center; transition: transform 0.3s; cursor: pointer; }
@@ -42,6 +43,13 @@
     .member img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #6a0dad; margin-bottom: 15px; }
     .member h4 { color: #0d0d0d; margin-bottom: 5px; font-size: 1.1rem; }
     .member p { color: #6a0dad; font-weight: bold; text-transform: uppercase; font-size: 0.8rem; margin: 0; }
+
+    /* Gallery Grid */
+    .gallery-section { max-width: 1100px; margin: 0 auto 50px; padding: 0 20px; }
+    .gallery-title { text-align: center; color: #6a0dad; font-size: 1.6rem; margin-bottom: 20px; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+    .gallery-grid img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; cursor: pointer; transition: transform 0.2s; }
+    .gallery-grid img:hover { transform: scale(1.03); }
 
     footer { background: #0d0d0d; color: #aaa; text-align: center; padding: 40px 20px; border-top: 1px solid #222; margin-top: 50px; }
     .footer-credit { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; }
@@ -125,6 +133,15 @@
         <h4>Mr. Tunde Bakare</h4>
         <p>Lecturer I</p>
       </div>
+    </div>
+  </section>
+
+  <section class="gallery-section">
+    <h2 class="gallery-title">Photo Gallery</h2>
+    <div class="gallery-grid">
+      <img src="images/mass communication logo.jpg" alt="Print Gallery" />
+      <img src="images/mass communication logo.jpg" alt="Print Gallery" />
+      <img src="images/mass communication logo.jpg" alt="Print Gallery" />
     </div>
   </section>
 
