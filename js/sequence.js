@@ -216,38 +216,32 @@ async function renderSequencePage() {
     }
   }
 
-  // ---------- FIXED LECTURERS SECTION ----------
+  // ---------- LECTURERS SECTION (FORCED LAYOUT) ----------
   const lecturersEl = document.getElementById("sequence-lecturers");
   if (lecturersEl) {
     const lecturerSlugs = await getLecturerSlugs();
     const allLecturers = (await Promise.all(lecturerSlugs.map(fetchLecturer))).filter(Boolean);
 
-    // Filter lecturers to handle BOTH strings and Sveltia lists
     const lecturers = allLecturers.filter((l) => {
       let seqData = l.sequence;
-      
-      if (typeof seqData === 'string') {
-        return seqData.toLowerCase().includes(slug);
-      }
-      
-      if (Array.isArray(seqData)) {
-        return seqData.some(s => s.toLowerCase() === slug);
-      }
-      
+      if (typeof seqData === 'string') return seqData.toLowerCase().includes(slug);
+      if (Array.isArray(seqData)) return seqData.some(s => s.toLowerCase() === slug);
       return false;
     });
 
-    // Sort alphabetically
     lecturers.sort((a, b) => a.name.localeCompare(b.name));
 
     if (lecturers.length === 0) {
       lecturersEl.innerHTML = `<p style="text-align:center; width:100%; color:#666;">Lecturer information is being updated. Please check back soon.</p>`;
     } else {
+      // FORCE THE FLEX CONTAINER AND FIX THE CARD DIMENSIONS
+      lecturersEl.style.cssText = "display: flex !important; flex-wrap: wrap !important; justify-content: center !important; gap: 20px !important; width: 100% !important;";
+      
       lecturersEl.innerHTML = lecturers.map((l) => `
-        <div class="member">
-          <img src="${l.photo}" alt="${l.name}" />
-          <h3>${l.name}</h3>
-          <p class="role">${l.role}</p>
+        <div class="member" style="width: 200px !important; height: 260px !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; padding: 20px !important; margin: 0 !important; flex-shrink: 0 !important; text-align: center !important;">
+          <img src="${l.photo}" alt="${l.name}" style="width: 100px !important; height: 100px !important; border-radius: 50% !important; object-fit: cover !important; border: 4px solid #6a0dad !important; margin-bottom: 15px !important;" />
+          <h3 style="font-size: 1rem !important; margin: 0 0 5px 0 !important; line-height: 1.2 !important; color: #0d0d0d !important;">${l.name}</h3>
+          <p class="role" style="font-size: 0.75rem !important; margin: 0 !important; text-transform: uppercase !important; color: #6a0dad !important; font-weight: bold !important;">${l.role}</p>
         </div>
       `).join("");
     }
