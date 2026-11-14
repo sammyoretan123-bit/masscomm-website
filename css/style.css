@@ -128,3 +128,30 @@ footer { background: #0d0d0d; color: #aaa; text-align: center; padding: 40px 20p
   .stats-grid { grid-template-columns: 1fr; }
   .slide-content h1 { font-size: 1.8rem; }
 }
+/* ============================================
+   MOBILE MENU POLISH: Purple underlines & X icon
+   ============================================ */
+@media screen and (max-width: 768px) {
+  
+  /* 1. Purple line under each menu item */
+  .nav-links > li {
+    border-bottom: 2px solid #6a0dad !important; /* Purple, not grey */
+  }
+  
+  /* Remove the purple line from the very last item */
+  .nav-links > li:last-child {
+    border-bottom: none !important;
+  }
+
+  /* 2. Style the hamburger button to be a toggle */
+  .menu-toggle {
+    display: block !important;
+    color: #fff !important;
+    font-size: 24px !important;
+    cursor: pointer !important;
+    z-index: 10001 !important;
+    background: none !important;
+    border: none !important;
+    padding: 5px !important;
+  }
+}

@@ -13,13 +13,21 @@ document.addEventListener("DOMContentLoaded", () => {
   backdrop.classList.add('menu-backdrop');
   document.body.appendChild(backdrop);
 
-  // --- 2. HAMBURGER TOGGLE ---
+  // --- 2. HAMBURGER TOGGLE (WITH X ICON) ---
   if (menuBtn && navMenu) {
     menuBtn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation(); 
+      
       navMenu.classList.toggle('active');
       backdrop.classList.toggle('active');
+      
+      // Change icon to X when open, back to ☰ when closed
+      if (navMenu.classList.contains('active')) {
+        menuBtn.innerHTML = '&times;'; // X icon
+      } else {
+        menuBtn.innerHTML = '&#9776;'; // Hamburger icon
+      }
     });
   }
 
@@ -27,6 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
   backdrop.addEventListener('click', () => {
     navMenu.classList.remove('active');
     backdrop.classList.remove('active');
+    if (menuBtn) menuBtn.innerHTML = '&#9776;'; // Reset to hamburger
   });
 
   // --- 4. DROPDOWN TOGGLE (Mobile only) ---
@@ -64,6 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (navMenu && navMenu.classList.contains('active')) {
           navMenu.classList.remove('active');
           backdrop.classList.remove('active');
+          if (menuBtn) menuBtn.innerHTML = '&#9776;'; // Reset to hamburger
         }
       }
     });
