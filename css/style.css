@@ -9,7 +9,14 @@ a { text-decoration: none; color: inherit; }
 ul { list-style: none; }
 
 /* --- NAVBAR --- */
-header { background: #000; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+header { 
+  background: #000; 
+  position: sticky; 
+  top: 0; 
+  z-index: 1000; 
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5); 
+  border-bottom: 2px solid #6a0dad; /* PURPLE LINE ADDED */
+}
 .navbar { display: flex; justify-content: space-between; align-items: center; padding: 10px 40px; max-width: 1200px; margin: 0 auto; }
 .logo { display: flex; align-items: center; gap: 10px; color: #fff; font-weight: bold; font-size: 1.2rem; }
 .logo img { height: 45px; border-radius: 50%; }
@@ -45,7 +52,7 @@ header { background: #000; position: sticky; top: 0; z-index: 1000; box-shadow: 
   align-items: center; 
   justify-content: center; 
   text-align: center; 
-  margin: 0 auto; /* Centers the box */
+  margin: 0 auto;
   width: 100%;
 }
 .slide-content h1 { font-size: 3.5rem; margin-bottom: 15px; font-weight: 800; letter-spacing: -1px; background: linear-gradient(to right, #ffffff, #d4b4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0px 4px 10px rgba(106, 13, 173, 0.5); }
