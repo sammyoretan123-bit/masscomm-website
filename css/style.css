@@ -90,8 +90,17 @@ footer { background: #0d0d0d; color: #aaa; text-align: center; padding: 40px 20p
    MOBILE MENU (WITH PERMANENT PURPLE LINES)
    ============================================ */
 @media screen and (max-width: 768px) {
-  .navbar { padding: 10px 20px; }
+  .navbar { padding: 10px 15px; } /* Slightly reduced padding */
   .menu-toggle { display: block !important; color: #fff; font-size: 24px; cursor: pointer; z-index: 10001; }
+
+  /* PREVENT LOGO TEXT WRAPPING */
+  .logo span {
+    white-space: nowrap !important;
+    font-size: 0.95rem !important; /* Smaller text to fit on one line */
+  }
+  .logo img {
+    height: 35px !important; /* Smaller image on mobile */
+  }
 
   .nav-links { display: none !important; position: absolute !important; top: 65px !important; right: 15px !important; background: #000 !important; width: 250px !important; flex-direction: column !important; padding: 10px 0 !important; border-radius: 8px !important; box-shadow: 0 5px 15px rgba(0,0,0,0.5) !important; z-index: 10000 !important; }
   .nav-links.active { display: flex !important; }
