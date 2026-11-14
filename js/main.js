@@ -24,9 +24,9 @@ document.addEventListener("DOMContentLoaded", () => {
       
       // Change icon to X when open, back to ☰ when closed
       if (navMenu.classList.contains('active')) {
-        menuBtn.innerHTML = '&times;'; // X icon
+        menuBtn.innerHTML = '&times;'; 
       } else {
-        menuBtn.innerHTML = '&#9776;'; // Hamburger icon
+        menuBtn.innerHTML = '&#9776;'; 
       }
     });
   }
@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
   backdrop.addEventListener('click', () => {
     navMenu.classList.remove('active');
     backdrop.classList.remove('active');
-    if (menuBtn) menuBtn.innerHTML = '&#9776;'; // Reset to hamburger
+    if (menuBtn) menuBtn.innerHTML = '&#9776;'; 
   });
 
   // --- 4. DROPDOWN TOGGLE (Mobile only) ---
@@ -51,12 +51,10 @@ document.addEventListener("DOMContentLoaded", () => {
           e.preventDefault(); 
           e.stopPropagation(); 
           
-          // Close other open dropdowns
           dropdownParents.forEach((other) => {
             if (other !== parent) other.classList.remove('open');
           });
           
-          // Toggle this one
           parent.classList.toggle('open');
         }
       });
@@ -68,12 +66,11 @@ document.addEventListener("DOMContentLoaded", () => {
   allLinks.forEach(link => {
     link.addEventListener('click', () => {
       const parentLi = link.parentElement;
-      // If the link is not a dropdown toggle, close the menu
       if (!parentLi.querySelector('.dropdown')) {
         if (navMenu && navMenu.classList.contains('active')) {
           navMenu.classList.remove('active');
           backdrop.classList.remove('active');
-          if (menuBtn) menuBtn.innerHTML = '&#9776;'; // Reset to hamburger
+          if (menuBtn) menuBtn.innerHTML = '&#9776;'; 
         }
       }
     });
@@ -280,4 +277,4 @@ function initSiteLightbox() {
 
 document.addEventListener("DOMContentLoaded", () => {
   initSiteLightbox();
-});
+})
