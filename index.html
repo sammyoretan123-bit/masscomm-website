@@ -10,6 +10,7 @@
 </head>
 <body>
 
+  <!-- ============ NAVBAR ============ -->
   <header>
     <nav class="navbar">
       <div class="logo">
@@ -59,11 +60,15 @@
     </nav>
   </header>
 
+  <!-- ============ HERO SLIDER ============ -->
   <div class="swiper hero-slider">
-    <div class="swiper-wrapper" id="slider-container"></div>
+    <div class="swiper-wrapper" id="slider-container">
+      <!-- Slides are loaded dynamically by JS -->
+    </div>
     <div class="swiper-pagination"></div>
   </div>
 
+  <!-- ============ STATISTICS SECTION ============ -->
   <section class="stats-section">
     <h2>Our Department in Numbers</h2>
     <div class="stats-grid">
@@ -86,6 +91,7 @@
     </div>
   </section>
 
+  <!-- ============ SPLIT SECTION (QUICK LINKS & EVENTS) ============ -->
   <section class="home-split-section">
     <div class="split-container">
       <div class="quick-links-section">
@@ -119,6 +125,7 @@
     </div>
   </section>
 
+  <!-- ============ FOOTER ============ -->
   <footer>
     <p>&copy; 2026 Mass Communication Department &mdash; Student Association.</p>
     <div class="footer-credit">
@@ -131,12 +138,14 @@
     </div>
   </footer>
 
+  <!-- ============ SCRIPTS ============ -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
   <script src="js/main.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
   <script>
+    // Load dynamic slider
     async function loadSlider() {
       const container = document.getElementById('slider-container');
       try {
@@ -145,7 +154,7 @@
         if (!data || data.length === 0) {
           container.innerHTML = `<div class="swiper-slide slide-1-bg"><div class="slide-content"><h1>Welcome</h1><p>Please add slides in the CMS.</p></div></div>`;
         } else {
-          container.innerHTML = data.map((slide, index) => {
+          container.innerHTML = data.map((slide) => {
             const isPurple = slide.is_purple === true;
             const bgStyle = !isPurple && slide.image ? `background-image: url('${slide.image}');` : '';
             let slideClass = '';
@@ -159,13 +168,14 @@
           }).join('');
         }
         setTimeout(() => {
-          new Swiper(".hero-slider", { spaceBetween: 0, centeredSlides: true, autoplay: { delay: 5000, disableOnInteraction: false }, pagination: { el: ".swiper-pagination", clickable: true }, effect: "slide", loop: data.length > 1 ? true : false, speed: 800, allowTouchMove: true, fadeEffect: { crossFade: true } });
+          new Swiper(".hero-slider", { spaceBetween: 0, centeredSlides: true, autoplay: { delay: 5000, disableOnInteraction: false }, pagination: { el: ".swiper-pagination", clickable: true }, effect: "slide", loop: data.length > 1 ? true : false, speed: 800, allowTouchMove: true });
         }, 200);
       } catch (err) {
         container.innerHTML = `<div class="swiper-slide slide-1-bg"><div class="slide-content"><h1>Welcome</h1><p>Slider is currently updating.</p></div></div>`;
       }
     }
 
+    // Load dynamic events
     async function loadEvents() {
       const eventsList = document.getElementById('events-list');
       try {
@@ -181,6 +191,7 @@
       } catch (err) { eventsList.innerHTML = `<p style="color: #aaa;">Unable to load events.</p>`; }
     }
 
+    // Animated counters
     const counters = document.querySelectorAll('.counter');
     const speed = 200;
     const observer = new IntersectionObserver((entries, observer) => {
@@ -198,19 +209,6 @@
       });
     }, { threshold: 0.5 });
     counters.forEach(counter => observer.observe(counter));
-
-    document.addEventListener("DOMContentLoaded", async () => {
-      if (typeof supabaseClient !== 'undefined') {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        const links = document.querySelectorAll('a[href="materials.html"]');
-        links.forEach(link => {
-          link.addEventListener("click", (e) => {
-            e.preventDefault();
-            if (session) { window.location.href = "dashboard.html"; } else { window.location.href = "login.html"; }
-          });
-        });
-      }
-    });
 
     document.addEventListener("DOMContentLoaded", () => {
       loadSlider();
