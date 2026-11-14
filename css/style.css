@@ -1,53 +1,113 @@
 /* ============================================
-   MOBILE MENU WITH PERMANENT PURPLE LINES
+   MASS COMMUNICATION DEPARTMENT - GLOBAL STYLES
+   ============================================ */
+
+/* --- RESET & BASE --- */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+body { background: #f4f6f9; color: #333; line-height: 1.6; }
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+
+/* --- NAVBAR (WITH PURPLE LINE) --- */
+header { 
+  background: #000; 
+  position: sticky; 
+  top: 0; 
+  z-index: 1000; 
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5); 
+  border-bottom: 2px solid #6a0dad; /* THE PURPLE LINE */
+}
+.navbar { display: flex; justify-content: space-between; align-items: center; padding: 10px 40px; max-width: 1200px; margin: 0 auto; }
+.logo { display: flex; align-items: center; gap: 10px; color: #fff; font-weight: bold; font-size: 1.2rem; }
+.logo img { height: 45px; border-radius: 50%; }
+.nav-links { display: flex; align-items: center; gap: 25px; }
+.nav-links > li { position: relative; }
+.nav-links a { color: #fff; font-weight: 500; transition: color 0.3s; font-size: 0.95rem; }
+.nav-links a:hover { color: #6a0dad; }
+.dropdown { display: none; position: absolute; top: 100%; left: 0; background: #1a1a1a; padding: 10px 0; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); min-width: 200px; z-index: 1001; }
+.dropdown li { padding: 0; }
+.dropdown a { display: block; padding: 10px 20px; font-size: 0.9rem; }
+.dropdown a:hover { background: #333; color: #fff; }
+.nav-links > li:hover .dropdown { display: block; }
+.arrow { font-size: 0.7rem; margin-left: 5px; }
+.menu-toggle { display: none; }
+
+/* --- HOME PAGE STYLES (SLIDER, STATS, ETC) --- */
+.hero-slider { width: 100%; height: 70vh; min-height: 500px; background: #0a0a0a; }
+.swiper-slide { position: relative; background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; text-align: center; overflow: hidden; }
+.slide-1-bg { background-color: #0d0214; background-image: radial-gradient(circle at 15% 50%, rgba(106, 13, 173, 0.4), transparent 40%), radial-gradient(circle at 85% 30%, rgba(142, 45, 226, 0.3), transparent 40%); }
+.glow-orb { position: absolute; border-radius: 50%; filter: blur(60px); z-index: 1; animation: float 8s ease-in-out infinite; }
+.orb-1 { width: 400px; height: 400px; background: #6a0dad; top: -100px; left: -100px; opacity: 0.5; }
+.orb-2 { width: 300px; height: 300px; background: #9b51e0; bottom: -50px; right: -50px; animation-delay: -4s; opacity: 0.4; }
+@keyframes float { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(30px, 20px) scale(1.05); } 100% { transform: translate(0, 0) scale(1); } }
+.slide-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.65); z-index: 2; }
+.slide-content { position: relative; z-index: 3; max-width: 800px; padding: 20px; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; margin: 0 auto; width: 100%; }
+.slide-content h1 { font-size: 3.5rem; margin-bottom: 15px; font-weight: 800; letter-spacing: -1px; background: linear-gradient(to right, #ffffff, #d4b4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0px 4px 10px rgba(106, 13, 173, 0.5); }
+.slide-content p { font-size: 1.15rem; margin-bottom: 30px; line-height: 1.6; color: #e0d4eb; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
+.slide-btn { display: inline-block; background: #6a0dad; color: #fff; padding: 14px 35px; font-size: 1.1rem; font-weight: bold; text-decoration: none; border-radius: 50px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(106, 13, 173, 0.4); border: 1px solid rgba(255,255,255,0.2); }
+.slide-btn:hover { background: #8e2de2; transform: translateY(-3px); box-shadow: 0 6px 20px rgba(142, 45, 226, 0.6); }
+.swiper-pagination-bullet-active { background: #6a0dad !important; width: 24px !important; border-radius: 5px !important; }
+
+.stats-section { background-color: #0d0d0d; padding: 80px 20px; text-align: center; border-top: 1px solid #222; border-bottom: 1px solid #222; }
+.stats-section h2 { color: #fff; font-size: 2.5rem; margin-bottom: 50px; text-transform: uppercase; letter-spacing: 2px; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; max-width: 1100px; margin: 0 auto; }
+.stat-card { background: rgba(106, 13, 173, 0.1); border: 1px solid rgba(106, 13, 173, 0.3); padding: 40px 20px; border-radius: 12px; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.stat-card:hover { transform: translateY(-10px); box-shadow: 0 10px 30px rgba(106, 13, 173, 0.2); border-color: #6a0dad; }
+.stat-number { font-size: 3.5rem; font-weight: 900; color: #fff; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; }
+.stat-number span { color: #9b51e0; }
+.stat-label { color: #aaa; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+
+.home-split-section { background-color: #141414; padding: 60px 20px; display: flex; justify-content: center; }
+.split-container { display: grid; grid-template-columns: 1fr 1.5fr; gap: 40px; max-width: 1200px; width: 100%; }
+.quick-links-section { text-align: left; }
+.quick-links-section h2 { color: #fff; font-size: 1.8rem; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px; border-bottom: 2px solid #6a0dad; padding-bottom: 10px; display: inline-block; }
+.quick-links-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+.quick-link-card { background: linear-gradient(135deg, rgba(106, 13, 173, 0.2) 0%, rgba(20, 20, 20, 0.8) 100%); border: 1px solid rgba(106, 13, 173, 0.4); border-radius: 12px; padding: 20px; text-decoration: none; color: #fff; display: flex; align-items: center; gap: 15px; transition: all 0.3s ease; }
+.quick-link-card:hover { transform: translateX(5px); border-color: #6a0dad; box-shadow: 0 5px 15px rgba(106, 13, 173, 0.3); }
+.quick-link-icon { font-size: 1.8rem; }
+.quick-link-card h3 { font-size: 1.1rem; margin: 0; }
+.events-section { text-align: left; }
+.events-section h2 { color: #fff; font-size: 1.8rem; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px; border-bottom: 2px solid #6a0dad; padding-bottom: 10px; display: inline-block; }
+.events-list { display: flex; flex-direction: column; gap: 20px; }
+.event-item { display: flex; gap: 20px; background: #1f1f1f; padding: 20px; border-radius: 10px; transition: background 0.3s ease; text-decoration: none; color: #fff; }
+.event-item:hover { background: #2a2a2a; }
+.event-date-box { background: #6a0dad; color: #fff; padding: 10px 15px; border-radius: 8px; text-align: center; min-width: 70px; height: fit-content; }
+.event-date-day { font-size: 1.8rem; font-weight: bold; line-height: 1; }
+.event-date-month { font-size: 0.8rem; text-transform: uppercase; font-weight: bold; }
+.event-info { display: flex; flex-direction: column; justify-content: center; }
+.event-info h3 { color: #fff; font-size: 1.1rem; margin: 0 0 5px; }
+.event-info p { color: #9b51e0; font-size: 0.9rem; margin: 0; display: flex; align-items: center; gap: 5px; }
+
+footer { background: #0d0d0d; color: #aaa; text-align: center; padding: 40px 20px; border-top: 1px solid #222; }
+.footer-credit { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; }
+.footer-credit img { height: 40px; }
+.footer-credit-text { text-align: left; }
+.powered-by { font-size: 0.8rem; color: #666; }
+.movement-name { font-weight: bold; color: #fff; }
+.admin-name { font-size: 0.8rem; color: #9b51e0; }
+
+/* ============================================
+   MOBILE MENU (WITH PERMANENT PURPLE LINES)
    ============================================ */
 @media screen and (max-width: 768px) {
   .navbar { padding: 10px 20px; }
   .menu-toggle { display: block !important; color: #fff; font-size: 24px; cursor: pointer; z-index: 10001; }
 
-  .nav-links { 
-    display: none !important; 
-    position: absolute !important; 
-    top: 65px !important; 
-    right: 15px !important; 
-    background: #000 !important; 
-    width: 250px !important; 
-    flex-direction: column !important; 
-    padding: 10px 0 !important; 
-    border-radius: 8px !important; 
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5) !important; 
-    z-index: 10000 !important; 
-  }
-  
+  .nav-links { display: none !important; position: absolute !important; top: 65px !important; right: 15px !important; background: #000 !important; width: 250px !important; flex-direction: column !important; padding: 10px 0 !important; border-radius: 8px !important; box-shadow: 0 5px 15px rgba(0,0,0,0.5) !important; z-index: 10000 !important; }
   .nav-links.active { display: flex !important; }
 
-  /* THE PERMANENT PURPLE LINES */
-  .nav-links > li {
-    width: 100% !important;
-    border-bottom: 2px solid #6a0dad !important;
-  }
-  
-  .nav-links > li:last-child {
-    border-bottom: none !important;
-  }
+  .nav-links > li { width: 100% !important; border-bottom: 2px solid #6a0dad !important; }
+  .nav-links > li:last-child { border-bottom: none !important; }
 
-  .nav-links a { 
-    display: block !important; 
-    padding: 12px 20px !important; 
-    color: #fff !important; 
-    font-size: 0.95rem !important; 
-    text-align: left !important; 
-  }
+  .nav-links a { display: block !important; padding: 12px 20px !important; color: #fff !important; font-size: 0.95rem !important; text-align: left !important; }
   
   .dropdown { display: none !important; position: static !important; background: #111 !important; padding: 0 !important; box-shadow: none !important; }
   .nav-links > li.open .dropdown { display: block !important; }
   .dropdown a { padding: 10px 20px 10px 35px !important; color: #bbb !important; font-size: 0.85rem !important; }
-  .dropdown li { border-bottom: 1px solid #333 !important; }
-  .dropdown li:last-child { border-bottom: none !important; }
 
   .hero-slider { height: 50vh; min-height: 350px; }
   .slide-content h1 { font-size: 2rem; }
-  .slide-content p { font-size: 0.9rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .slide-content p { font-size: 0.9rem; }
   .slide-btn { padding: 10px 20px; font-size: 0.9rem; }
   .stats-section h2, .quick-links-section h2, .events-section h2 { font-size: 1.5rem; }
   .stat-number { font-size: 2.5rem; }
