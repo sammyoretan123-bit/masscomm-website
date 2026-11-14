@@ -2,7 +2,6 @@
    MASS COMMUNICATION DEPARTMENT
    File: js/sequence.js
    Purpose: Load sequence page content + lecturers
-   (Filename-independent — finds file by slug_key)
    ============================================ */
 
 const GITHUB_REPO = "sammyoretan123-bit/masscomm-website";
@@ -15,7 +14,7 @@ function getSequenceSlug() {
   return page.replace("sequence-", "").toLowerCase();
 }
 
-/* ---------- 2. PARSE FRONT-MATTER (handles scalars, multiline, lists) ---------- */
+/* ---------- 2. PARSE FRONT-MATTER ---------- */
 function parseFrontMatter(text) {
   const result = {};
   const match = text.match(/^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/);
@@ -66,6 +65,13 @@ function parseFrontMatter(text) {
       continue;
     }
 
+    // Inline list [A, B]
+    if (rawValue.startsWith("[") && rawValue.endsWith("]")) {
+      result[key] = rawValue.slice(1, -1).split(",").map(v => v.trim().replace(/^["']|["']$/g, ""));
+      i++;
+      continue;
+    }
+
     result[key] = rawValue.replace(/^["']|["']$/g, "");
     i++;
   }
@@ -89,11 +95,10 @@ async function getSequenceSlugs() {
   }
 }
 
-/* ---------- 4. FIND SEQUENCE BY slug_key (filename-independent) ---------- */
+/* ---------- 4. FIND SEQUENCE BY slug_key ---------- */
 async function fetchSequence(targetSlug) {
   const slugs = await getSequenceSlugs();
 
-  // Fetch every sequence file in parallel
   const results = await Promise.all(
     slugs.map(async (slug) => {
       try {
@@ -108,13 +113,11 @@ async function fetchSequence(targetSlug) {
     })
   );
 
-  // Primary match: by slug_key field
   const match = results.find(
     (r) => r && (r.data.slug_key || "").toLowerCase() === targetSlug
   );
   if (match) return match.data;
 
-  // Fallback: filename matches target
   const fallback = results.find(
     (r) => r && r.slug.toLowerCase() === targetSlug
   );
@@ -213,13 +216,29 @@ async function renderSequencePage() {
     }
   }
 
-  // Lecturers in this sequence
+  // ---------- FIXED LECTURERS SECTION ----------
   const lecturersEl = document.getElementById("sequence-lecturers");
   if (lecturersEl) {
     const lecturerSlugs = await getLecturerSlugs();
-    const lecturers = (await Promise.all(lecturerSlugs.map(fetchLecturer)))
-      .filter(Boolean)
-      .filter((l) => (l.sequence || "").toLowerCase() === slug);
+    const allLecturers = (await Promise.all(lecturerSlugs.map(fetchLecturer))).filter(Boolean);
+
+    // Filter lecturers to handle BOTH strings and Sveltia lists
+    const lecturers = allLecturers.filter((l) => {
+      let seqData = l.sequence;
+      
+      if (typeof seqData === 'string') {
+        return seqData.toLowerCase().includes(slug);
+      }
+      
+      if (Array.isArray(seqData)) {
+        return seqData.some(s => s.toLowerCase() === slug);
+      }
+      
+      return false;
+    });
+
+    // Sort alphabetically
+    lecturers.sort((a, b) => a.name.localeCompare(b.name));
 
     if (lecturers.length === 0) {
       lecturersEl.innerHTML = `<p style="text-align:center; width:100%; color:#666;">Lecturer information is being updated. Please check back soon.</p>`;

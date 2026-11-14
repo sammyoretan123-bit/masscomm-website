@@ -35,7 +35,6 @@
     .content-card ul { list-style-type: disc; padding-left: 20px; }
     .content-card ul li { color: #444; font-size: 1.05rem; line-height: 1.8; margin-bottom: 10px; }
 
-    /* Lecturer Cards Grid */
     .team { padding: 20px; }
     .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; max-width: 900px; margin: 0 auto; }
     .member { background: #fff; border-radius: 12px; padding: 25px 15px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); display: flex; flex-direction: column; align-items: center; text-align: center; transition: transform 0.3s; cursor: pointer; }
@@ -44,7 +43,6 @@
     .member h4 { color: #0d0d0d; margin-bottom: 5px; font-size: 1.1rem; }
     .member p { color: #6a0dad; font-weight: bold; text-transform: uppercase; font-size: 0.8rem; margin: 0; }
 
-    /* Gallery Grid */
     .gallery-section { max-width: 1100px; margin: 0 auto 50px; padding: 0 20px; }
     .gallery-title { text-align: center; color: #6a0dad; font-size: 1.6rem; margin-bottom: 20px; }
     .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
@@ -117,31 +115,15 @@
 
   <section class="team">
     <h2 style="text-align: center; color: #0d0d0d; margin-bottom: 20px;">Lecturers In This Sequence</h2>
-    <div class="team-grid">
-      <div class="member">
-        <img src="images/mass communication logo.jpg" alt="Lecturer" />
-        <h4>Dr. Adebayo Adeyemi</h4>
-        <p>Print Coordinator</p>
-      </div>
-      <div class="member">
-        <img src="images/mass communication logo.jpg" alt="Lecturer" />
-        <h4>Mrs. Ngozi Okafor</h4>
-        <p>Senior Lecturer</p>
-      </div>
-      <div class="member">
-        <img src="images/mass communication logo.jpg" alt="Lecturer" />
-        <h4>Mr. Tunde Bakare</h4>
-        <p>Lecturer I</p>
-      </div>
+    <div class="team-grid" id="sequence-lecturers">
+      <p style="text-align:center; width:100%; color:#666;">Loading lecturers...</p>
     </div>
   </section>
 
   <section class="gallery-section">
     <h2 class="gallery-title">Photo Gallery</h2>
-    <div class="gallery-grid">
-      <img src="images/mass communication logo.jpg" alt="Print Gallery" />
-      <img src="images/mass communication logo.jpg" alt="Print Gallery" />
-      <img src="images/mass communication logo.jpg" alt="Print Gallery" />
+    <div class="gallery-grid" id="seq-gallery">
+      <p style="grid-column: 1/-1; text-align: center; color: #666;">Loading photos...</p>
     </div>
   </section>
 
@@ -153,5 +135,6 @@
     </div>
   </footer>
   <script src="js/main.js"></script>
+  <script src="js/sequence.js"></script>
 </body>
 </html>

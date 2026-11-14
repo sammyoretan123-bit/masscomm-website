@@ -115,31 +115,16 @@
 
   <section class="team">
     <h2 style="text-align: center; color: #0d0d0d; margin-bottom: 20px;">Lecturers In This Sequence</h2>
-    <div class="team-grid">
-      <div class="member">
-        <img src="images/mass communication logo.jpg" alt="Lecturer" />
-        <h4>Dr. Ishola Lamidi</h4>
-        <p>PRAD Coordinator</p>
-      </div>
-      <div class="member">
-        <img src="images/mass communication logo.jpg" alt="Lecturer" />
-        <h4>Dr. Adebayo Adeyemi</h4>
-        <p>Senior Lecturer</p>
-      </div>
-      <div class="member">
-        <img src="images/mass communication logo.jpg" alt="Lecturer" />
-        <h4>Mr. Oluwaseun Ojo</h4>
-        <p>Lecturer I</p>
-      </div>
+    <!-- FIXED: Added the ID and removed the hardcoded members -->
+    <div class="team-grid" id="sequence-lecturers">
+      <p style="text-align:center; width:100%; color:#666;">Loading lecturers...</p>
     </div>
   </section>
 
   <section class="gallery-section">
     <h2 class="gallery-title">Photo Gallery</h2>
-    <div class="gallery-grid">
-      <img src="images/mass communication logo.jpg" alt="PRAD Gallery" />
-      <img src="images/mass communication logo.jpg" alt="PRAD Gallery" />
-      <img src="images/mass communication logo.jpg" alt="PRAD Gallery" />
+    <div class="gallery-grid" id="seq-gallery">
+      <p style="grid-column: 1/-1; text-align: center; color: #666;">Loading photos...</p>
     </div>
   </section>
 
@@ -150,6 +135,9 @@
       <div class="footer-credit-text"><div class="powered-by">Built &amp; Managed by</div><div class="movement-name">The Vanguard Movement</div><div class="admin-name">Oretan Led-Admin &bull; 2026/2027</div></div>
     </div>
   </footer>
+  
+  <!-- FIXED: Added the sequence.js script -->
   <script src="js/main.js"></script>
+  <script src="js/sequence.js"></script>
 </body>
 </html>
