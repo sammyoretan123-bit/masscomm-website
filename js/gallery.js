@@ -1,36 +1,51 @@
 /* ============================================
    MASS COMMUNICATION DEPARTMENT
-   File: js/gallery.js
+   File: js/sequence.js
+   Purpose: Load sequence page content + lecturers
    ============================================ */
 
 const GITHUB_REPO = "sammyoretan123-bit/masscomm-website";
-const GALLERY_FOLDER = "content/gallery";
-const GALLERY_SETTINGS_FOLDER = "content/gallery-settings";
+const LECTURERS_FOLDER = "content/lecturers";
+const SEQUENCES_FOLDER = "content/sequences";
 
-async function listMdFiles(folder) {
-  try {
-    const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${folder}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error("GitHub API failed");
-    const files = await res.json();
-    return files.filter((f) => f.name.endsWith(".md") && f.name !== ".gitkeep").map((f) => f.name);
-  } catch (err) { return []; }
+/* ---------- 1. GET CURRENT SEQUENCE SLUG FROM PAGE URL ---------- */
+function getSequenceSlug() {
+  const page = window.location.pathname.split("/").pop().replace(".html", "");
+  return page.replace("sequence-", "").toLowerCase();
 }
 
+/* ---------- 2. PARSE FRONT-MATTER ---------- */
 function parseFrontMatter(text) {
   const result = {};
   const match = text.match(/^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/);
   if (!match) return { data: {} };
+
   const fm = match[1];
   const lines = fm.split("\n");
   let i = 0;
+
   while (i < lines.length) {
     const line = lines[i];
     if (!line.trim()) { i++; continue; }
+
     const keyMatch = line.match(/^([a-zA-Z_][a-zA-Z0-9_]*):\s*(.*)$/);
     if (!keyMatch) { i++; continue; }
+
     const key = keyMatch[1];
     const rawValue = keyMatch[2].trim();
+
+    if (/^[|>][-+]?$/.test(rawValue)) {
+      const isFolded = rawValue.startsWith(">");
+      const blockLines = [];
+      i++;
+      while (i < lines.length && (lines[i].startsWith("  ") || !lines[i].trim())) {
+        blockLines.push(lines[i].replace(/^\s{2}/, ""));
+        i++;
+      }
+      result[key] = isFolded ? blockLines.join(" ").trim() : blockLines.join("\n").trim();
+      continue;
+    }
+
     if (rawValue === "") {
       const listItems = [];
       let j = i + 1;
@@ -38,81 +53,203 @@ function parseFrontMatter(text) {
         listItems.push(lines[j].replace(/^\s*-\s+/, "").replace(/^["']|["']$/g, "").trim());
         j++;
       }
-      if (listItems.length > 0) { result[key] = listItems; i = j; continue; }
-      result[key] = ""; i++; continue;
+      if (listItems.length > 0) {
+        result[key] = listItems;
+        i = j;
+        continue;
+      }
+      result[key] = "";
+      i++;
+      continue;
     }
+
+    if (rawValue.startsWith("[") && rawValue.endsWith("]")) {
+      result[key] = rawValue.slice(1, -1).split(",").map(v => v.trim().replace(/^["']|["']$/g, ""));
+      i++;
+      continue;
+    }
+
     result[key] = rawValue.replace(/^["']|["']$/g, "");
     i++;
   }
+
   return { data: result };
 }
 
-async function fetchGallerySettings() {
-  const defaults = { heading: "Photo Gallery", subtitle: "Moments from our events and activities" };
+/* ---------- 3. LIST SEQUENCE FILES FROM GITHUB ---------- */
+async function getSequenceSlugs() {
   try {
-    const files = await listMdFiles(GALLERY_SETTINGS_FOLDER);
-    if (files.length === 0) return defaults;
-    const rawUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/main/${GALLERY_SETTINGS_FOLDER}/${files[0]}`;
-    const res = await fetch(rawUrl);
-    if (!res.ok) return defaults;
-    const text = await res.text();
-    const { data } = parseFrontMatter(text);
-    return { heading: data.heading || defaults.heading, subtitle: data.subtitle || defaults.subtitle };
-  } catch (err) { return defaults; }
+    const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${SEQUENCES_FOLDER}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("GitHub API failed");
+    const files = await res.json();
+    return files
+      .filter((f) => f.name.endsWith(".md") && f.name !== ".gitkeep")
+      .map((f) => f.name.replace(".md", ""));
+  } catch (err) {
+    console.warn("Could not fetch sequence list:", err);
+    return [];
+  }
 }
 
-async function fetchGallerySection(fileName) {
+/* ---------- 4. FIND SEQUENCE BY slug_key ---------- */
+async function fetchSequence(targetSlug) {
+  const slugs = await getSequenceSlugs();
+
+  const results = await Promise.all(
+    slugs.map(async (slug) => {
+      try {
+        const res = await fetch(`content/sequences/${slug}.md`);
+        if (!res.ok) return null;
+        const text = await res.text();
+        const { data } = parseFrontMatter(text);
+        return { slug, data };
+      } catch (err) {
+        return null;
+      }
+    })
+  );
+
+  const match = results.find(
+    (r) => r && (r.data.slug_key || "").toLowerCase() === targetSlug
+  );
+  if (match) return match.data;
+
+  const fallback = results.find(
+    (r) => r && r.slug.toLowerCase() === targetSlug
+  );
+  return fallback ? fallback.data : null;
+}
+
+/* ---------- 5. FETCH LECTURERS ---------- */
+async function getLecturerSlugs() {
   try {
-    const rawUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/main/${GALLERY_FOLDER}/${fileName}`;
-    const res = await fetch(rawUrl);
-    if (!res.ok) throw new Error("Not found: " + fileName);
+    const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${LECTURERS_FOLDER}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("GitHub API failed");
+    const files = await res.json();
+    return files
+      .filter((f) => f.name.endsWith(".md") && f.name !== ".gitkeep")
+      .map((f) => f.name.replace(".md", ""));
+  } catch (err) {
+    console.warn("Could not fetch lecturer list:", err);
+    return [];
+  }
+}
+
+async function fetchLecturer(slug) {
+  try {
+    const res = await fetch(`content/lecturers/${slug}.md`);
+    if (!res.ok) throw new Error("Not found: " + slug);
     const text = await res.text();
     const { data } = parseFrontMatter(text);
     return {
-      fileName,
-      title: data.title || 'Gallery',
-      order: parseInt(data.order) || 999,
-      photos: Array.isArray(data.photos) ? data.photos : []
+      slug,
+      name: data.name || slug,
+      role: data.role || "Lecturer",
+      photo: data.photo || "images/mass communication logo.jpg",
+      sequence: data.sequence || ""
     };
-  } catch (err) { return null; }
+  } catch (err) {
+    return null;
+  }
 }
 
-async function renderGallery() {
-  const container = document.getElementById("gallery-sections");
-  if (!container) return;
+/* ---------- 6. RENDER SEQUENCE PAGE ---------- */
+async function renderSequencePage() {
+  const slug = getSequenceSlug();
+  const seq = await fetchSequence(slug);
 
-  const settings = await fetchGallerySettings();
-  const headingEl = document.getElementById("gallery-heading");
-  const subtitleEl = document.getElementById("gallery-subtitle");
-  if (headingEl) headingEl.textContent = settings.heading;
-  if (subtitleEl) subtitleEl.textContent = settings.subtitle;
+  // Title + Subtitle
+  const titleEl = document.getElementById("seq-title");
+  const subtitleEl = document.getElementById("seq-subtitle");
+  if (titleEl) titleEl.textContent = (seq && seq.title) ? seq.title : "Sequence";
+  if (subtitleEl) subtitleEl.textContent = (seq && seq.subtitle) ? seq.subtitle : "";
 
-  const files = await listMdFiles(GALLERY_FOLDER);
-  const sections = (await Promise.all(files.map(fetchGallerySection))).filter(Boolean);
-  sections.sort((a, b) => a.order - b.order);
-
-  if (sections.length === 0) {
-    container.innerHTML = `<p style="text-align:center; width:100%; color:#666; padding: 30px;">Gallery is being updated. Please check back soon.</p>`;
-    return;
+  if (seq && seq.title) {
+    document.title = seq.title + " | Mass Communication Department";
   }
 
-  container.innerHTML = sections.map((s) => {
-    const photosHTML = s.photos.length
-      ? `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; margin-bottom: 30px;">
-          ${s.photos.map((img) => `
-            <img src="${img}" alt="${s.title}" 
-                 style="width: 100%; height: 350px; object-fit: contain; background: #f0f0f0; border-radius: 8px; padding: 5px;" />
-          `).join("")}
-        </div>`
-      : `<p style="text-align:center; color:#666; padding:20px; margin-bottom: 30px;">Photos are being updated.</p>`;
+  // Description
+  const descEl = document.getElementById("seq-description");
+  if (descEl) {
+    if (seq && seq.description) {
+      descEl.innerHTML = seq.description
+        .split(/\n{2,}/)
+        .map((p) => `<p>${p.replace(/\n/g, "<br />")}</p>`)
+        .join("");
+    } else {
+      descEl.innerHTML = "<p>Information is being updated. Please check back soon.</p>";
+    }
+  }
 
-    return `
-      <section class="gallery-section" style="margin-bottom: 40px;">
-        <h2 style="color: #6a0dad; margin-bottom: 20px; text-transform: uppercase; text-align: center;">${s.title}</h2>
-        ${photosHTML}
-      </section>
-    `;
-  }).join("");
+  // What You'll Learn
+  const learnEl = document.getElementById("seq-learn");
+  if (learnEl) {
+    if (seq && Array.isArray(seq.learn) && seq.learn.length) {
+      learnEl.innerHTML = seq.learn.map((item) => `<li>${item}</li>`).join("");
+    } else {
+      learnEl.innerHTML = "<li>Information is being updated.</li>";
+    }
+  }
+
+  // Related Courses
+  const coursesEl = document.getElementById("seq-courses");
+  if (coursesEl) {
+    if (seq && Array.isArray(seq.courses) && seq.courses.length) {
+      coursesEl.innerHTML = seq.courses.map((c) => `<li>${c}</li>`).join("");
+    } else {
+      coursesEl.innerHTML = "<li>Information is being updated.</li>";
+    }
+  }
+
+  // ---------- PHOTO GALLERY (SINGLE COLUMN FULL-WIDTH) ----------
+  const galleryEl = document.getElementById("seq-gallery");
+  if (galleryEl) {
+    if (seq && Array.isArray(seq.gallery) && seq.gallery.length) {
+      galleryEl.style.cssText = "display: flex !important; flex-direction: column !important; gap: 20px !important; align-items: center !important;";
+      
+      galleryEl.innerHTML = seq.gallery.map((img) => `
+        <img src="${img}" alt="Sequence Photo" style="width: 100% !important; max-width: 800px !important; height: auto !important; border-radius: 8px !important; object-fit: cover !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;" />
+      `).join("");
+    } else {
+      galleryEl.innerHTML = `<p style="text-align:center; color:#666; padding: 20px;">Photos are being updated. Please check back soon.</p>`;
+    }
+  }
+
+  // ---------- LECTURERS SECTION ----------
+  const lecturersEl = document.getElementById("sequence-lecturers");
+  if (lecturersEl) {
+    const lecturerSlugs = await getLecturerSlugs();
+    const allLecturers = (await Promise.all(lecturerSlugs.map(fetchLecturer))).filter(Boolean);
+
+    const lecturers = allLecturers.filter((l) => {
+      let seqData = l.sequence;
+      if (typeof seqData === 'string') return seqData.toLowerCase().includes(slug);
+      if (Array.isArray(seqData)) return seqData.some(s => s.toLowerCase() === slug);
+      return false;
+    });
+
+    lecturers.sort((a, b) => a.name.localeCompare(b.name));
+
+    if (lecturers.length === 0) {
+      lecturersEl.innerHTML = `<p style="text-align:center; width:100%; color:#666;">Lecturer information is being updated. Please check back soon.</p>`;
+    } else {
+      // FORCE THE FLEX CONTAINER AND FIX THE CARD DIMENSIONS
+      lecturersEl.style.cssText = "display: flex !important; flex-wrap: wrap !important; justify-content: center !important; gap: 20px !important; width: 100% !important;";
+      
+      lecturersEl.innerHTML = lecturers.map((l) => `
+        <div class="member" style="width: 200px !important; height: 260px !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; padding: 20px !important; margin: 0 !important; flex-shrink: 0 !important; text-align: center !important;">
+          <img src="${l.photo}" alt="${l.name}" style="width: 100px !important; height: 100px !important; border-radius: 50% !important; object-fit: cover !important; border: 4px solid #6a0dad !important; margin-bottom: 15px !important;" />
+          <h3 style="font-size: 1rem !important; margin: 0 0 5px 0 !important; line-height: 1.2 !important; color: #0d0d0d !important;">${l.name}</h3>
+          <p class="role" style="font-size: 0.75rem !important; margin: 0 !important; text-transform: uppercase !important; color: #6a0dad !important; font-weight: bold !important;">${l.role}</p>
+        </div>
+      `).join("");
+    }
+  }
 }
 
-document.addEventListener("DOMContentLoaded", () => { renderGallery(); });
+/* ---------- 7. RUN ---------- */
+document.addEventListener("DOMContentLoaded", () => {
+  renderSequencePage();
+});
