@@ -72,11 +72,11 @@
     </div>
 
     <div id="form-course" class="admin-form active">
-      <h3 style="color: #6a0dad; margin-top: 0;">Add a New Course</h3>
+      <h3 style="color: #6a0dad; margin-top: 0;" id="course-form-title">Add a New Course</h3>
       <div class="form-group"><label>Course Code (e.g., MAC 101)</label><input type="text" id="course-code" placeholder="MAC 101" /></div>
       <div class="form-group"><label>Course Title</label><input type="text" id="course-title" placeholder="Introduction to Communication" /></div>
       <div class="form-group"><label>Description</label><textarea id="course-desc" rows="3" placeholder="Short description..."></textarea></div>
-      <button class="btn-save" onclick="addCourse()">Add Course</button>
+      <button class="btn-save" id="course-save-btn" onclick="addCourse()">Add Course</button>
       <p id="msg-course" class="status-msg"></p>
     </div>
 
@@ -93,7 +93,7 @@
     </div>
 
     <div id="form-quiz" class="admin-form">
-      <h3 style="color: #6a0dad; margin-top: 0;">Add a Quiz Question</h3>
+      <h3 style="color: #6a0dad; margin-top: 0;" id="quiz-form-title">Add a Quiz Question</h3>
       <div class="form-group"><label>Course Code</label><input type="text" id="quiz-code" placeholder="MAC 101" /></div>
       <div class="form-group"><label>Question</label><input type="text" id="quiz-question" placeholder="What is...?" /></div>
       <div class="form-group"><label>Option A</label><input type="text" id="quiz-a" /></div>
@@ -101,7 +101,7 @@
       <div class="form-group"><label>Option C</label><input type="text" id="quiz-c" /></div>
       <div class="form-group"><label>Option D</label><input type="text" id="quiz-d" /></div>
       <div class="form-group"><label>Correct Answer</label><select id="quiz-correct"><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></div>
-      <button class="btn-save" onclick="addQuiz()">Add Question</button>
+      <button class="btn-save" id="quiz-save-btn" onclick="addQuiz()">Add Question</button>
       <p id="msg-quiz" class="status-msg"></p>
     </div>
 
@@ -151,12 +151,27 @@
       document.getElementById('form-' + tabName).classList.add('active');
       if(btnElement) btnElement.classList.add('active');
 
+      // Reset forms when switching tabs
+      if (tabName === 'course') { resetCourseForm(); }
+      if (tabName === 'quiz') { resetQuizForm(); }
+
       if (tabName === 'manage') { loadManageList(); }
       if (tabName === 'manage-quizzes') { loadManageQuizzes(); }
       if (tabName === 'students') { loadStudents(); }
     }
 
     // --- FORM SUBMISSIONS ---
+    function resetCourseForm() {
+      document.getElementById('course-form-title').textContent = "Add a New Course";
+      document.getElementById('course-code').value = '';
+      document.getElementById('course-title').value = '';
+      document.getElementById('course-desc').value = '';
+      const btn = document.getElementById('course-save-btn');
+      btn.textContent = "Add Course";
+      btn.style.background = '#1e7e34';
+      btn.onclick = addCourse;
+    }
+
     async function addCourse() {
       const code = document.getElementById('course-code').value;
       const title = document.getElementById('course-title').value;
@@ -166,22 +181,22 @@
       msg.style.color = 'blue'; msg.textContent = 'Saving...';
       const { error } = await supabaseClient.from('courses').insert([{ code, title, description: desc }]);
       if (error) { msg.style.color = 'red'; msg.textContent = 'Error: ' + error.message; }
-      else { msg.style.color = 'green'; msg.textContent = '✅ Course added successfully!'; document.getElementById('course-code').value = ''; document.getElementById('course-title').value = ''; document.getElementById('course-desc').value = ''; }
+      else { msg.style.color = 'green'; msg.textContent = '✅ Course added successfully!'; resetCourseForm(); }
     }
 
-    async function addLesson() {
-      const code = document.getElementById('lesson-code').value;
-      const title = document.getElementById('lesson-title').value;
-      const order = document.getElementById('lesson-order').value;
-      const pdf = document.getElementById('lesson-pdf').value;
-      const video = document.getElementById('lesson-video').value;
-      const desc = document.getElementById('lesson-desc').value;
-      const msg = document.getElementById('msg-lesson');
-      if (!code || !title) { msg.style.color = 'red'; msg.textContent = 'Code and Title are required.'; return; }
-      msg.style.color = 'blue'; msg.textContent = 'Saving...';
-      const { error } = await supabaseClient.from('materials').insert([{ course_code: code, title: title, order_index: parseInt(order) || 0, file_url: pdf, video_url: video, description: desc }]);
-      if (error) { msg.style.color = 'red'; msg.textContent = 'Error: ' + error.message; }
-      else { msg.style.color = 'green'; msg.textContent = '✅ Lesson added successfully!'; document.getElementById('lesson-title').value = ''; }
+    function resetQuizForm() {
+      document.getElementById('quiz-form-title').textContent = "Add a Quiz Question";
+      document.getElementById('quiz-code').value = '';
+      document.getElementById('quiz-question').value = '';
+      document.getElementById('quiz-a').value = '';
+      document.getElementById('quiz-b').value = '';
+      document.getElementById('quiz-c').value = '';
+      document.getElementById('quiz-d').value = '';
+      document.getElementById('quiz-correct').value = 'A';
+      const btn = document.getElementById('quiz-save-btn');
+      btn.textContent = "Add Question";
+      btn.style.background = '#1e7e34';
+      btn.onclick = addQuiz;
     }
 
     async function addQuiz() {
@@ -197,10 +212,10 @@
       msg.style.color = 'blue'; msg.textContent = 'Saving...';
       const { error } = await supabaseClient.from('quizzes').insert([{ course_code: code, question: question, option_a: a, option_b: b, option_c: c, option_d: d, correct_answer: correct }]);
       if (error) { msg.style.color = 'red'; msg.textContent = 'Error: ' + error.message; }
-      else { msg.style.color = 'green'; msg.textContent = '✅ Question added successfully!'; document.getElementById('quiz-question').value = ''; }
+      else { msg.style.color = 'green'; msg.textContent = '✅ Question added successfully!'; resetQuizForm(); }
     }
 
-    // --- MANAGE QUIZZES (NEW) ---
+    // --- MANAGE QUIZZES (EDIT/DELETE) ---
     async function loadManageQuizzes() {
       const listContainer = document.getElementById('manage-quizzes-list');
       listContainer.innerHTML = '<p>Loading...</p>';
@@ -215,6 +230,7 @@
             <p style="color:green; font-weight:bold;">Correct: ${q.correct_answer}</p>
           </div>
           <div class="action-btns">
+            <button class="btn-edit" onclick="editQuiz(${q.id}, '${q.course_code}', '${q.question.replace(/'/g, "\\'")}', '${q.option_a.replace(/'/g, "\\'")}', '${q.option_b.replace(/'/g, "\\'")}', '${q.option_c.replace(/'/g, "\\'")}', '${q.option_d.replace(/'/g, "\\'")}', '${q.correct_answer}')">✏️ Edit</button>
             <button class="btn-delete" onclick="deleteQuiz(${q.id})">🗑️ Delete</button>
           </div>
         </div>
@@ -226,6 +242,56 @@
       const { error } = await supabaseClient.from('quizzes').delete().eq('id', id);
       if (error) { alert("Error deleting: " + error.message); }
       else { alert("Question deleted."); loadManageQuizzes(); }
+    }
+
+    function editQuiz(id, code, question, a, b, c, d, correct) {
+      // Switch to the quiz tab
+      switchTab('quiz', document.querySelectorAll('.tab-btn')[2]);
+
+      // Fill the form with the existing quiz data
+      document.getElementById('quiz-form-title').textContent = "Edit Quiz Question";
+      document.getElementById('quiz-code').value = code;
+      document.getElementById('quiz-question').value = question;
+      document.getElementById('quiz-a').value = a;
+      document.getElementById('quiz-b').value = b;
+      document.getElementById('quiz-c').value = c;
+      document.getElementById('quiz-d').value = d;
+      document.getElementById('quiz-correct').value = correct;
+
+      // Change the save button to update mode
+      const btn = document.getElementById('quiz-save-btn');
+      btn.textContent = "Update Question";
+      btn.style.background = '#ffc107';
+      btn.style.color = '#000';
+
+      btn.onclick = async () => {
+        const newCode = document.getElementById('quiz-code').value;
+        const newQuestion = document.getElementById('quiz-question').value;
+        const newA = document.getElementById('quiz-a').value;
+        const newB = document.getElementById('quiz-b').value;
+        const newC = document.getElementById('quiz-c').value;
+        const newD = document.getElementById('quiz-d').value;
+        const newCorrect = document.getElementById('quiz-correct').value;
+        const msg = document.getElementById('msg-quiz');
+
+        msg.style.color = 'blue'; msg.textContent = 'Updating...';
+        const { error } = await supabaseClient.from('quizzes').update({ 
+          course_code: newCode, 
+          question: newQuestion, 
+          option_a: newA, 
+          option_b: newB, 
+          option_c: newC, 
+          option_d: newD, 
+          correct_answer: newCorrect 
+        }).eq('id', id);
+
+        if (error) { msg.style.color = 'red'; msg.textContent = 'Error: ' + error.message; }
+        else { 
+          msg.style.color = 'green'; msg.textContent = '✅ Question updated successfully!'; 
+          resetQuizForm();
+          loadManageQuizzes(); // Refresh the list
+        }
+      };
     }
 
     // --- MANAGE COURSES (EDIT/DELETE) ---
