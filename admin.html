@@ -24,7 +24,7 @@
     .btn-save:hover { background: #155d27; }
     .status-msg { text-align: center; font-weight: bold; margin-top: 15px; }
     
-    /* Manage Courses List */
+    /* Manage Lists */
     .course-list-item { display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #6a0dad; }
     .course-list-item h4 { margin: 0 0 5px; color: #333; }
     .course-list-item p { margin: 0; color: #666; font-size: 0.9rem; }
@@ -50,13 +50,11 @@
         <img src="images/mass communication logo.jpg" alt="Logo" />
         <span>Mass Communication AAUA</span>
       </div>
-      
       <ul class="nav-links" id="navLinks">
         <li><a href="dashboard.html">My Dashboard</a></li>
         <li><a href="admin.html" style="color: #e50914; font-weight: bold;">Admin Panel</a></li>
         <li><button id="logout-btn" style="background: #e50914; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Log Out</button></li>
       </ul>
-      
       <div class="menu-toggle" id="menu-toggle">&#9776;</div>
     </nav>
   </header>
@@ -68,6 +66,7 @@
       <button class="tab-btn active" onclick="switchTab('course', this)">Add Course</button>
       <button class="tab-btn" onclick="switchTab('lesson', this)">Add Lesson</button>
       <button class="tab-btn" onclick="switchTab('quiz', this)">Add Quiz Question</button>
+      <button class="tab-btn" onclick="switchTab('manage-quizzes', this)">Manage Quizzes</button>
       <button class="tab-btn" onclick="switchTab('manage', this)">Manage Courses</button>
       <button class="tab-btn" onclick="switchTab('students', this)">Enrolled Students</button>
     </div>
@@ -106,6 +105,11 @@
       <p id="msg-quiz" class="status-msg"></p>
     </div>
 
+    <div id="form-manage-quizzes" class="admin-form">
+      <h3 style="color: #6a0dad; margin-top: 0;">Manage Quiz Questions</h3>
+      <div id="manage-quizzes-list"><p>Loading questions...</p></div>
+    </div>
+
     <div id="form-manage" class="admin-form">
       <h3 style="color: #6a0dad; margin-top: 0;">Manage Courses</h3>
       <div id="manage-list"><p>Loading courses...</p></div>
@@ -114,9 +118,7 @@
     <div id="form-students" class="admin-form">
       <h3 style="color: #6a0dad; margin-top: 0;">Enrolled Students</h3>
       <p style="color: #666; font-size: 0.9rem; margin-bottom: 15px;">Students who have completed at least one lesson.</p>
-      <div id="students-list">
-        <p>Loading students...</p>
-      </div>
+      <div id="students-list"><p>Loading students...</p></div>
     </div>
 
   </div>
@@ -128,7 +130,6 @@
     async function checkAdmin() {
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session) { window.location.href = "login.html"; return; }
-
       const { data: profile } = await supabaseClient.from('profiles').select('role').eq('id', session.user.id).single();
       if (!profile || profile.role !== 'admin') {
         alert("Access Denied: You are not an administrator.");
@@ -151,6 +152,7 @@
       if(btnElement) btnElement.classList.add('active');
 
       if (tabName === 'manage') { loadManageList(); }
+      if (tabName === 'manage-quizzes') { loadManageQuizzes(); }
       if (tabName === 'students') { loadStudents(); }
     }
 
@@ -160,12 +162,9 @@
       const title = document.getElementById('course-title').value;
       const desc = document.getElementById('course-desc').value;
       const msg = document.getElementById('msg-course');
-
       if (!code || !title) { msg.style.color = 'red'; msg.textContent = 'Code and Title are required.'; return; }
-
       msg.style.color = 'blue'; msg.textContent = 'Saving...';
       const { error } = await supabaseClient.from('courses').insert([{ code, title, description: desc }]);
-
       if (error) { msg.style.color = 'red'; msg.textContent = 'Error: ' + error.message; }
       else { msg.style.color = 'green'; msg.textContent = '✅ Course added successfully!'; document.getElementById('course-code').value = ''; document.getElementById('course-title').value = ''; document.getElementById('course-desc').value = ''; }
     }
@@ -178,14 +177,9 @@
       const video = document.getElementById('lesson-video').value;
       const desc = document.getElementById('lesson-desc').value;
       const msg = document.getElementById('msg-lesson');
-
       if (!code || !title) { msg.style.color = 'red'; msg.textContent = 'Code and Title are required.'; return; }
-
       msg.style.color = 'blue'; msg.textContent = 'Saving...';
-      const { error } = await supabaseClient.from('materials').insert([{ 
-        course_code: code, title: title, order_index: parseInt(order) || 0, file_url: pdf, video_url: video, description: desc 
-      }]);
-
+      const { error } = await supabaseClient.from('materials').insert([{ course_code: code, title: title, order_index: parseInt(order) || 0, file_url: pdf, video_url: video, description: desc }]);
       if (error) { msg.style.color = 'red'; msg.textContent = 'Error: ' + error.message; }
       else { msg.style.color = 'green'; msg.textContent = '✅ Lesson added successfully!'; document.getElementById('lesson-title').value = ''; }
     }
@@ -199,28 +193,48 @@
       const d = document.getElementById('quiz-d').value;
       const correct = document.getElementById('quiz-correct').value;
       const msg = document.getElementById('msg-quiz');
-
       if (!code || !question || !a || !b || !c || !d) { msg.style.color = 'red'; msg.textContent = 'All fields are required.'; return; }
-
       msg.style.color = 'blue'; msg.textContent = 'Saving...';
-      const { error } = await supabaseClient.from('quizzes').insert([{ 
-        course_code: code, question: question, option_a: a, option_b: b, option_c: c, option_d: d, correct_answer: correct 
-      }]);
-
+      const { error } = await supabaseClient.from('quizzes').insert([{ course_code: code, question: question, option_a: a, option_b: b, option_c: c, option_d: d, correct_answer: correct }]);
       if (error) { msg.style.color = 'red'; msg.textContent = 'Error: ' + error.message; }
       else { msg.style.color = 'green'; msg.textContent = '✅ Question added successfully!'; document.getElementById('quiz-question').value = ''; }
+    }
+
+    // --- MANAGE QUIZZES (NEW) ---
+    async function loadManageQuizzes() {
+      const listContainer = document.getElementById('manage-quizzes-list');
+      listContainer.innerHTML = '<p>Loading...</p>';
+      const { data: quizzes, error } = await supabaseClient.from('quizzes').select('*').order('course_code');
+      if (error || !quizzes) { listContainer.innerHTML = '<p style="color:red;">Error loading quizzes.</p>'; return; }
+      if (quizzes.length === 0) { listContainer.innerHTML = '<p>No quiz questions found.</p>'; return; }
+      listContainer.innerHTML = quizzes.map(q => `
+        <div class="course-list-item">
+          <div>
+            <h4>${q.course_code} - ${q.question}</h4>
+            <p>A) ${q.option_a} | B) ${q.option_b} | C) ${q.option_c} | D) ${q.option_d}</p>
+            <p style="color:green; font-weight:bold;">Correct: ${q.correct_answer}</p>
+          </div>
+          <div class="action-btns">
+            <button class="btn-delete" onclick="deleteQuiz(${q.id})">🗑️ Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function deleteQuiz(id) {
+      if (!confirm("Delete this quiz question?")) return;
+      const { error } = await supabaseClient.from('quizzes').delete().eq('id', id);
+      if (error) { alert("Error deleting: " + error.message); }
+      else { alert("Question deleted."); loadManageQuizzes(); }
     }
 
     // --- MANAGE COURSES (EDIT/DELETE) ---
     async function loadManageList() {
       const listContainer = document.getElementById('manage-list');
       listContainer.innerHTML = '<p>Loading...</p>';
-
       const { data: courses, error } = await supabaseClient.from('courses').select('*').order('title');
-      
       if (error || !courses) { listContainer.innerHTML = '<p style="color:red;">Error loading courses.</p>'; return; }
       if (courses.length === 0) { listContainer.innerHTML = '<p>No courses found.</p>'; return; }
-
       listContainer.innerHTML = courses.map(course => `
         <div class="course-list-item">
           <div>
@@ -236,12 +250,10 @@
     }
 
     async function deleteCourse(courseId) {
-      if (!confirm("Are you sure you want to delete this course? This might break student progress if they are enrolled.")) return;
-
+      if (!confirm("Are you sure you want to delete this course?")) return;
       const { error } = await supabaseClient.from('courses').delete().eq('id', courseId);
-      
       if (error) { alert("Error deleting: " + error.message); }
-      else { alert("Course deleted successfully."); loadManageList(); }
+      else { alert("Course deleted."); loadManageList(); }
     }
 
     function editCourse(id, oldCode, oldTitle, oldDesc) {
@@ -249,27 +261,19 @@
       document.getElementById('course-code').value = oldCode;
       document.getElementById('course-title').value = oldTitle;
       document.getElementById('course-desc').value = oldDesc;
-
       const saveBtn = document.querySelector('#form-course .btn-save');
       saveBtn.textContent = "Update Course";
       saveBtn.style.background = '#ffc107';
       saveBtn.style.color = '#000';
-      
       saveBtn.onclick = async () => {
         const newCode = document.getElementById('course-code').value;
         const newTitle = document.getElementById('course-title').value;
         const newDesc = document.getElementById('course-desc').value;
         const msg = document.getElementById('msg-course');
-
         msg.style.color = 'blue'; msg.textContent = 'Updating...';
         const { error } = await supabaseClient.from('courses').update({ code: newCode, title: newTitle, description: newDesc }).eq('id', id);
-        
         if (error) { msg.style.color = 'red'; msg.textContent = 'Error: ' + error.message; }
-        else { 
-          msg.style.color = 'green'; msg.textContent = '✅ Course updated successfully!'; 
-          saveBtn.textContent = "Add Course"; saveBtn.style.background = '#1e7e34'; saveBtn.style.color = '#fff'; saveBtn.onclick = addCourse;
-          document.getElementById('course-code').value = ''; document.getElementById('course-title').value = ''; document.getElementById('course-desc').value = '';
-        }
+        else { msg.style.color = 'green'; msg.textContent = '✅ Course updated!'; saveBtn.textContent = "Add Course"; saveBtn.style.background = '#1e7e34'; saveBtn.style.color = '#fff'; saveBtn.onclick = addCourse; document.getElementById('course-code').value = ''; document.getElementById('course-title').value = ''; document.getElementById('course-desc').value = ''; }
       };
     }
 
@@ -277,51 +281,26 @@
     async function loadStudents() {
       const listContainer = document.getElementById('students-list');
       listContainer.innerHTML = '<p>Loading student data...</p>';
-
       const { data: progress, error: progErr } = await supabaseClient.from('progress').select('user_id, material_id');
       const { data: profiles, error: profErr } = await supabaseClient.from('profiles').select('id, full_name');
       const { data: materials, error: matErr } = await supabaseClient.from('materials').select('id, course_code');
-      
       if (progErr || profErr || matErr) { listContainer.innerHTML = '<p style="color:red;">Error loading data.</p>'; return; }
       if (!progress || progress.length === 0) { listContainer.innerHTML = '<p>No students have completed any lessons yet.</p>'; return; }
-
       const studentStats = {};
-
       progress.forEach(record => {
         const profile = profiles.find(p => String(p.id) === String(record.user_id));
         const name = (profile && profile.full_name) ? profile.full_name : "Unknown Student";
-
         const material = materials.find(m => m.id === record.material_id);
         const courseCode = material ? material.course_code : "Unknown Course";
-
         const key = `${record.user_id}-${courseCode}`;
-
-        if (!studentStats[key]) {
-          studentStats[key] = { name: name, course: courseCode, count: 0 };
-        }
+        if (!studentStats[key]) { studentStats[key] = { name: name, course: courseCode, count: 0 }; }
         studentStats[key].count += 1;
       });
-
       const statsArray = Object.values(studentStats);
-
       listContainer.innerHTML = `
         <table class="student-table">
-          <thead>
-            <tr>
-              <th>Student Name</th>
-              <th>Course Code</th>
-              <th>Lessons Completed</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${statsArray.map(stat => `
-              <tr>
-                <td><strong>${stat.name}</strong></td>
-                <td><span class="badge">${stat.course}</span></td>
-                <td>${stat.count}</td>
-              </tr>
-            `).join('')}
-          </tbody>
+          <thead><tr><th>Student Name</th><th>Course Code</th><th>Lessons Completed</th></tr></thead>
+          <tbody>${statsArray.map(stat => `<tr><td><strong>${stat.name}</strong></td><td><span class="badge">${stat.course}</span></td><td>${stat.count}</td></tr>`).join('')}</tbody>
         </table>
       `;
     }
@@ -332,45 +311,14 @@
     });
   </script>
 
-  <!-- FORCED CSS FOR MOBILE MENU (Bypasses style.css) -->
+  <!-- FORCED CSS FOR MOBILE MENU -->
   <style>
     @media screen and (max-width: 768px) {
-      .menu-toggle {
-        display: block !important;
-        color: #fff !important;
-        font-size: 24px !important; /* REDUCED SIZE */
-        cursor: pointer !important;
-        z-index: 9999 !important;
-      }
-      .nav-links {
-        display: none !important; 
-        position: absolute !important;
-        top: 70px !important;
-        right: 20px !important;
-        background: #000 !important;
-        width: 220px !important;
-        flex-direction: column !important;
-        padding: 20px !important;
-        border-radius: 8px !important;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.5) !important;
-        z-index: 9998 !important;
-      }
-      .nav-links.active {
-        display: flex !important; 
-      }
-      .nav-links li {
-        margin: 12px 0 !important;
-        text-align: right !important;
-        width: 100% !important;
-        display: block !important;
-      }
-      .nav-links a {
-        display: block !important;
-        width: 100% !important;
-        color: #fff !important;
-        padding: 10px 0 !important;
-        text-decoration: none !important;
-      }
+      .menu-toggle { display: block !important; color: #fff !important; font-size: 24px !important; cursor: pointer !important; z-index: 9999 !important; }
+      .nav-links { display: none !important; position: absolute !important; top: 70px !important; right: 20px !important; background: #000 !important; width: 220px !important; flex-direction: column !important; padding: 20px !important; border-radius: 8px !important; box-shadow: 0 5px 15px rgba(0,0,0,0.5) !important; z-index: 9998 !important; }
+      .nav-links.active { display: flex !important; }
+      .nav-links li { margin: 12px 0 !important; text-align: right !important; width: 100% !important; display: block !important; }
+      .nav-links a { display: block !important; width: 100% !important; color: #fff !important; padding: 10px 0 !important; text-decoration: none !important; }
     }
   </style>
 </body>
