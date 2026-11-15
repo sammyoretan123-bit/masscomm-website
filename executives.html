@@ -29,11 +29,107 @@
     .menu-toggle { display: none; }
     .team { padding: 20px; }
     .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 30px; max-width: 1100px; margin: 0 auto; }
-    .member { background: #fff; border-radius: 12px; padding: 30px 20px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); display: flex; flex-direction: column; align-items: center; text-align: center; transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; }
+    
+    /* --- CURRENT EXECUTIVES CARD FIX --- */
+    .member { 
+      background: #fff; 
+      border-radius: 12px; 
+      padding: 30px 20px; 
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08); 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      text-align: center; 
+      transition: transform 0.3s, box-shadow 0.3s; 
+      cursor: pointer; 
+      justify-content: flex-start;
+    }
     .member:hover { transform: translateY(-10px); box-shadow: 0 12px 25px rgba(106, 13, 173, 0.2); }
     .member img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid #6a0dad; margin-bottom: 15px; }
-    .member h3 { color: #0d0d0d; margin-bottom: 5px; font-size: 1.2rem; }
-    .member p { color: #6a0dad; font-weight: bold; text-transform: uppercase; font-size: 0.85rem; margin: 0; }
+    
+    .member h3 { 
+      color: #0d0d0d; 
+      font-size: 1.2rem; 
+      flex-grow: 1; /* Pushes the role to the bottom */
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      text-align: center;
+      margin: 0 0 8px 0; 
+      min-height: 3em; /* Ensures space for 2 lines of text */
+      line-height: 1.3;
+    }
+    .member p { 
+      color: #6a0dad; 
+      font-weight: bold; 
+      text-transform: uppercase; 
+      font-size: 0.85rem; 
+      margin: 0; 
+      text-align: center;
+    }
+
+    /* --- PAST ADMINISTRATIONS STYLES --- */
+    .past-admin-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+    .past-admin-header {
+      background: #6a0dad;
+      color: #fff;
+      padding: 20px 30px; /* Fixes header text alignment */
+    }
+    .past-admin-header h3 {
+      margin: 0;
+      font-size: 1.4rem;
+    }
+    .past-admin-header p {
+      margin: 5px 0 0;
+      opacity: 0.9;
+      font-size: 0.9rem;
+    }
+    .past-admin-grid {
+      padding: 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+    }
+    .past-member {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .past-member img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 4px solid #6a0dad;
+      margin-bottom: 12px;
+    }
+    .past-member h4 {
+      margin: 0 0 5px 0;
+      color: #0d0d0d;
+      font-size: 1rem;
+      flex-grow: 1; /* Aligns the roles perfectly */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 2.5em; 
+    }
+    .past-member p {
+      margin: 0;
+      color: #6a0dad;
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+      text-align: center;
+    }
+
     footer { background: #0d0d0d; color: #aaa; text-align: center; padding: 40px 20px; border-top: 1px solid #222; margin-top: 50px; }
     .footer-credit { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; }
     .footer-credit img { height: 40px; }

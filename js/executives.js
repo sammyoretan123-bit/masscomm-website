@@ -134,21 +134,21 @@ async function renderPastExecutives() {
   });
 
   container.innerHTML = groupArray.map((g) => `
-    <div style="background:#fff; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.08); overflow:hidden; margin-bottom:40px;">
-
+    <div class="past-admin-card">
+      
       <!-- Header -->
-      <div style="background:#6a0dad; color:#fff; padding:18px 25px;">
-        <h3 style="margin:0; font-size:1.4rem;">${g.admin_name}</h3>
-        ${g.set_year ? `<p style="margin:5px 0 0; opacity:0.9; font-size:0.9rem;">Set: ${g.set_year}</p>` : ""}
+      <div class="past-admin-header">
+        <h3>${g.admin_name}</h3>
+        ${g.set_year ? `<p>Set: ${g.set_year}</p>` : ""}
       </div>
 
       <!-- Members Grid -->
-      <div style="padding:25px; display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:20px;">
+      <div class="past-admin-grid">
         ${g.members.map((m) => `
-          <div style="text-align:center;">
-            <img src="${m.photo}" alt="${m.name}" style="width:120px; height:120px; object-fit:cover; border-radius:50%; border:4px solid #6a0dad;" />
-            <h4 style="margin:12px 0 3px; color:#0d0d0d; font-size:1rem;">${m.name}</h4>
-            <p style="margin:0; color:#6a0dad; font-weight:bold; text-transform:uppercase; font-size:0.75rem; letter-spacing:0.5px;">${m.position}</p>
+          <div class="past-member">
+            <img src="${m.photo}" alt="${m.name}" />
+            <h4>${m.name}</h4>
+            <p>${m.position}</p>
           </div>
         `).join("")}
       </div>
