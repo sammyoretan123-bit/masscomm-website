@@ -47,13 +47,47 @@
   <header>
     <nav class="navbar">
       <div class="logo">
-        <img src="images/mass communication logo.jpg" alt="Logo" />
+        <img src="images/mass communication logo.jpg" alt="Department Logo" />
         <span>Mass Communication AAUA</span>
       </div>
       <ul class="nav-links" id="navLinks">
-        <li><a href="dashboard.html">My Dashboard</a></li>
-        <li><a href="admin.html" style="color: #e50914; font-weight: bold;">Admin Panel</a></li>
-        <li><button id="logout-btn" style="background: #e50914; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Log Out</button></li>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="#">About <span class="arrow">&#9662;</span></a>
+          <ul class="dropdown">
+            <li><a href="about.html">About Department</a></li>
+            <li><a href="courses.html">Courses</a></li>
+            <li><a href="materials.html">Course Materials</a></li>
+            <li><a href="sequence-prad.html">PRAD</a></li>
+            <li><a href="sequence-broadcast.html">Broadcast</a></li>
+            <li><a href="sequence-print.html">Print</a></li>
+          </ul>
+        </li>
+        <li><a href="#">People <span class="arrow">&#9662;</span></a>
+          <ul class="dropdown">
+            <li><a href="hod.html">HOD</a></li>
+            <li><a href="lecturers.html">Lecturers</a></li>
+            <li><a href="executives.html">Student Executives</a></li>
+            <li><a href="alumni.html">Alumni</a></li>
+          </ul>
+        </li>
+        <li><a href="#">Students <span class="arrow">&#9662;</span></a>
+          <ul class="dropdown"><li><a href="sets.html">Sets</a></li></ul>
+        </li>
+        <li><a href="#">Activities <span class="arrow">&#9662;</span></a>
+          <ul class="dropdown">
+            <li><a href="activities.html">Activities</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="anthem.html">NAMACOS Anthem</a></li>
+          </ul>
+        </li>
+        <li><a href="#">Media <span class="arrow">&#9662;</span></a>
+          <ul class="dropdown">
+            <li><a href="news.html">News</a></li>
+            <li><a href="blog.html">Blog</a></li>
+          </ul>
+        </li>
+        <li><a href="cinema.html">NAMACOS TV</a></li>
+        <li><a href="contact.html">Contact</a></li>
       </ul>
       <div class="menu-toggle" id="menu-toggle">&#9776;</div>
     </nav>
@@ -76,6 +110,7 @@
       <div class="form-group"><label>Course Code (e.g., MAC 101)</label><input type="text" id="course-code" placeholder="MAC 101" /></div>
       <div class="form-group"><label>Course Title</label><input type="text" id="course-title" placeholder="Introduction to Communication" /></div>
       <div class="form-group"><label>Description</label><textarea id="course-desc" rows="3" placeholder="Short description..."></textarea></div>
+      <div class="form-group"><label>Quiz Duration (in minutes)</label><input type="number" id="course-duration" placeholder="15" value="15" /></div>
       <button class="btn-save" id="course-save-btn" onclick="addCourse()">Add Course</button>
       <p id="msg-course" class="status-msg"></p>
     </div>
@@ -151,7 +186,6 @@
       document.getElementById('form-' + tabName).classList.add('active');
       if(btnElement) btnElement.classList.add('active');
 
-      // Reset forms when switching tabs
       if (tabName === 'course') { resetCourseForm(); }
       if (tabName === 'quiz') { resetQuizForm(); }
 
@@ -166,6 +200,7 @@
       document.getElementById('course-code').value = '';
       document.getElementById('course-title').value = '';
       document.getElementById('course-desc').value = '';
+      document.getElementById('course-duration').value = '15';
       const btn = document.getElementById('course-save-btn');
       btn.textContent = "Add Course";
       btn.style.background = '#1e7e34';
@@ -176,10 +211,11 @@
       const code = document.getElementById('course-code').value;
       const title = document.getElementById('course-title').value;
       const desc = document.getElementById('course-desc').value;
+      const duration = document.getElementById('course-duration').value || 15;
       const msg = document.getElementById('msg-course');
       if (!code || !title) { msg.style.color = 'red'; msg.textContent = 'Code and Title are required.'; return; }
       msg.style.color = 'blue'; msg.textContent = 'Saving...';
-      const { error } = await supabaseClient.from('courses').insert([{ code, title, description: desc }]);
+      const { error } = await supabaseClient.from('courses').insert([{ code, title, description: desc, duration: parseInt(duration) }]);
       if (error) { msg.style.color = 'red'; msg.textContent = 'Error: ' + error.message; }
       else { msg.style.color = 'green'; msg.textContent = '✅ Course added successfully!'; resetCourseForm(); }
     }
@@ -245,10 +281,7 @@
     }
 
     function editQuiz(id, code, question, a, b, c, d, correct) {
-      // Switch to the quiz tab
       switchTab('quiz', document.querySelectorAll('.tab-btn')[2]);
-
-      // Fill the form with the existing quiz data
       document.getElementById('quiz-form-title').textContent = "Edit Quiz Question";
       document.getElementById('quiz-code').value = code;
       document.getElementById('quiz-question').value = question;
@@ -257,13 +290,10 @@
       document.getElementById('quiz-c').value = c;
       document.getElementById('quiz-d').value = d;
       document.getElementById('quiz-correct').value = correct;
-
-      // Change the save button to update mode
       const btn = document.getElementById('quiz-save-btn');
       btn.textContent = "Update Question";
       btn.style.background = '#ffc107';
       btn.style.color = '#000';
-
       btn.onclick = async () => {
         const newCode = document.getElementById('quiz-code').value;
         const newQuestion = document.getElementById('quiz-question').value;
@@ -273,24 +303,10 @@
         const newD = document.getElementById('quiz-d').value;
         const newCorrect = document.getElementById('quiz-correct').value;
         const msg = document.getElementById('msg-quiz');
-
         msg.style.color = 'blue'; msg.textContent = 'Updating...';
-        const { error } = await supabaseClient.from('quizzes').update({ 
-          course_code: newCode, 
-          question: newQuestion, 
-          option_a: newA, 
-          option_b: newB, 
-          option_c: newC, 
-          option_d: newD, 
-          correct_answer: newCorrect 
-        }).eq('id', id);
-
+        const { error } = await supabaseClient.from('quizzes').update({ course_code: newCode, question: newQuestion, option_a: newA, option_b: newB, option_c: newC, option_d: newD, correct_answer: newCorrect }).eq('id', id);
         if (error) { msg.style.color = 'red'; msg.textContent = 'Error: ' + error.message; }
-        else { 
-          msg.style.color = 'green'; msg.textContent = '✅ Question updated successfully!'; 
-          resetQuizForm();
-          loadManageQuizzes(); // Refresh the list
-        }
+        else { msg.style.color = 'green'; msg.textContent = '✅ Question updated successfully!'; resetQuizForm(); loadManageQuizzes(); }
       };
     }
 
@@ -308,7 +324,7 @@
             <p>${course.description || 'No description'}</p>
           </div>
           <div class="action-btns">
-            <button class="btn-edit" onclick="editCourse(${course.id}, '${course.code}', '${course.title.replace(/'/g, "\\'")}', '${(course.description || '').replace(/'/g, "\\'")}')">✏️ Edit</button>
+            <button class="btn-edit" onclick="editCourse(${course.id}, '${course.code}', '${course.title.replace(/'/g, "\\'")}', '${(course.description || '').replace(/'/g, "\\'")}', ${course.duration || 15})">✏️ Edit</button>
             <button class="btn-delete" onclick="deleteCourse(${course.id})">🗑️ Delete</button>
           </div>
         </div>
@@ -322,11 +338,12 @@
       else { alert("Course deleted."); loadManageList(); }
     }
 
-    function editCourse(id, oldCode, oldTitle, oldDesc) {
+    function editCourse(id, oldCode, oldTitle, oldDesc, oldDuration) {
       switchTab('course', document.querySelector('.tab-btn'));
       document.getElementById('course-code').value = oldCode;
       document.getElementById('course-title').value = oldTitle;
       document.getElementById('course-desc').value = oldDesc;
+      document.getElementById('course-duration').value = oldDuration || 15;
       const saveBtn = document.querySelector('#form-course .btn-save');
       saveBtn.textContent = "Update Course";
       saveBtn.style.background = '#ffc107';
@@ -335,11 +352,12 @@
         const newCode = document.getElementById('course-code').value;
         const newTitle = document.getElementById('course-title').value;
         const newDesc = document.getElementById('course-desc').value;
+        const newDuration = document.getElementById('course-duration').value || 15;
         const msg = document.getElementById('msg-course');
         msg.style.color = 'blue'; msg.textContent = 'Updating...';
-        const { error } = await supabaseClient.from('courses').update({ code: newCode, title: newTitle, description: newDesc }).eq('id', id);
+        const { error } = await supabaseClient.from('courses').update({ code: newCode, title: newTitle, description: newDesc, duration: parseInt(newDuration) }).eq('id', id);
         if (error) { msg.style.color = 'red'; msg.textContent = 'Error: ' + error.message; }
-        else { msg.style.color = 'green'; msg.textContent = '✅ Course updated!'; saveBtn.textContent = "Add Course"; saveBtn.style.background = '#1e7e34'; saveBtn.style.color = '#fff'; saveBtn.onclick = addCourse; document.getElementById('course-code').value = ''; document.getElementById('course-title').value = ''; document.getElementById('course-desc').value = ''; }
+        else { msg.style.color = 'green'; msg.textContent = '✅ Course updated!'; saveBtn.textContent = "Add Course"; saveBtn.style.background = '#1e7e34'; saveBtn.style.color = '#fff'; saveBtn.onclick = addCourse; resetCourseForm(); }
       };
     }
 
