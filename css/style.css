@@ -17,9 +17,30 @@ header {
   box-shadow: 0 2px 10px rgba(0,0,0,0.5); 
   border-bottom: 2px solid #6a0dad; /* THE PURPLE LINE */
 }
-.navbar { display: flex; justify-content: space-between; align-items: center; padding: 10px 40px; max-width: 1200px; margin: 0 auto; }
-.logo { display: flex; align-items: center; gap: 10px; color: #fff; font-weight: bold; font-size: 1.2rem; }
+.navbar { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 10px 40px; 
+  width: 100% !important;   /* Full width */
+  max-width: 100% !important; /* Removes 1200px cap */
+  margin: 0 auto; 
+  box-sizing: border-box;
+}
+
+/* FIX: Logo text forced on one line */
+.logo { 
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
+  color: #fff; 
+  font-weight: bold; 
+  font-size: 1.2rem; 
+  white-space: nowrap !important; 
+  flex-shrink: 0 !important; 
+}
 .logo img { height: 45px; border-radius: 50%; }
+
 .nav-links { display: flex; align-items: center; gap: 25px; }
 .nav-links > li { position: relative; }
 .nav-links a { color: #fff; font-weight: 500; transition: color 0.3s; font-size: 0.95rem; }
@@ -90,16 +111,16 @@ footer { background: #0d0d0d; color: #aaa; text-align: center; padding: 40px 20p
    MOBILE MENU (WITH PERMANENT PURPLE LINES)
    ============================================ */
 @media screen and (max-width: 768px) {
-  .navbar { padding: 10px 15px; } /* Slightly reduced padding */
+  .navbar { padding: 10px 15px; } 
   .menu-toggle { display: block !important; color: #fff; font-size: 24px; cursor: pointer; z-index: 10001; }
 
   /* PREVENT LOGO TEXT WRAPPING */
   .logo span {
     white-space: nowrap !important;
-    font-size: 0.95rem !important; /* Smaller text to fit on one line */
+    font-size: 0.95rem !important; 
   }
   .logo img {
-    height: 35px !important; /* Smaller image on mobile */
+    height: 35px !important; 
   }
 
   .nav-links { display: none !important; position: absolute !important; top: 65px !important; right: 15px !important; background: #000 !important; width: 250px !important; flex-direction: column !important; padding: 10px 0 !important; border-radius: 8px !important; box-shadow: 0 5px 15px rgba(0,0,0,0.5) !important; z-index: 10000 !important; }
