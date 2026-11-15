@@ -31,4 +31,6 @@ photos:
   - /images/Anonymous.jpg
   - /images/grad.jpeg
   - /images/p.jpeg
+  - /images/WhatsApp Image 2026-11-13 at 12.53.34.jpeg
+  - /images/jj.jpeg
 ---
