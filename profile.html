@@ -78,20 +78,39 @@
     });
 
     document.getElementById('save-profile-btn').addEventListener('click', async () => {
-      const statusMsg = document.getElementById('status-msg'); const fileInput = document.getElementById('avatar-upload-input'); const fullName = document.getElementById('profile-fullname').value;
-      statusMsg.style.color = 'blue'; statusMsg.textContent = 'Saving...';
+      const statusMsg = document.getElementById('status-msg'); 
+      const fileInput = document.getElementById('avatar-upload-input'); 
+      const fullName = document.getElementById('profile-fullname').value;
+      statusMsg.style.color = 'blue'; 
+      statusMsg.textContent = 'Saving...';
+
       if (fileInput.files.length > 0) {
-        const file = fileInput.files[0]; const fileExt = file.name.split('.').pop(); const filePath = `${currentUser.id}-${Date.now()}.${fileExt}`;
+        const file = fileInput.files[0]; 
+        const fileExt = file.name.split('.').pop(); 
         
-        // CHANGED: upsert: true → upsert: false
+        // FIXED: File is placed inside a folder named after the user's ID
+        const filePath = `${currentUser.id}/${Date.now()}.${fileExt}`;
+        
         const { error: uploadError } = await supabaseClient.storage.from('avatars').upload(filePath, file, { upsert: false });
         
-        if (uploadError) { statusMsg.style.color = 'red'; statusMsg.textContent = 'Upload failed: ' + uploadError.message; return; }
-        const { data: urlData } = supabaseClient.storage.from('avatars').getPublicUrl(filePath); newAvatarUrl = urlData.publicUrl;
+        if (uploadError) { 
+          statusMsg.style.color = 'red'; 
+          statusMsg.textContent = 'Upload failed: ' + uploadError.message; 
+          return; 
+        }
+        const { data: urlData } = supabaseClient.storage.from('avatars').getPublicUrl(filePath); 
+        newAvatarUrl = urlData.publicUrl;
       }
+      
       const { error: updateError } = await supabaseClient.from('profiles').update({ full_name: fullName, avatar_url: newAvatarUrl }).eq('id', currentUser.id);
-      if (updateError) { statusMsg.style.color = 'red'; statusMsg.textContent = 'Save failed: ' + updateError.message; return; }
-      statusMsg.style.color = 'green'; statusMsg.textContent = '✅ Profile updated successfully!';
+      if (updateError) { 
+        statusMsg.style.color = 'red'; 
+        statusMsg.textContent = 'Save failed: ' + updateError.message; 
+        return; 
+      }
+      
+      statusMsg.style.color = 'green'; 
+      statusMsg.textContent = '✅ Profile updated successfully!';
       if (newAvatarUrl) { document.getElementById('nav-avatar-img').src = newAvatarUrl; }
     });
 
