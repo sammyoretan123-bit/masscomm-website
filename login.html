@@ -5,26 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Student Login | NAMACOS</title>
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" type="image/jpeg" href="images/mass communication logo.jpg" />
   <style>
-    body { display: flex; justify-content: center; align-items: center; height: 100vh; background: #0d0d0d; }
-    .login-box { background: #fff; padding: 40px; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-    .login-box h2 { color: #6a0dad; text-align: center; margin-top: 0; }
-    .login-box input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-    .login-box button { width: 100%; padding: 12px; background: #6a0dad; color: #fff; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; }
+    body { display: flex; justify-content: center; align-items: center; height: 100vh; background: #0d0d0d; margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .login-box { background: #fff; padding: 40px; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; }
+    .login-box img { width: 80px; display: block; margin: 0 auto 20px; border-radius: 50%; }
+    .login-box h2 { color: #6a0dad; margin-top: 0; }
+    .login-box p { color: #666; margin-bottom: 25px; }
+    .login-box input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
+    .login-box button { width: 100%; padding: 12px; background: #6a0dad; color: #fff; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background 0.3s; }
     .login-box button:hover { background: #8e2de2; }
-    #error-msg { color: #e50914; text-align: center; margin-top: 15px; display: none; }
+    
+    /* Forgot Password Link */
+    .forgot-link { display: block; text-align: right; margin-bottom: 15px; font-size: 0.85rem; color: #6a0dad; font-weight: bold; text-decoration: none; }
+    .forgot-link:hover { text-decoration: underline; }
+    
+    #error-msg { color: #e50914; text-align: center; margin-top: 15px; display: none; font-weight: bold; }
   </style>
 </head>
 <body>
 
   <div class="login-box">
-    <img src="images/mass communication logo.jpg" alt="Logo" style="width: 80px; display: block; margin: 0 auto 20px; border-radius: 50%;" />
+    <img src="images/mass communication logo.jpg" alt="Logo" />
     <h2>Student Portal Login</h2>
-    <p style="text-align: center; color: #666; margin-bottom: 25px;">Log in to access your courses.</p>
+    <p>Log in to access your courses.</p>
     
     <form id="login-form">
       <input type="email" id="email" placeholder="Email Address" required />
       <input type="password" id="password" placeholder="Password" required />
+      
+      <!-- FORGOT PASSWORD LINK -->
+      <a href="reset-password.html" class="forgot-link">Forgot Password?</a>
+      
       <button type="submit">Log In</button>
     </form>
     <p id="error-msg"></p>
