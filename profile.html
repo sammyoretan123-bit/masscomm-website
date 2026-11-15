@@ -82,7 +82,10 @@
       statusMsg.style.color = 'blue'; statusMsg.textContent = 'Saving...';
       if (fileInput.files.length > 0) {
         const file = fileInput.files[0]; const fileExt = file.name.split('.').pop(); const filePath = `${currentUser.id}-${Date.now()}.${fileExt}`;
-        const { error: uploadError } = await supabaseClient.storage.from('avatars').upload(filePath, file, { upsert: true });
+        
+        // CHANGED: upsert: true → upsert: false
+        const { error: uploadError } = await supabaseClient.storage.from('avatars').upload(filePath, file, { upsert: false });
+        
         if (uploadError) { statusMsg.style.color = 'red'; statusMsg.textContent = 'Upload failed: ' + uploadError.message; return; }
         const { data: urlData } = supabaseClient.storage.from('avatars').getPublicUrl(filePath); newAvatarUrl = urlData.publicUrl;
       }
