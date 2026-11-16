@@ -57,7 +57,7 @@
   <script>
     let correctAnswers = {}; 
     let timerInterval;
-    let timeLeft = 15 * 60; 
+    let timeLeft; // Removed the hardcoded 15 * 60 here
     let isSubmitted = false;
 
     window.addEventListener('beforeunload', function (e) {
@@ -101,6 +101,18 @@
       }
 
       document.getElementById('quiz-title').textContent = `CBT: ${courseCode}`;
+
+      // --- NEW: Fetch Course Duration from Database ---
+      const { data: courseData } = await supabaseClient.from('courses').select('duration').eq('code', courseCode).single();
+      
+      // Set timeLeft based on database duration (default to 15 mins if missing)
+      const durationMinutes = courseData && courseData.duration ? courseData.duration : 15;
+      timeLeft = durationMinutes * 60;
+
+      // Update the timer text on screen immediately before starting
+      const minutesDisplay = Math.floor(timeLeft / 60);
+      document.getElementById('timer').textContent = `${minutesDisplay.toString().padStart(2, '0')}:00`;
+      // ------------------------------------------------
 
       const { data: questions, error } = await supabaseClient.from('quizzes').select('*').eq('course_code', courseCode);
 
@@ -165,11 +177,10 @@
           total_questions: totalQuestions 
         }]);
 
-      // ADDED ALERT TO CATCH ERRORS
       if (saveError) {
         alert("DATABASE SAVE FAILED! Reason: " + saveError.message);
         console.error("Error saving score:", saveError);
-        isSubmitted = false; // Allow them to try again
+        isSubmitted = false; 
         return;
       } else {
         console.log("Score saved successfully to database!");
