@@ -44,7 +44,6 @@
 </head>
 <body>
 
-  <!-- CLEAN ADMIN NAVBAR -->
   <header>
     <nav class="navbar">
       <div class="logo">
@@ -173,6 +172,7 @@
       const btn = document.getElementById('course-save-btn');
       btn.textContent = "Add Course";
       btn.style.background = '#1e7e34';
+      btn.style.color = '#fff';
       btn.onclick = addCourse;
     }
 
@@ -201,6 +201,7 @@
       const btn = document.getElementById('quiz-save-btn');
       btn.textContent = "Add Question";
       btn.style.background = '#1e7e34';
+      btn.style.color = '#fff';
       btn.onclick = addQuiz;
     }
 
@@ -227,6 +228,7 @@
       const { data: quizzes, error } = await supabaseClient.from('quizzes').select('*').order('course_code');
       if (error || !quizzes) { listContainer.innerHTML = '<p style="color:red;">Error loading quizzes.</p>'; return; }
       if (quizzes.length === 0) { listContainer.innerHTML = '<p>No quiz questions found.</p>'; return; }
+      
       listContainer.innerHTML = quizzes.map(q => `
         <div class="course-list-item">
           <div>
@@ -235,7 +237,7 @@
             <p style="color:green; font-weight:bold;">Correct: ${q.correct_answer}</p>
           </div>
           <div class="action-btns">
-            <button class="btn-edit" onclick="editQuizFromData(${JSON.stringify(q).replace(/'/g, "&#39;")})">✏️ Edit</button>
+            <button class="btn-edit quiz-edit-btn" data-id="${q.id}" data-code="${encodeURIComponent(q.course_code)}" data-question="${encodeURIComponent(q.question)}" data-a="${encodeURIComponent(q.option_a)}" data-b="${encodeURIComponent(q.option_b)}" data-c="${encodeURIComponent(q.option_c)}" data-d="${encodeURIComponent(q.option_d)}" data-correct="${q.correct_answer}">✏️ Edit</button>
             <button class="btn-delete" onclick="deleteQuiz(${q.id})">🗑️ Delete</button>
           </div>
         </div>
@@ -297,20 +299,18 @@
       if (error || !courses) { listContainer.innerHTML = '<p style="color:red;">Error loading courses.</p>'; return; }
       if (courses.length === 0) { listContainer.innerHTML = '<p>No courses found.</p>'; return; }
       
-      listContainer.innerHTML = courses.map(course => {
-        const courseData = JSON.stringify(course).replace(/'/g, "&#39;");
-        return `
+      listContainer.innerHTML = courses.map(course => `
         <div class="course-list-item">
           <div>
             <h4>${course.title} <span style="font-weight:normal; color:#6a0dad;">(${course.code})</span></h4>
             <p>${course.description || 'No description'}</p>
           </div>
           <div class="action-btns">
-            <button class="btn-edit" onclick="editCourseFromData(${courseData})">✏️ Edit</button>
+            <button class="btn-edit course-edit-btn" data-id="${course.id}" data-code="${encodeURIComponent(course.code)}" data-title="${encodeURIComponent(course.title)}" data-desc="${encodeURIComponent(course.description || '')}" data-duration="${course.duration || 15}">✏️ Edit</button>
             <button class="btn-delete" onclick="deleteCourse(${course.id})">🗑️ Delete</button>
           </div>
         </div>
-      `}).join('');
+      `).join('');
     }
 
     async function deleteCourse(courseId) {
@@ -381,6 +381,36 @@
         </table>
       `;
     }
+
+    // --- GLOBAL EDIT BUTTON LISTENER (Bypasses all HTML string bugs) ---
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('course-edit-btn')) {
+        const btn = e.target;
+        const course = {
+          id: btn.dataset.id,
+          code: decodeURIComponent(btn.dataset.code),
+          title: decodeURIComponent(btn.dataset.title),
+          description: decodeURIComponent(btn.dataset.desc),
+          duration: btn.dataset.duration
+        };
+        editCourseFromData(course);
+      }
+      
+      if (e.target.classList.contains('quiz-edit-btn')) {
+        const btn = e.target;
+        const quiz = {
+          id: btn.dataset.id,
+          course_code: decodeURIComponent(btn.dataset.code),
+          question: decodeURIComponent(btn.dataset.question),
+          option_a: decodeURIComponent(btn.dataset.a),
+          option_b: decodeURIComponent(btn.dataset.b),
+          option_c: decodeURIComponent(btn.dataset.c),
+          option_d: decodeURIComponent(btn.dataset.d),
+          correct_answer: btn.dataset.correct
+        };
+        editQuizFromData(quiz);
+      }
+    });
 
     document.getElementById('logout-btn').addEventListener('click', async () => {
       await supabaseClient.auth.signOut();
