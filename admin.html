@@ -69,10 +69,12 @@
       <button class="tab-btn" onclick="switchTab('lesson', this)">Add Lesson</button>
       <button class="tab-btn" onclick="switchTab('quiz', this)">Add Quiz Question</button>
       <button class="tab-btn" onclick="switchTab('manage-quizzes', this)">Manage Quizzes</button>
+      <button class="tab-btn" onclick="switchTab('manage-lessons', this)">Manage Lessons</button>
       <button class="tab-btn" onclick="switchTab('manage', this)">Manage Courses</button>
       <button class="tab-btn" onclick="switchTab('students', this)">Enrolled Students</button>
     </div>
 
+    <!-- ADD COURSE FORM -->
     <div id="form-course" class="admin-form active">
       <h3 style="color: #6a0dad; margin-top: 0;" id="course-form-title">Add a New Course</h3>
       <div class="form-group"><label>Course Code (e.g., MAC 101)</label><input type="text" id="course-code" placeholder="MAC 101" /></div>
@@ -83,18 +85,20 @@
       <p id="msg-course" class="status-msg"></p>
     </div>
 
+    <!-- ADD LESSON FORM -->
     <div id="form-lesson" class="admin-form">
-      <h3 style="color: #6a0dad; margin-top: 0;">Add a Lesson</h3>
+      <h3 style="color: #6a0dad; margin-top: 0;" id="lesson-form-title">Add a Lesson</h3>
       <div class="form-group"><label>Course Code</label><input type="text" id="lesson-code" placeholder="MAC 101" /></div>
       <div class="form-group"><label>Lesson Title</label><input type="text" id="lesson-title" placeholder="Week 1: Basics" /></div>
       <div class="form-group"><label>Order Index (1, 2, 3...)</label><input type="number" id="lesson-order" placeholder="1" /></div>
       <div class="form-group"><label>PDF File URL (Optional)</label><input type="text" id="lesson-pdf" placeholder="https://..." /></div>
       <div class="form-group"><label>Video Embed URL (Optional)</label><input type="text" id="lesson-video" placeholder="https://www.youtube.com/embed/..." /></div>
       <div class="form-group"><label>Description / Notes</label><textarea id="lesson-desc" rows="3" placeholder="Write the lesson text here..."></textarea></div>
-      <button class="btn-save" onclick="addLesson()">Add Lesson</button>
+      <button class="btn-save" id="lesson-save-btn" onclick="addLesson()">Add Lesson</button>
       <p id="msg-lesson" class="status-msg"></p>
     </div>
 
+    <!-- ADD QUIZ FORM -->
     <div id="form-quiz" class="admin-form">
       <h3 style="color: #6a0dad; margin-top: 0;" id="quiz-form-title">Add a Quiz Question</h3>
       <div class="form-group"><label>Course Code</label><input type="text" id="quiz-code" placeholder="MAC 101" /></div>
@@ -108,16 +112,25 @@
       <p id="msg-quiz" class="status-msg"></p>
     </div>
 
+    <!-- MANAGE QUIZZES LIST -->
     <div id="form-manage-quizzes" class="admin-form">
       <h3 style="color: #6a0dad; margin-top: 0;">Manage Quiz Questions</h3>
       <div id="manage-quizzes-list"><p>Loading questions...</p></div>
     </div>
 
+    <!-- MANAGE LESSONS LIST -->
+    <div id="form-manage-lessons" class="admin-form">
+      <h3 style="color: #6a0dad; margin-top: 0;">Manage Lessons</h3>
+      <div id="manage-lessons-list"><p>Loading lessons...</p></div>
+    </div>
+
+    <!-- MANAGE COURSES LIST -->
     <div id="form-manage" class="admin-form">
       <h3 style="color: #6a0dad; margin-top: 0;">Manage Courses</h3>
       <div id="manage-list"><p>Loading courses...</p></div>
     </div>
 
+    <!-- ENROLLED STUDENTS -->
     <div id="form-students" class="admin-form">
       <h3 style="color: #6a0dad; margin-top: 0;">Enrolled Students</h3>
       <p style="color: #666; font-size: 0.9rem; margin-bottom: 15px;">Students who have completed at least one lesson.</p>
@@ -155,10 +168,12 @@
       if(btnElement) btnElement.classList.add('active');
 
       if (tabName === 'course') { resetCourseForm(); }
+      if (tabName === 'lesson') { resetLessonForm(); }
       if (tabName === 'quiz') { resetQuizForm(); }
 
       if (tabName === 'manage') { loadManageList(); }
       if (tabName === 'manage-quizzes') { loadManageQuizzes(); }
+      if (tabName === 'manage-lessons') { loadManageLessons(); }
       if (tabName === 'students') { loadStudents(); }
     }
 
@@ -187,6 +202,36 @@
       const { error } = await supabaseClient.from('courses').insert([{ code, title, description: desc, duration: parseInt(duration) }]);
       if (error) { msg.style.color = 'red'; msg.textContent = 'Error: ' + error.message; }
       else { msg.style.color = 'green'; msg.textContent = '✅ Course added successfully!'; resetCourseForm(); }
+    }
+
+    function resetLessonForm() {
+      document.getElementById('lesson-form-title').textContent = "Add a Lesson";
+      document.getElementById('lesson-code').value = '';
+      document.getElementById('lesson-title').value = '';
+      document.getElementById('lesson-order').value = '';
+      document.getElementById('lesson-pdf').value = '';
+      document.getElementById('lesson-video').value = '';
+      document.getElementById('lesson-desc').value = '';
+      const btn = document.getElementById('lesson-save-btn');
+      btn.textContent = "Add Lesson";
+      btn.style.background = '#1e7e34';
+      btn.style.color = '#fff';
+      btn.onclick = addLesson;
+    }
+
+    async function addLesson() {
+      const code = document.getElementById('lesson-code').value;
+      const title = document.getElementById('lesson-title').value;
+      const order = document.getElementById('lesson-order').value;
+      const pdf = document.getElementById('lesson-pdf').value;
+      const video = document.getElementById('lesson-video').value;
+      const desc = document.getElementById('lesson-desc').value;
+      const msg = document.getElementById('msg-lesson');
+      if (!code || !title) { msg.style.color = 'red'; msg.textContent = 'Code and Title are required.'; return; }
+      msg.style.color = 'blue'; msg.textContent = 'Saving...';
+      const { error } = await supabaseClient.from('materials').insert([{ course_code: code, title: title, order_index: parseInt(order) || 0, file_url: pdf, video_url: video, description: desc }]);
+      if (error) { msg.style.color = 'red'; msg.textContent = 'Error: ' + error.message; }
+      else { msg.style.color = 'green'; msg.textContent = '✅ Lesson added successfully!'; resetLessonForm(); }
     }
 
     function resetQuizForm() {
@@ -291,6 +336,73 @@
       };
     }
 
+    // --- MANAGE LESSONS (EDIT/DELETE) ---
+    async function loadManageLessons() {
+      const listContainer = document.getElementById('manage-lessons-list');
+      listContainer.innerHTML = '<p>Loading...</p>';
+      const { data: lessons, error } = await supabaseClient.from('materials').select('*').order('course_code');
+      if (error || !lessons) { listContainer.innerHTML = '<p style="color:red;">Error loading lessons.</p>'; return; }
+      if (lessons.length === 0) { listContainer.innerHTML = '<p>No lessons found.</p>'; return; }
+      
+      listContainer.innerHTML = lessons.map(l => `
+        <div class="course-list-item">
+          <div>
+            <h4>${l.course_code} - ${l.title} <span style="font-weight:normal; color:#6a0dad;">(Order: ${l.order_index || 0})</span></h4>
+            <p>${l.description || 'No description'}</p>
+          </div>
+          <div class="action-btns">
+            <button class="btn-edit lesson-edit-btn" data-id="${l.id}" data-code="${encodeURIComponent(l.course_code)}" data-title="${encodeURIComponent(l.title)}" data-order="${l.order_index || 0}" data-pdf="${encodeURIComponent(l.file_url || '')}" data-video="${encodeURIComponent(l.video_url || '')}" data-desc="${encodeURIComponent(l.description || '')}">✏️ Edit</button>
+            <button class="btn-delete" onclick="deleteLesson(${l.id})">🗑️ Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function deleteLesson(id) {
+      if (!confirm("Delete this lesson?")) return;
+      const { error } = await supabaseClient.from('materials').delete().eq('id', id);
+      if (error) { alert("Error deleting: " + error.message); }
+      else { alert("Lesson deleted."); loadManageLessons(); }
+    }
+
+    function editLessonFromData(lesson) {
+      switchTab('lesson', document.querySelectorAll('.tab-btn')[1]);
+      document.getElementById('lesson-form-title').textContent = "Edit Lesson";
+      document.getElementById('lesson-code').value = lesson.course_code;
+      document.getElementById('lesson-title').value = lesson.title;
+      document.getElementById('lesson-order').value = lesson.order_index;
+      document.getElementById('lesson-pdf').value = lesson.file_url;
+      document.getElementById('lesson-video').value = lesson.video_url;
+      document.getElementById('lesson-desc').value = lesson.description;
+      
+      const btn = document.getElementById('lesson-save-btn');
+      btn.textContent = "Update Lesson";
+      btn.style.background = '#ffc107';
+      btn.style.color = '#000';
+      
+      btn.onclick = async () => {
+        const newCode = document.getElementById('lesson-code').value;
+        const newTitle = document.getElementById('lesson-title').value;
+        const newOrder = document.getElementById('lesson-order').value;
+        const newPdf = document.getElementById('lesson-pdf').value;
+        const newVideo = document.getElementById('lesson-video').value;
+        const newDesc = document.getElementById('lesson-desc').value;
+        const msg = document.getElementById('msg-lesson');
+        
+        msg.style.color = 'blue'; msg.textContent = 'Updating...';
+        const { error } = await supabaseClient.from('materials').update({ 
+          course_code: newCode, title: newTitle, order_index: parseInt(newOrder) || 0, file_url: newPdf, video_url: newVideo, description: newDesc 
+        }).eq('id', lesson.id);
+        
+        if (error) { msg.style.color = 'red'; msg.textContent = 'Error: ' + error.message; }
+        else { 
+          msg.style.color = 'green'; msg.textContent = '✅ Lesson updated successfully!'; 
+          resetLessonForm();
+          loadManageLessons();
+        }
+      };
+    }
+
     // --- MANAGE COURSES (EDIT/DELETE) ---
     async function loadManageList() {
       const listContainer = document.getElementById('manage-list');
@@ -382,25 +494,22 @@
       `;
     }
 
-    // --- GLOBAL EDIT BUTTON LISTENER (Bypasses all HTML string bugs) ---
+    // --- GLOBAL EDIT BUTTON LISTENER ---
     document.addEventListener('click', (e) => {
-      // Check if the clicked element is a Course Edit button
       if (e.target.classList.contains('course-edit-btn')) {
         const btn = e.target;
-        const course = {
+        editCourseFromData({
           id: btn.dataset.id,
           code: decodeURIComponent(btn.dataset.code),
           title: decodeURIComponent(btn.dataset.title),
           description: decodeURIComponent(btn.dataset.desc),
           duration: btn.dataset.duration
-        };
-        editCourseFromData(course);
+        });
       }
       
-      // Check if the clicked element is a Quiz Edit button
       if (e.target.classList.contains('quiz-edit-btn')) {
         const btn = e.target;
-        const quiz = {
+        editQuizFromData({
           id: btn.dataset.id,
           course_code: decodeURIComponent(btn.dataset.code),
           question: decodeURIComponent(btn.dataset.question),
@@ -409,8 +518,20 @@
           option_c: decodeURIComponent(btn.dataset.c),
           option_d: decodeURIComponent(btn.dataset.d),
           correct_answer: btn.dataset.correct
-        };
-        editQuizFromData(quiz);
+        });
+      }
+
+      if (e.target.classList.contains('lesson-edit-btn')) {
+        const btn = e.target;
+        editLessonFromData({
+          id: btn.dataset.id,
+          course_code: decodeURIComponent(btn.dataset.code),
+          title: decodeURIComponent(btn.dataset.title),
+          order_index: btn.dataset.order,
+          file_url: decodeURIComponent(btn.dataset.pdf),
+          video_url: decodeURIComponent(btn.dataset.video),
+          description: decodeURIComponent(btn.dataset.desc)
+        });
       }
     });
 
