@@ -24,7 +24,7 @@ courses:
   - MAC 401 — Public Relations Campaigns
 gallery:
   - /images/pr.jpeg
-  - /images/WhatsApp Image 2026-10-14 at 10.23.05 AM.jpeg
+  - /images/pam 1.jpeg
   - /images/pr10.jpeg
   - /images/WhatsApp Image 2026-10-14 at 10.22.55 AM.jpeg
   - /images/pr19.jpeg
