@@ -11,8 +11,22 @@
     .welcome-banner { background: linear-gradient(135deg, #6a0dad 0%, #1a052b 100%); padding: 40px; border-radius: 12px; color: #fff; margin-bottom: 40px; overflow-wrap: break-word; }
     .welcome-banner h1 { margin: 0 0 10px; font-size: 2.5rem; }
     .welcome-banner p { margin: 0; color: #e0d4eb; font-size: 1.1rem; }
-    .courses-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-    .course-card { background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #6a0dad; display: flex; flex-direction: column; justify-content: space-between; transition: background-color 0.3s; }
+    .courses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+    
+    .course-card { 
+      background: #fff; 
+      border-radius: 12px; 
+      padding: 25px; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+      border-top: 4px solid #6a0dad; 
+      display: flex; 
+      flex-direction: column; 
+      justify-content: space-between; 
+      transition: background-color 0.3s;
+      height: fit-content !important; /* FIXED: Prevents stretching */
+      align-self: start !important; /* FIXED: Keeps cards at top of grid */
+    }
+    
     .course-card h3 { margin-top: 0; color: #0d0d0d; }
     .course-card p { font-size: 0.95rem; color: #666; }
     .progress-bar { background: #eee; border-radius: 10px; height: 10px; margin: 15px 0; overflow: hidden; }
