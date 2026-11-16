@@ -8,22 +8,26 @@
   <link rel="icon" type="image/jpeg" href="images/mass communication logo.jpg" />
   <style>
     .admin-container { max-width: 1000px; margin: 40px auto; padding: 20px; }
-    
+
     .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
     .tab-btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; background: #eee; color: #333; transition: 0.2s; }
     .tab-btn.active { background: #6a0dad; color: #fff; }
-    
+
     .admin-form { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #6a0dad; display: none; }
     .admin-form.active { display: block; }
-    
+
     .form-group { margin-bottom: 15px; }
     .form-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #333; }
     .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-family: inherit; }
-    
+
     .btn-save { background: #1e7e34; color: #fff; padding: 12px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
     .btn-save:hover { background: #155d27; }
     .status-msg { text-align: center; font-weight: bold; margin-top: 15px; }
-    
+
+    /* SEARCH BAR */
+    .search-bar { width: 100%; padding: 12px 20px; border: 1px solid #ccc; border-radius: 30px; font-size: 1rem; margin-bottom: 20px; box-sizing: border-box; outline: none; }
+    .search-bar:focus { border-color: #6a0dad; box-shadow: 0 0 0 3px rgba(106, 13, 173, 0.1); }
+
     /* Manage Lists */
     .course-list-item { display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #6a0dad; }
     .course-list-item h4 { margin: 0 0 5px; color: #333; }
@@ -40,6 +44,34 @@
     .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; background: #e0e0e0; color: #333; }
 
     .nav-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid #6a0dad; vertical-align: middle; }
+
+    /* === EQUAL-HEIGHT COURSE CARDS (Issue #4) === */
+    .course-grid,
+    .courses-container,
+    .course-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      align-items: stretch; /* makes children fill row height */
+    }
+
+    .course-card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      box-sizing: border-box;
+      justify-content: space-between;
+    }
+
+    .course-card .card-body,
+    .course-card .course-desc {
+      flex: 1 1 auto;
+    }
+
+    .course-card .card-footer,
+    .course-card .btn {
+      margin-top: auto;
+    }
   </style>
 </head>
 <body>
@@ -63,7 +95,7 @@
 
   <div class="admin-container">
     <h1 style="color: #0d0d0d; margin-bottom: 20px;">Admin Dashboard</h1>
-    
+
     <div class="admin-tabs">
       <button class="tab-btn active" onclick="switchTab('course', this)">Add Course</button>
       <button class="tab-btn" onclick="switchTab('lesson', this)">Add Lesson</button>
@@ -74,7 +106,7 @@
       <button class="tab-btn" onclick="switchTab('students', this)">Enrolled Students</button>
     </div>
 
-    <!-- ADD COURSE FORM -->
+    <!-- ADD COURSE -->
     <div id="form-course" class="admin-form active">
       <h3 style="color: #6a0dad; margin-top: 0;" id="course-form-title">Add a New Course</h3>
       <div class="form-group"><label>Course Code (e.g., MAC 101)</label><input type="text" id="course-code" placeholder="MAC 101" /></div>
@@ -85,7 +117,7 @@
       <p id="msg-course" class="status-msg"></p>
     </div>
 
-    <!-- ADD LESSON FORM -->
+    <!-- ADD LESSON -->
     <div id="form-lesson" class="admin-form">
       <h3 style="color: #6a0dad; margin-top: 0;" id="lesson-form-title">Add a Lesson</h3>
       <div class="form-group"><label>Course Code</label><input type="text" id="lesson-code" placeholder="MAC 101" /></div>
@@ -98,7 +130,7 @@
       <p id="msg-lesson" class="status-msg"></p>
     </div>
 
-    <!-- ADD QUIZ FORM -->
+    <!-- ADD QUIZ -->
     <div id="form-quiz" class="admin-form">
       <h3 style="color: #6a0dad; margin-top: 0;" id="quiz-form-title">Add a Quiz Question</h3>
       <div class="form-group"><label>Course Code</label><input type="text" id="quiz-code" placeholder="MAC 101" /></div>
@@ -112,21 +144,24 @@
       <p id="msg-quiz" class="status-msg"></p>
     </div>
 
-    <!-- MANAGE QUIZZES LIST -->
+    <!-- MANAGE QUIZZES -->
     <div id="form-manage-quizzes" class="admin-form">
       <h3 style="color: #6a0dad; margin-top: 0;">Manage Quiz Questions</h3>
+      <input type="text" id="quiz-search" class="search-bar" placeholder="🔍 Search by course code or question..." onkeyup="filterQuizzes()" />
       <div id="manage-quizzes-list"><p>Loading questions...</p></div>
     </div>
 
-    <!-- MANAGE LESSONS LIST -->
+    <!-- MANAGE LESSONS -->
     <div id="form-manage-lessons" class="admin-form">
       <h3 style="color: #6a0dad; margin-top: 0;">Manage Lessons</h3>
+      <input type="text" id="lesson-search" class="search-bar" placeholder="🔍 Search by course code or lesson title..." onkeyup="filterLessons()" />
       <div id="manage-lessons-list"><p>Loading lessons...</p></div>
     </div>
 
-    <!-- MANAGE COURSES LIST -->
+    <!-- MANAGE COURSES -->
     <div id="form-manage" class="admin-form">
       <h3 style="color: #6a0dad; margin-top: 0;">Manage Courses</h3>
+      <input type="text" id="course-search-admin" class="search-bar" placeholder="🔍 Search by course code or title..." onkeyup="filterAdminCourses()" />
       <div id="manage-list"><p>Loading courses...</p></div>
     </div>
 
@@ -154,7 +189,17 @@
     }
     checkAdmin();
 
-    // --- MANUAL MOBILE MENU TOGGLE ---
+    // --- LOGOUT ---
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', async () => {
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) alert("Error logging out: " + error.message);
+        else window.location.href = "login.html";
+      });
+    }
+
+    // --- MOBILE MENU ---
     document.getElementById('menu-toggle').addEventListener('click', () => {
       document.getElementById('navLinks').classList.toggle('active');
     });
@@ -163,21 +208,21 @@
     function switchTab(tabName, btnElement) {
       document.querySelectorAll('.admin-form').forEach(f => f.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      
+
       document.getElementById('form-' + tabName).classList.add('active');
-      if(btnElement) btnElement.classList.add('active');
+      if (btnElement) btnElement.classList.add('active');
 
-      if (tabName === 'course') { resetCourseForm(); }
-      if (tabName === 'lesson') { resetLessonForm(); }
-      if (tabName === 'quiz') { resetQuizForm(); }
+      if (tabName === 'course') resetCourseForm();
+      if (tabName === 'lesson') resetLessonForm();
+      if (tabName === 'quiz') resetQuizForm();
 
-      if (tabName === 'manage') { loadManageList(); }
-      if (tabName === 'manage-quizzes') { loadManageQuizzes(); }
-      if (tabName === 'manage-lessons') { loadManageLessons(); }
-      if (tabName === 'students') { loadStudents(); }
+      if (tabName === 'manage') loadManageList();
+      if (tabName === 'manage-quizzes') loadManageQuizzes();
+      if (tabName === 'manage-lessons') loadManageLessons();
+      if (tabName === 'students') loadStudents();
     }
 
-    // --- FORM SUBMISSIONS ---
+    // --- ADD COURSE ---
     function resetCourseForm() {
       document.getElementById('course-form-title').textContent = "Add a New Course";
       document.getElementById('course-code').value = '';
@@ -192,8 +237,8 @@
     }
 
     async function addCourse() {
-      const code = document.getElementById('course-code').value;
-      const title = document.getElementById('course-title').value;
+      const code = document.getElementById('course-code').value.trim();
+      const title = document.getElementById('course-title').value.trim();
       const desc = document.getElementById('course-desc').value;
       const duration = document.getElementById('course-duration').value || 15;
       const msg = document.getElementById('msg-course');
@@ -204,6 +249,7 @@
       else { msg.style.color = 'green'; msg.textContent = '✅ Course added successfully!'; resetCourseForm(); }
     }
 
+    // --- ADD LESSON ---
     function resetLessonForm() {
       document.getElementById('lesson-form-title').textContent = "Add a Lesson";
       document.getElementById('lesson-code').value = '';
@@ -220,8 +266,8 @@
     }
 
     async function addLesson() {
-      const code = document.getElementById('lesson-code').value;
-      const title = document.getElementById('lesson-title').value;
+      const code = document.getElementById('lesson-code').value.trim();
+      const title = document.getElementById('lesson-title').value.trim();
       const order = document.getElementById('lesson-order').value;
       const pdf = document.getElementById('lesson-pdf').value;
       const video = document.getElementById('lesson-video').value;
@@ -229,11 +275,12 @@
       const msg = document.getElementById('msg-lesson');
       if (!code || !title) { msg.style.color = 'red'; msg.textContent = 'Code and Title are required.'; return; }
       msg.style.color = 'blue'; msg.textContent = 'Saving...';
-      const { error } = await supabaseClient.from('materials').insert([{ course_code: code, title: title, order_index: parseInt(order) || 0, file_url: pdf, video_url: video, description: desc }]);
+      const { error } = await supabaseClient.from('materials').insert([{ course_code: code, title, order_index: parseInt(order) || 0, file_url: pdf, video_url: video, description: desc }]);
       if (error) { msg.style.color = 'red'; msg.textContent = 'Error: ' + error.message; }
       else { msg.style.color = 'green'; msg.textContent = '✅ Lesson added successfully!'; resetLessonForm(); }
     }
 
+    // --- ADD QUIZ ---
     function resetQuizForm() {
       document.getElementById('quiz-form-title').textContent = "Add a Quiz Question";
       document.getElementById('quiz-code').value = '';
@@ -251,8 +298,8 @@
     }
 
     async function addQuiz() {
-      const code = document.getElementById('quiz-code').value;
-      const question = document.getElementById('quiz-question').value;
+      const code = document.getElementById('quiz-code').value.trim();
+      const question = document.getElementById('quiz-question').value.trim();
       const a = document.getElementById('quiz-a').value;
       const b = document.getElementById('quiz-b').value;
       const c = document.getElementById('quiz-c').value;
@@ -261,39 +308,48 @@
       const msg = document.getElementById('msg-quiz');
       if (!code || !question || !a || !b || !c || !d) { msg.style.color = 'red'; msg.textContent = 'All fields are required.'; return; }
       msg.style.color = 'blue'; msg.textContent = 'Saving...';
-      const { error } = await supabaseClient.from('quizzes').insert([{ course_code: code, question: question, option_a: a, option_b: b, option_c: c, option_d: d, correct_answer: correct }]);
+      const { error } = await supabaseClient.from('quizzes').insert([{ course_code: code, question, option_a: a, option_b: b, option_c: c, option_d: d, correct_answer: correct }]);
       if (error) { msg.style.color = 'red'; msg.textContent = 'Error: ' + error.message; }
       else { msg.style.color = 'green'; msg.textContent = '✅ Question added successfully!'; resetQuizForm(); }
     }
 
-    // --- MANAGE QUIZZES (EDIT/DELETE) ---
+    // --- MANAGE QUIZZES ---
     async function loadManageQuizzes() {
       const listContainer = document.getElementById('manage-quizzes-list');
       listContainer.innerHTML = '<p>Loading...</p>';
       const { data: quizzes, error } = await supabaseClient.from('quizzes').select('*').order('course_code');
       if (error || !quizzes) { listContainer.innerHTML = '<p style="color:red;">Error loading quizzes.</p>'; return; }
       if (quizzes.length === 0) { listContainer.innerHTML = '<p>No quiz questions found.</p>'; return; }
-      
+
       listContainer.innerHTML = quizzes.map(q => `
-        <div class="course-list-item">
+        <div class="course-list-item quiz-item" data-search="${encodeURIComponent((q.course_code || '') + ' ' + (q.question || ''))}">
           <div>
             <h4>${q.course_code} - ${q.question}</h4>
             <p>A) ${q.option_a} | B) ${q.option_b} | C) ${q.option_c} | D) ${q.option_d}</p>
             <p style="color:green; font-weight:bold;">Correct: ${q.correct_answer}</p>
           </div>
           <div class="action-btns">
-            <button class="btn-edit quiz-edit-btn" data-id="${q.id}" data-code="${encodeURIComponent(q.course_code)}" data-question="${encodeURIComponent(q.question)}" data-a="${encodeURIComponent(q.option_a)}" data-b="${encodeURIComponent(q.option_b)}" data-c="${encodeURIComponent(q.option_c)}" data-d="${encodeURIComponent(q.option_d)}" data-correct="${q.correct_answer}">✏️ Edit</button>
-            <button class="btn-delete" onclick="deleteQuiz(${q.id})">🗑️ Delete</button>
+            <button class="btn-edit quiz-edit-btn"
+              data-id="${q.id}"
+              data-code="${encodeURIComponent(q.course_code || '')}"
+              data-question="${encodeURIComponent(q.question || '')}"
+              data-a="${encodeURIComponent(q.option_a || '')}"
+              data-b="${encodeURIComponent(q.option_b || '')}"
+              data-c="${encodeURIComponent(q.option_c || '')}"
+              data-d="${encodeURIComponent(q.option_d || '')}"
+              data-correct="${q.correct_answer}">✏️ Edit</button>
+            <button class="btn-delete quiz-delete-btn" data-id="${q.id}">🗑️ Delete</button>
           </div>
         </div>
       `).join('');
     }
 
-    async function deleteQuiz(id) {
-      if (!confirm("Delete this quiz question?")) return;
-      const { error } = await supabaseClient.from('quizzes').delete().eq('id', id);
-      if (error) { alert("Error deleting: " + error.message); }
-      else { alert("Question deleted."); loadManageQuizzes(); }
+    function filterQuizzes() {
+      const input = document.getElementById('quiz-search').value.toLowerCase();
+      document.querySelectorAll('.quiz-item').forEach(item => {
+        const text = decodeURIComponent(item.dataset.search || '').toLowerCase();
+        item.style.display = text.includes(input) ? 'flex' : 'none';
+      });
     }
 
     function editQuizFromData(quiz) {
@@ -306,63 +362,71 @@
       document.getElementById('quiz-c').value = quiz.option_c;
       document.getElementById('quiz-d').value = quiz.option_d;
       document.getElementById('quiz-correct').value = quiz.correct_answer;
-      
+
       const btn = document.getElementById('quiz-save-btn');
       btn.textContent = "Update Question";
       btn.style.background = '#ffc107';
       btn.style.color = '#000';
-      
+
       btn.onclick = async () => {
-        const newCode = document.getElementById('quiz-code').value;
-        const newQuestion = document.getElementById('quiz-question').value;
+        const newCode = document.getElementById('quiz-code').value.trim();
+        const newQuestion = document.getElementById('quiz-question').value.trim();
         const newA = document.getElementById('quiz-a').value;
         const newB = document.getElementById('quiz-b').value;
         const newC = document.getElementById('quiz-c').value;
         const newD = document.getElementById('quiz-d').value;
         const newCorrect = document.getElementById('quiz-correct').value;
         const msg = document.getElementById('msg-quiz');
-        
+
         msg.style.color = 'blue'; msg.textContent = 'Updating...';
-        const { error } = await supabaseClient.from('quizzes').update({ 
-          course_code: newCode, question: newQuestion, option_a: newA, option_b: newB, option_c: newC, option_d: newD, correct_answer: newCorrect 
+        const { error } = await supabaseClient.from('quizzes').update({
+          course_code: newCode, question: newQuestion, option_a: newA, option_b: newB, option_c: newC, option_d: newD, correct_answer: newCorrect
         }).eq('id', quiz.id);
-        
+
         if (error) { msg.style.color = 'red'; msg.textContent = 'Error: ' + error.message; }
-        else { 
-          msg.style.color = 'green'; msg.textContent = '✅ Question updated successfully!'; 
+        else {
+          msg.style.color = 'green'; msg.textContent = '✅ Question updated successfully!';
           resetQuizForm();
           loadManageQuizzes();
         }
       };
     }
 
-    // --- MANAGE LESSONS (EDIT/DELETE) ---
+    // --- MANAGE LESSONS ---
     async function loadManageLessons() {
       const listContainer = document.getElementById('manage-lessons-list');
       listContainer.innerHTML = '<p>Loading...</p>';
       const { data: lessons, error } = await supabaseClient.from('materials').select('*').order('course_code');
       if (error || !lessons) { listContainer.innerHTML = '<p style="color:red;">Error loading lessons.</p>'; return; }
       if (lessons.length === 0) { listContainer.innerHTML = '<p>No lessons found.</p>'; return; }
-      
+
       listContainer.innerHTML = lessons.map(l => `
-        <div class="course-list-item">
+        <div class="course-list-item lesson-item" data-search="${encodeURIComponent((l.course_code || '') + ' ' + (l.title || ''))}">
           <div>
             <h4>${l.course_code} - ${l.title} <span style="font-weight:normal; color:#6a0dad;">(Order: ${l.order_index || 0})</span></h4>
             <p>${l.description || 'No description'}</p>
           </div>
           <div class="action-btns">
-            <button class="btn-edit lesson-edit-btn" data-id="${l.id}" data-code="${encodeURIComponent(l.course_code)}" data-title="${encodeURIComponent(l.title)}" data-order="${l.order_index || 0}" data-pdf="${encodeURIComponent(l.file_url || '')}" data-video="${encodeURIComponent(l.video_url || '')}" data-desc="${encodeURIComponent(l.description || '')}">✏️ Edit</button>
-            <button class="btn-delete" onclick="deleteLesson(${l.id})">🗑️ Delete</button>
+            <button class="btn-edit lesson-edit-btn"
+              data-id="${l.id}"
+              data-code="${encodeURIComponent(l.course_code || '')}"
+              data-title="${encodeURIComponent(l.title || '')}"
+              data-order="${l.order_index || 0}"
+              data-pdf="${encodeURIComponent(l.file_url || '')}"
+              data-video="${encodeURIComponent(l.video_url || '')}"
+              data-desc="${encodeURIComponent(l.description || '')}">✏️ Edit</button>
+            <button class="btn-delete lesson-delete-btn" data-id="${l.id}">🗑️ Delete</button>
           </div>
         </div>
       `).join('');
     }
 
-    async function deleteLesson(id) {
-      if (!confirm("Delete this lesson?")) return;
-      const { error } = await supabaseClient.from('materials').delete().eq('id', id);
-      if (error) { alert("Error deleting: " + error.message); }
-      else { alert("Lesson deleted."); loadManageLessons(); }
+    function filterLessons() {
+      const input = document.getElementById('lesson-search').value.toLowerCase();
+      document.querySelectorAll('.lesson-item').forEach(item => {
+        const text = decodeURIComponent(item.dataset.search || '').toLowerCase();
+        item.style.display = text.includes(input) ? 'flex' : 'none';
+      });
     }
 
     function editLessonFromData(lesson) {
@@ -374,62 +438,68 @@
       document.getElementById('lesson-pdf').value = lesson.file_url;
       document.getElementById('lesson-video').value = lesson.video_url;
       document.getElementById('lesson-desc').value = lesson.description;
-      
+
       const btn = document.getElementById('lesson-save-btn');
       btn.textContent = "Update Lesson";
       btn.style.background = '#ffc107';
       btn.style.color = '#000';
-      
+
       btn.onclick = async () => {
-        const newCode = document.getElementById('lesson-code').value;
-        const newTitle = document.getElementById('lesson-title').value;
+        const newCode = document.getElementById('lesson-code').value.trim();
+        const newTitle = document.getElementById('lesson-title').value.trim();
         const newOrder = document.getElementById('lesson-order').value;
         const newPdf = document.getElementById('lesson-pdf').value;
         const newVideo = document.getElementById('lesson-video').value;
         const newDesc = document.getElementById('lesson-desc').value;
         const msg = document.getElementById('msg-lesson');
-        
+
         msg.style.color = 'blue'; msg.textContent = 'Updating...';
-        const { error } = await supabaseClient.from('materials').update({ 
-          course_code: newCode, title: newTitle, order_index: parseInt(newOrder) || 0, file_url: newPdf, video_url: newVideo, description: newDesc 
+        const { error } = await supabaseClient.from('materials').update({
+          course_code: newCode, title: newTitle, order_index: parseInt(newOrder) || 0, file_url: newPdf, video_url: newVideo, description: newDesc
         }).eq('id', lesson.id);
-        
+
         if (error) { msg.style.color = 'red'; msg.textContent = 'Error: ' + error.message; }
-        else { 
-          msg.style.color = 'green'; msg.textContent = '✅ Lesson updated successfully!'; 
+        else {
+          msg.style.color = 'green'; msg.textContent = '✅ Lesson updated successfully!';
           resetLessonForm();
           loadManageLessons();
         }
       };
     }
 
-    // --- MANAGE COURSES (EDIT/DELETE) ---
+    // --- MANAGE COURSES ---
     async function loadManageList() {
       const listContainer = document.getElementById('manage-list');
       listContainer.innerHTML = '<p>Loading...</p>';
       const { data: courses, error } = await supabaseClient.from('courses').select('*').order('title');
       if (error || !courses) { listContainer.innerHTML = '<p style="color:red;">Error loading courses.</p>'; return; }
       if (courses.length === 0) { listContainer.innerHTML = '<p>No courses found.</p>'; return; }
-      
+
       listContainer.innerHTML = courses.map(course => `
-        <div class="course-list-item">
+        <div class="course-list-item course-item" data-search="${encodeURIComponent((course.code || '') + ' ' + (course.title || ''))}">
           <div>
             <h4>${course.title} <span style="font-weight:normal; color:#6a0dad;">(${course.code})</span></h4>
             <p>${course.description || 'No description'}</p>
           </div>
           <div class="action-btns">
-            <button class="btn-edit course-edit-btn" data-id="${course.id}" data-code="${encodeURIComponent(course.code)}" data-title="${encodeURIComponent(course.title)}" data-desc="${encodeURIComponent(course.description || '')}" data-duration="${course.duration || 15}">✏️ Edit</button>
-            <button class="btn-delete" onclick="deleteCourse(${course.id})">🗑️ Delete</button>
+            <button class="btn-edit course-edit-btn"
+              data-id="${course.id}"
+              data-code="${encodeURIComponent(course.code || '')}"
+              data-title="${encodeURIComponent(course.title || '')}"
+              data-desc="${encodeURIComponent(course.description || '')}"
+              data-duration="${course.duration || 15}">✏️ Edit</button>
+            <button class="btn-delete course-delete-btn" data-id="${course.id}">🗑️ Delete</button>
           </div>
         </div>
       `).join('');
     }
 
-    async function deleteCourse(courseId) {
-      if (!confirm("Are you sure you want to delete this course?")) return;
-      const { error } = await supabaseClient.from('courses').delete().eq('id', courseId);
-      if (error) { alert("Error deleting: " + error.message); }
-      else { alert("Course deleted."); loadManageList(); }
+    function filterAdminCourses() {
+      const input = document.getElementById('course-search-admin').value.toLowerCase();
+      document.querySelectorAll('.course-item').forEach(item => {
+        const text = decodeURIComponent(item.dataset.search || '').toLowerCase();
+        item.style.display = text.includes(input) ? 'flex' : 'none';
+      });
     }
 
     function editCourseFromData(course) {
@@ -438,35 +508,34 @@
       document.getElementById('course-title').value = course.title;
       document.getElementById('course-desc').value = course.description || '';
       document.getElementById('course-duration').value = course.duration || 15;
-      
+
       const saveBtn = document.querySelector('#form-course .btn-save');
       saveBtn.textContent = "Update Course";
       saveBtn.style.background = '#ffc107';
       saveBtn.style.color = '#000';
-      
+
       saveBtn.onclick = async () => {
-        const newCode = document.getElementById('course-code').value;
-        const newTitle = document.getElementById('course-title').value;
+        const newCode = document.getElementById('course-code').value.trim();
+        const newTitle = document.getElementById('course-title').value.trim();
         const newDesc = document.getElementById('course-desc').value;
         const newDuration = document.getElementById('course-duration').value || 15;
         const msg = document.getElementById('msg-course');
-        
+
         msg.style.color = 'blue'; msg.textContent = 'Updating...';
-        const { error } = await supabaseClient.from('courses').update({ 
-          code: newCode, title: newTitle, description: newDesc, duration: parseInt(newDuration) 
+        const { error } = await supabaseClient.from('courses').update({
+          code: newCode, title: newTitle, description: newDesc, duration: parseInt(newDuration)
         }).eq('id', course.id);
-        
+
         if (error) { msg.style.color = 'red'; msg.textContent = 'Error: ' + error.message; }
-        else { 
-          msg.style.color = 'green'; msg.textContent = '✅ Course updated!'; 
-          saveBtn.textContent = "Add Course"; saveBtn.style.background = '#1e7e34'; saveBtn.style.color = '#fff'; saveBtn.onclick = addCourse; 
-          resetCourseForm(); 
+        else {
+          msg.style.color = 'green'; msg.textContent = '✅ Course updated!';
+          resetCourseForm();
           loadManageList();
         }
       };
     }
 
-    // --- ENROLLED STUDENTS TRACKER ---
+    // --- ENROLLED STUDENTS ---
     async function loadStudents() {
       const listContainer = document.getElementById('students-list');
       listContainer.innerHTML = '<p>Loading student data...</p>';
@@ -494,8 +563,8 @@
       `;
     }
 
-    // --- GLOBAL EDIT BUTTON LISTENER ---
-    document.addEventListener('click', (e) => {
+    // --- GLOBAL BUTTON LISTENERS (apostrophe-safe) ---
+    document.addEventListener('click', async (e) => {
       if (e.target.classList.contains('course-edit-btn')) {
         const btn = e.target;
         editCourseFromData({
@@ -506,7 +575,7 @@
           duration: btn.dataset.duration
         });
       }
-      
+
       if (e.target.classList.contains('quiz-edit-btn')) {
         const btn = e.target;
         editQuizFromData({
@@ -533,23 +602,37 @@
           description: decodeURIComponent(btn.dataset.desc)
         });
       }
-    });
 
-    document.getElementById('logout-btn').addEventListener('click', async () => {
-      await supabaseClient.auth.signOut();
-      window.location.href = "index.html";
+      // DELETE: course
+      if (e.target.classList.contains('course-delete-btn')) {
+        if (!confirm("Delete this course?")) return;
+        const { data, error } = await supabaseClient
+          .from('courses').delete().eq('id', e.target.dataset.id).select();
+        if (error) { alert("Error deleting course: " + error.message); return; }
+        if (!data || data.length === 0) { alert("Delete blocked — check Supabase RLS DELETE policy for 'courses'."); return; }
+        loadManageList();
+      }
+
+      // DELETE: quiz
+      if (e.target.classList.contains('quiz-delete-btn')) {
+        if (!confirm("Delete this question?")) return;
+        const { data, error } = await supabaseClient
+          .from('quizzes').delete().eq('id', e.target.dataset.id).select();
+        if (error) { alert("Error deleting question: " + error.message); return; }
+        if (!data || data.length === 0) { alert("Delete blocked — check Supabase RLS DELETE policy for 'quizzes'."); return; }
+        loadManageQuizzes();
+      }
+
+      // DELETE: lesson
+      if (e.target.classList.contains('lesson-delete-btn')) {
+        if (!confirm("Delete this lesson?")) return;
+        const { data, error } = await supabaseClient
+          .from('materials').delete().eq('id', e.target.dataset.id).select();
+        if (error) { alert("Error deleting lesson: " + error.message); return; }
+        if (!data || data.length === 0) { alert("Delete blocked — check Supabase RLS DELETE policy for 'materials'."); return; }
+        loadManageLessons();
+      }
     });
   </script>
-
-  <!-- FORCED CSS FOR MOBILE MENU -->
-  <style>
-    @media screen and (max-width: 768px) {
-      .menu-toggle { display: block !important; color: #fff !important; font-size: 24px !important; cursor: pointer !important; z-index: 9999 !important; }
-      .nav-links { display: none !important; position: absolute !important; top: 70px !important; right: 20px !important; background: #000 !important; width: 220px !important; flex-direction: column !important; padding: 20px !important; border-radius: 8px !important; box-shadow: 0 5px 15px rgba(0,0,0,0.5) !important; z-index: 9998 !important; }
-      .nav-links.active { display: flex !important; }
-      .nav-links li { margin: 12px 0 !important; text-align: right !important; width: 100% !important; display: block !important; }
-      .nav-links a { display: block !important; width: 100% !important; color: #fff !important; padding: 10px 0 !important; text-decoration: none !important; }
-    }
-  </style>
 </body>
 </html>
