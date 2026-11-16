@@ -237,7 +237,7 @@
             <p style="color:green; font-weight:bold;">Correct: ${q.correct_answer}</p>
           </div>
           <div class="action-btns">
-            <button class="btn-edit" onclick='editQuizFromData(${JSON.stringify(q).replace(/'/g, "&#39;")})'>✏️ Edit</button>
+            <button class="btn-edit quiz-edit-btn" data-id="${q.id}" data-code="${encodeURIComponent(q.course_code)}" data-question="${encodeURIComponent(q.question)}" data-a="${encodeURIComponent(q.option_a)}" data-b="${encodeURIComponent(q.option_b)}" data-c="${encodeURIComponent(q.option_c)}" data-d="${encodeURIComponent(q.option_d)}" data-correct="${q.correct_answer}">✏️ Edit</button>
             <button class="btn-delete" onclick="deleteQuiz(${q.id})">🗑️ Delete</button>
           </div>
         </div>
@@ -306,7 +306,7 @@
             <p>${course.description || 'No description'}</p>
           </div>
           <div class="action-btns">
-            <button class="btn-edit" onclick='editCourseFromData(${JSON.stringify(course).replace(/'/g, "&#39;")})'>✏️ Edit</button>
+            <button class="btn-edit course-edit-btn" data-id="${course.id}" data-code="${encodeURIComponent(course.code)}" data-title="${encodeURIComponent(course.title)}" data-desc="${encodeURIComponent(course.description || '')}" data-duration="${course.duration || 15}">✏️ Edit</button>
             <button class="btn-delete" onclick="deleteCourse(${course.id})">🗑️ Delete</button>
           </div>
         </div>
@@ -381,6 +381,38 @@
         </table>
       `;
     }
+
+    // --- GLOBAL EDIT BUTTON LISTENER (Bypasses all HTML string bugs) ---
+    document.addEventListener('click', (e) => {
+      // Check if the clicked element is a Course Edit button
+      if (e.target.classList.contains('course-edit-btn')) {
+        const btn = e.target;
+        const course = {
+          id: btn.dataset.id,
+          code: decodeURIComponent(btn.dataset.code),
+          title: decodeURIComponent(btn.dataset.title),
+          description: decodeURIComponent(btn.dataset.desc),
+          duration: btn.dataset.duration
+        };
+        editCourseFromData(course);
+      }
+      
+      // Check if the clicked element is a Quiz Edit button
+      if (e.target.classList.contains('quiz-edit-btn')) {
+        const btn = e.target;
+        const quiz = {
+          id: btn.dataset.id,
+          course_code: decodeURIComponent(btn.dataset.code),
+          question: decodeURIComponent(btn.dataset.question),
+          option_a: decodeURIComponent(btn.dataset.a),
+          option_b: decodeURIComponent(btn.dataset.b),
+          option_c: decodeURIComponent(btn.dataset.c),
+          option_d: decodeURIComponent(btn.dataset.d),
+          correct_answer: btn.dataset.correct
+        };
+        editQuizFromData(quiz);
+      }
+    });
 
     document.getElementById('logout-btn').addEventListener('click', async () => {
       await supabaseClient.auth.signOut();
