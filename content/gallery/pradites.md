@@ -10,4 +10,5 @@ photos:
   - /images/pr19.jpeg
   - /images/pr9.jpeg
   - /images/pr6.jpeg
+  - /images/pam 1.jpeg
 ---
