@@ -172,6 +172,7 @@
       const btn = document.getElementById('course-save-btn');
       btn.textContent = "Add Course";
       btn.style.background = '#1e7e34';
+      btn.style.color = '#fff';
       btn.onclick = addCourse;
     }
 
@@ -200,6 +201,7 @@
       const btn = document.getElementById('quiz-save-btn');
       btn.textContent = "Add Question";
       btn.style.background = '#1e7e34';
+      btn.style.color = '#fff';
       btn.onclick = addQuiz;
     }
 
@@ -235,27 +237,11 @@
             <p style="color:green; font-weight:bold;">Correct: ${q.correct_answer}</p>
           </div>
           <div class="action-btns">
-            <button class="btn-edit quiz-edit-btn" data-id="${q.id}" data-code="${q.course_code}" data-question="${encodeURIComponent(q.question)}" data-a="${encodeURIComponent(q.option_a)}" data-b="${encodeURIComponent(q.option_b)}" data-c="${encodeURIComponent(q.option_c)}" data-d="${encodeURIComponent(q.option_d)}" data-correct="${q.correct_answer}">✏️ Edit</button>
+            <button class="btn-edit" onclick='editQuizFromData(${JSON.stringify(q).replace(/'/g, "&#39;")})'>✏️ Edit</button>
             <button class="btn-delete" onclick="deleteQuiz(${q.id})">🗑️ Delete</button>
           </div>
         </div>
       `).join('');
-
-      document.querySelectorAll('.quiz-edit-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const quiz = {
-            id: e.target.dataset.id,
-            course_code: e.target.dataset.code,
-            question: decodeURIComponent(e.target.dataset.question),
-            option_a: decodeURIComponent(e.target.dataset.a),
-            option_b: decodeURIComponent(e.target.dataset.b),
-            option_c: decodeURIComponent(e.target.dataset.c),
-            option_d: decodeURIComponent(e.target.dataset.d),
-            correct_answer: e.target.dataset.correct
-          };
-          editQuizFromData(quiz);
-        });
-      });
     }
 
     async function deleteQuiz(id) {
@@ -320,24 +306,11 @@
             <p>${course.description || 'No description'}</p>
           </div>
           <div class="action-btns">
-            <button class="btn-edit course-edit-btn" data-id="${course.id}" data-code="${course.code}" data-title="${encodeURIComponent(course.title)}" data-desc="${encodeURIComponent(course.description || '')}" data-duration="${course.duration || 15}">✏️ Edit</button>
+            <button class="btn-edit" onclick='editCourseFromData(${JSON.stringify(course).replace(/'/g, "&#39;")})'>✏️ Edit</button>
             <button class="btn-delete" onclick="deleteCourse(${course.id})">🗑️ Delete</button>
           </div>
         </div>
       `).join('');
-
-      document.querySelectorAll('.course-edit-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const course = {
-            id: e.target.dataset.id,
-            code: e.target.dataset.code,
-            title: decodeURIComponent(e.target.dataset.title),
-            description: decodeURIComponent(e.target.dataset.desc),
-            duration: e.target.dataset.duration
-          };
-          editCourseFromData(course);
-        });
-      });
     }
 
     async function deleteCourse(courseId) {
