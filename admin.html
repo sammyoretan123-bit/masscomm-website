@@ -44,7 +44,6 @@
 </head>
 <body>
 
-  <!-- CUSTOM ADMIN NAVBAR -->
   <header>
     <nav class="navbar">
       <div class="logo">
@@ -227,6 +226,7 @@
       const { data: quizzes, error } = await supabaseClient.from('quizzes').select('*').order('course_code');
       if (error || !quizzes) { listContainer.innerHTML = '<p style="color:red;">Error loading quizzes.</p>'; return; }
       if (quizzes.length === 0) { listContainer.innerHTML = '<p>No quiz questions found.</p>'; return; }
+      
       listContainer.innerHTML = quizzes.map(q => `
         <div class="course-list-item">
           <div>
@@ -235,11 +235,27 @@
             <p style="color:green; font-weight:bold;">Correct: ${q.correct_answer}</p>
           </div>
           <div class="action-btns">
-            <button class="btn-edit" onclick="editQuiz(${q.id}, '${q.course_code}', '${q.question.replace(/'/g, "\\'")}', '${q.option_a.replace(/'/g, "\\'")}', '${q.option_b.replace(/'/g, "\\'")}', '${q.option_c.replace(/'/g, "\\'")}', '${q.option_d.replace(/'/g, "\\'")}', '${q.correct_answer}')">✏️ Edit</button>
+            <button class="btn-edit quiz-edit-btn" data-id="${q.id}" data-code="${q.course_code}" data-question="${q.question}" data-a="${q.option_a}" data-b="${q.option_b}" data-c="${q.option_c}" data-d="${q.option_d}" data-correct="${q.correct_answer}">✏️ Edit</button>
             <button class="btn-delete" onclick="deleteQuiz(${q.id})">🗑️ Delete</button>
           </div>
         </div>
       `).join('');
+
+      document.querySelectorAll('.quiz-edit-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const quiz = {
+            id: e.target.dataset.id,
+            course_code: e.target.dataset.code,
+            question: e.target.dataset.question,
+            option_a: e.target.dataset.a,
+            option_b: e.target.dataset.b,
+            option_c: e.target.dataset.c,
+            option_d: e.target.dataset.d,
+            correct_answer: e.target.dataset.correct
+          };
+          editQuizFromData(quiz);
+        });
+      });
     }
 
     async function deleteQuiz(id) {
@@ -249,20 +265,22 @@
       else { alert("Question deleted."); loadManageQuizzes(); }
     }
 
-    function editQuiz(id, code, question, a, b, c, d, correct) {
+    function editQuizFromData(quiz) {
       switchTab('quiz', document.querySelectorAll('.tab-btn')[2]);
       document.getElementById('quiz-form-title').textContent = "Edit Quiz Question";
-      document.getElementById('quiz-code').value = code;
-      document.getElementById('quiz-question').value = question;
-      document.getElementById('quiz-a').value = a;
-      document.getElementById('quiz-b').value = b;
-      document.getElementById('quiz-c').value = c;
-      document.getElementById('quiz-d').value = d;
-      document.getElementById('quiz-correct').value = correct;
+      document.getElementById('quiz-code').value = quiz.course_code;
+      document.getElementById('quiz-question').value = quiz.question;
+      document.getElementById('quiz-a').value = quiz.option_a;
+      document.getElementById('quiz-b').value = quiz.option_b;
+      document.getElementById('quiz-c').value = quiz.option_c;
+      document.getElementById('quiz-d').value = quiz.option_d;
+      document.getElementById('quiz-correct').value = quiz.correct_answer;
+      
       const btn = document.getElementById('quiz-save-btn');
       btn.textContent = "Update Question";
       btn.style.background = '#ffc107';
       btn.style.color = '#000';
+      
       btn.onclick = async () => {
         const newCode = document.getElementById('quiz-code').value;
         const newQuestion = document.getElementById('quiz-question').value;
@@ -272,10 +290,18 @@
         const newD = document.getElementById('quiz-d').value;
         const newCorrect = document.getElementById('quiz-correct').value;
         const msg = document.getElementById('msg-quiz');
+        
         msg.style.color = 'blue'; msg.textContent = 'Updating...';
-        const { error } = await supabaseClient.from('quizzes').update({ course_code: newCode, question: newQuestion, option_a: newA, option_b: newB, option_c: newC, option_d: newD, correct_answer: newCorrect }).eq('id', id);
+        const { error } = await supabaseClient.from('quizzes').update({ 
+          course_code: newCode, question: newQuestion, option_a: newA, option_b: newB, option_c: newC, option_d: newD, correct_answer: newCorrect 
+        }).eq('id', quiz.id);
+        
         if (error) { msg.style.color = 'red'; msg.textContent = 'Error: ' + error.message; }
-        else { msg.style.color = 'green'; msg.textContent = '✅ Question updated successfully!'; resetQuizForm(); loadManageQuizzes(); }
+        else { 
+          msg.style.color = 'green'; msg.textContent = '✅ Question updated successfully!'; 
+          resetQuizForm();
+          loadManageQuizzes();
+        }
       };
     }
 
@@ -286,6 +312,7 @@
       const { data: courses, error } = await supabaseClient.from('courses').select('*').order('title');
       if (error || !courses) { listContainer.innerHTML = '<p style="color:red;">Error loading courses.</p>'; return; }
       if (courses.length === 0) { listContainer.innerHTML = '<p>No courses found.</p>'; return; }
+      
       listContainer.innerHTML = courses.map(course => `
         <div class="course-list-item">
           <div>
@@ -293,11 +320,24 @@
             <p>${course.description || 'No description'}</p>
           </div>
           <div class="action-btns">
-            <button class="btn-edit" onclick="editCourse(${course.id}, '${course.code}', '${course.title.replace(/'/g, "\\'")}', '${(course.description || '').replace(/'/g, "\\'")}', ${course.duration || 15})">✏️ Edit</button>
+            <button class="btn-edit course-edit-btn" data-id="${course.id}" data-code="${course.code}" data-title="${course.title}" data-desc="${course.description || ''}" data-duration="${course.duration || 15}">✏️ Edit</button>
             <button class="btn-delete" onclick="deleteCourse(${course.id})">🗑️ Delete</button>
           </div>
         </div>
       `).join('');
+
+      document.querySelectorAll('.course-edit-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const course = {
+            id: e.target.dataset.id,
+            code: e.target.dataset.code,
+            title: e.target.dataset.title,
+            description: e.target.dataset.desc,
+            duration: e.target.dataset.duration
+          };
+          editCourseFromData(course);
+        });
+      });
     }
 
     async function deleteCourse(courseId) {
@@ -307,26 +347,37 @@
       else { alert("Course deleted."); loadManageList(); }
     }
 
-    function editCourse(id, oldCode, oldTitle, oldDesc, oldDuration) {
+    function editCourseFromData(course) {
       switchTab('course', document.querySelector('.tab-btn'));
-      document.getElementById('course-code').value = oldCode;
-      document.getElementById('course-title').value = oldTitle;
-      document.getElementById('course-desc').value = oldDesc;
-      document.getElementById('course-duration').value = oldDuration || 15;
+      document.getElementById('course-code').value = course.code;
+      document.getElementById('course-title').value = course.title;
+      document.getElementById('course-desc').value = course.description || '';
+      document.getElementById('course-duration').value = course.duration || 15;
+      
       const saveBtn = document.querySelector('#form-course .btn-save');
       saveBtn.textContent = "Update Course";
       saveBtn.style.background = '#ffc107';
       saveBtn.style.color = '#000';
+      
       saveBtn.onclick = async () => {
         const newCode = document.getElementById('course-code').value;
         const newTitle = document.getElementById('course-title').value;
         const newDesc = document.getElementById('course-desc').value;
         const newDuration = document.getElementById('course-duration').value || 15;
         const msg = document.getElementById('msg-course');
+        
         msg.style.color = 'blue'; msg.textContent = 'Updating...';
-        const { error } = await supabaseClient.from('courses').update({ code: newCode, title: newTitle, description: newDesc, duration: parseInt(newDuration) }).eq('id', id);
+        const { error } = await supabaseClient.from('courses').update({ 
+          code: newCode, title: newTitle, description: newDesc, duration: parseInt(newDuration) 
+        }).eq('id', course.id);
+        
         if (error) { msg.style.color = 'red'; msg.textContent = 'Error: ' + error.message; }
-        else { msg.style.color = 'green'; msg.textContent = '✅ Course updated!'; saveBtn.textContent = "Add Course"; saveBtn.style.background = '#1e7e34'; saveBtn.style.color = '#fff'; saveBtn.onclick = addCourse; resetCourseForm(); }
+        else { 
+          msg.style.color = 'green'; msg.textContent = '✅ Course updated!'; 
+          saveBtn.textContent = "Add Course"; saveBtn.style.background = '#1e7e34'; saveBtn.style.color = '#fff'; saveBtn.onclick = addCourse; 
+          resetCourseForm(); 
+          loadManageList();
+        }
       };
     }
 
