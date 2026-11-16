@@ -235,7 +235,7 @@
             <p style="color:green; font-weight:bold;">Correct: ${q.correct_answer}</p>
           </div>
           <div class="action-btns">
-            <button class="btn-edit quiz-edit-btn" data-id="${q.id}" data-code="${q.course_code}" data-question="${q.question}" data-a="${q.option_a}" data-b="${q.option_b}" data-c="${q.option_c}" data-d="${q.option_d}" data-correct="${q.correct_answer}">✏️ Edit</button>
+            <button class="btn-edit quiz-edit-btn" data-id="${q.id}" data-code="${q.course_code}" data-question="${encodeURIComponent(q.question)}" data-a="${encodeURIComponent(q.option_a)}" data-b="${encodeURIComponent(q.option_b)}" data-c="${encodeURIComponent(q.option_c)}" data-d="${encodeURIComponent(q.option_d)}" data-correct="${q.correct_answer}">✏️ Edit</button>
             <button class="btn-delete" onclick="deleteQuiz(${q.id})">🗑️ Delete</button>
           </div>
         </div>
@@ -246,11 +246,11 @@
           const quiz = {
             id: e.target.dataset.id,
             course_code: e.target.dataset.code,
-            question: e.target.dataset.question,
-            option_a: e.target.dataset.a,
-            option_b: e.target.dataset.b,
-            option_c: e.target.dataset.c,
-            option_d: e.target.dataset.d,
+            question: decodeURIComponent(e.target.dataset.question),
+            option_a: decodeURIComponent(e.target.dataset.a),
+            option_b: decodeURIComponent(e.target.dataset.b),
+            option_c: decodeURIComponent(e.target.dataset.c),
+            option_d: decodeURIComponent(e.target.dataset.d),
             correct_answer: e.target.dataset.correct
           };
           editQuizFromData(quiz);
@@ -320,7 +320,7 @@
             <p>${course.description || 'No description'}</p>
           </div>
           <div class="action-btns">
-            <button class="btn-edit course-edit-btn" data-id="${course.id}" data-code="${course.code}" data-title="${course.title}" data-desc="${course.description || ''}" data-duration="${course.duration || 15}">✏️ Edit</button>
+            <button class="btn-edit course-edit-btn" data-id="${course.id}" data-code="${course.code}" data-title="${encodeURIComponent(course.title)}" data-desc="${encodeURIComponent(course.description || '')}" data-duration="${course.duration || 15}">✏️ Edit</button>
             <button class="btn-delete" onclick="deleteCourse(${course.id})">🗑️ Delete</button>
           </div>
         </div>
@@ -331,8 +331,8 @@
           const course = {
             id: e.target.dataset.id,
             code: e.target.dataset.code,
-            title: e.target.dataset.title,
-            description: e.target.dataset.desc,
+            title: decodeURIComponent(e.target.dataset.title),
+            description: decodeURIComponent(e.target.dataset.desc),
             duration: e.target.dataset.duration
           };
           editCourseFromData(course);
